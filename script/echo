@@ -7,24 +7,26 @@ require 'socket'
 class EchoServer
 
   def initialize(port)
+    @port = port
     begin
-      @server = TCPServer.new('localhost', port)
+      @server = TCPServer.new('127.0.0.1', @port)
     rescue Exception => e
       puts e.message
     end
   end
 
   def connect
-    puts "Waiting for client"
+    puts "Waiting for client on port #{@port}"
     client = @server.accept
     client.puts "Welcome"
+    puts client.readline
     while message = STDIN.gets
       client.puts message
-      puts client.gets
+      puts client.readline
     end
     client.close
   end
 end
 
-server  = EchoServer.new(4445)
+server  = EchoServer.new(5555)
 server.connect

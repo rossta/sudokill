@@ -12,7 +12,6 @@ Sudoku = (function() {
       ws.onopen = function() {
         debug("connected...");
         ws.send("hello server");
-        ws.send("hello again");
       };
     }
   },

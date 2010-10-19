@@ -1,4 +1,4 @@
-Sudoku = (function() {
+Sudokl = (function() {
 
   var instanceMethods = {
     initialize: function() {
@@ -18,8 +18,8 @@ Sudoku = (function() {
 
   classMethods = {
     begin : function(opts) {
-      var sudoku = new Sudoku(opts);
-      sudoku.connect();
+      var sudokl = new Sudokl(opts);
+      sudokl.connect();
     }
   };
 

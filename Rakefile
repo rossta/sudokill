@@ -1,4 +1,4 @@
-namespace :sudoku do
+namespace :sudokl do
   
   namespace :server do
     

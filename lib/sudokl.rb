@@ -6,6 +6,6 @@ require "eventmachine"
 require "em-websocket"
 
 %w[ proxy web_socket ].each do |file|
-  require "sudoku/#{file}"
+  require "sudokl/#{file}"
 end
 

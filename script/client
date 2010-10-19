@@ -1,0 +1,42 @@
+#! /usr/bin/env ruby
+
+lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
+$LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
+require 'sudokl'
+
+module Dummy
+  def post_init
+    send_data "GET /\r\n\r\n"
+  end
+
+  def receive_data(data)
+    puts data
+  end
+end
+
+EM.run do
+
+  trap("TERM") { Sudokl::WebSocket.stop }
+  trap("INT")  { Sudokl::WebSocket.stop }
+
+  @proxy = EM.connect '127.0.0.1', 5555, Sudokl::Proxy
+
+  Sudokl::WebSocket.start(:host => "0.0.0.0", :port => 8080, :debug => true) do |ws|
+
+    ws.onopen    {
+      @proxy.websocket = ws
+      ws.send "Hello Client!"
+    }
+
+    ws.onmessage { |msg|
+      @proxy.send_data(msg)
+    }
+
+    ws.onclose   {
+      ws.send "Closing time"
+      puts "WebSocket closed"
+    }
+
+  end
+
+end

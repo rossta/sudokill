@@ -1,14 +1,15 @@
-= Sudokl
+Sudokl
+======
 
 Sudoku backed by EventMachine based, async WebSocket server. 
 
-== Start server
+Start server
 
   ./script/server
 
-== Start client
+Start client
 
   ./script/client
 
-== Open index.html
+Open index.html
 

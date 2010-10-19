@@ -1,4 +1,4 @@
-$LOAD_PATH << File.expand_path(File.dirname(__FILE__)) + "/../vendor/"
+$LOAD_PATH << File.expand_path(File.dirname(__FILE__)) + "/../vendor/em-websocket/lib"
 
 require "rubygems"
 require "socket"

@@ -4,6 +4,8 @@ lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 require 'sudokl'
 
+name = ARGV[0] || nil
+
 module Dummy
   def post_init
     send_data "GET /\r\n\r\n"
@@ -25,11 +27,11 @@ EM.run do
 
     ws.onopen    {
       @proxy.websocket = ws
-      ws.send "Hello Client!"
+      ws.send "Hello #{name}"
     }
 
     ws.onmessage { |msg|
-      @proxy.send_data(msg)
+      # @proxy.send_data(msg)
     }
 
     ws.onclose   {

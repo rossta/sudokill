@@ -8,6 +8,8 @@ Sudokl = (function() {
       this.board    = new SuBoard(selector);
       this.board.build();
 
+      this.score    = new ScoreTable();
+
       this.$msg     = $("<div>");
       this.$msg.attr("id", "msg").appendTo(this.$sudokl);
     },
@@ -35,6 +37,9 @@ Sudokl = (function() {
       };
       ws.onclose = function() { console.log("ws:","socket closed"); };
       ws.onopen = function() { console.log("ws:","connected..."); ws.send("hello server"); };
+    },
+    update: function(i, j, number) {
+      this.board.update(i, j, number);
     }
   },
 
@@ -42,14 +47,25 @@ Sudokl = (function() {
     play : function(opts) {
       var sudokl = new Sudokl(opts);
       sudokl.connect();
+      this.game = sudokl;
     }
   };
 
   var SuBoard = Base.extend({
     constructor: function(selector) {
       this.r = Raphael(selector, 450, 450);
-      this.dim = 50;
-      this.entries = [];
+      this.dim            = 50;
+      this.numberSquares  = new MultiArray(9, 9);
+      this.backgroundSquares = new MultiArray(9, 9);
+    },
+    update: function(i, j, number){
+      var rtext = this.numberSquares[i][j],
+      rsquare = this.backgroundSquares[i][j];
+      rsquare.animate({fill:Raphael.getColor()},300, function() {
+        rtext.attr({text: number});
+        rsquare.animate({fill:"none"}, 300);
+      });
+      return rtext;
     },
     build: function() {
       var r = this.r,
@@ -86,20 +102,24 @@ Sudokl = (function() {
           x = j * dim;
           cx = x + (dim/2);
           cy = y + (dim/2);
-          
+
           square = r.rect(x, y, dim, dim);
-          
+
           text = r.text(cx, cy, Math.floor(Math.random()*9) + 1).attr({
             fill: bcolor,
             "text-anchor": "middle",
             "font-size": "32px",
             "color": "white"
           });
+          
+          this.numberSquares[i][j] = text;
+          this.backgroundSquares[i][j] = square;
 
           squares.push(square);
           start += 0.01;
         }
       }
+
 
       squares.attr({
         stroke: strokeColor,
@@ -114,6 +134,28 @@ Sudokl = (function() {
       });
     }
   },{});
+
+  var ScoreTable = Base.extend({
+    constructor: function() {
+      this.numbers = new MultiArray(9, 9);
+    }
+  });
+
+
+  var MultiArray = function(rows, cols) {
+    var i;
+    var j;
+       var a = new Array(rows);
+       for (i=0; i < rows; i++)
+       {
+           a[i] = new Array(cols);
+           for (j=0; j < cols; j++)
+           {
+               a[i][j] = "";
+           }
+       }
+       return(a);
+  };
 
   return Base.extend(instanceMethods, classMethods);
 })();

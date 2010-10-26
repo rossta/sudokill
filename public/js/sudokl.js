@@ -20,6 +20,8 @@ Sudokl = (function() {
       ws = new WebSocket(url);
       ws.onmessage = function(evt) {
         self.$msg.append("<p>"+evt.data+"</p>").scrollTop(self.$msg.height());
+        console.log("ws: receiving message");
+        console.log("ws: message", evt);
       };
       ws.onclose = function() {
         console.log("ws:","socket closed");

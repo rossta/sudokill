@@ -6,6 +6,7 @@ require 'sudokl'
 
 host = (ARGV.shift || '127.0.0.1')
 port = (ARGV.shift || 45454)
+socket = (ARGV.shift || 8080)
 
 module Dummy
   def post_init
@@ -24,7 +25,7 @@ EM.run do
 
   @proxy = EM.connect host, port, Sudokl::Proxy
 
-  Sudokl::WebSocket.start(:host => "0.0.0.0", :port => 8787, :debug => true) do |ws|
+  Sudokl::WebSocket.start(:host => "0.0.0.0", :port => socket, :debug => true) do |ws|
 
     ws.onopen    {
       @proxy.websocket = ws

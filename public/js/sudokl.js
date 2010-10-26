@@ -14,9 +14,10 @@ Sudokl = (function() {
       this.$msg.attr("id", "msg").appendTo(this.$sudokl);
     },
 
-    connect: function() {
-      var self = this;
-      ws = new WebSocket("ws://localhost:8080/");
+    connect: function(url) {
+      var self = this,
+      url = url || "ws://localhost:8080/";
+      ws = new WebSocket(url);
       ws.onmessage = function(evt) {
         self.$msg.append("<p>"+evt.data+"</p>").scrollTop(self.$msg.height());
       };
@@ -46,7 +47,7 @@ Sudokl = (function() {
   classMethods = {
     play : function(opts) {
       var sudokl = new Sudokl(opts);
-      sudokl.connect();
+      // sudokl.connect();
       this.game = sudokl;
     }
   };

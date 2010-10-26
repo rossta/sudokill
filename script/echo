@@ -6,10 +6,11 @@ require 'socket'
 
 class EchoServer
 
-  def initialize(port)
+  def initialize(host, port)
+    @host = host
     @port = port
     begin
-      @server = TCPServer.new('127.0.0.1', @port)
+      @server = TCPServer.new(@host, @port)
     rescue Exception => e
       puts e.message
     end
@@ -28,5 +29,7 @@ class EchoServer
   end
 end
 
-server  = EchoServer.new(5555)
+host = (ARGV.shift || '127.0.0.1')
+port = (ARGV.shift || 45454)
+server  = EchoServer.new(host, port)
 server.connect

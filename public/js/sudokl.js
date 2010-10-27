@@ -11,7 +11,7 @@ Sudokl = (function() {
       this.score    = new ScoreTable();
 
       this.$msg     = $("<div>");
-      this.$msg.attr("id", "msg").appendTo(this.$sudokl);
+      this.$msg.attr("id", "msg").appendTo('body');
     },
 
 // Example Sudokl.game.connect("ws://linserv1.cims.nyu.edu:25252")
@@ -20,9 +20,22 @@ Sudokl = (function() {
       url = url || "ws://localhost:8080/";
       ws = new WebSocket(url);
       ws.onmessage = function(e) {
-        self.$msg.append("<p>"+e.data+"</p>").scrollTop(self.$msg.height());
+        var message = e.data.trim();
+        self.$msg.append("<p>"+message+"</p>").scrollTop(self.$msg.height());
         console.log("ws: receiving message");
-        console.log("ws: " + e.data, e);
+        console.log("ws: " + message, e);
+        debugger;
+        try {
+          var json = $.parseJSON(message);
+          switch (json.action) {
+            case "UPDATE":
+              self.update(json.x, json.y, json.value);
+            else
+              console.log("Unrecognized action", json.action, json);
+          }
+        } catch (e) {
+          console.log("Error parsing JSON", e.toString());
+        }
       };
       ws.onclose = function() {
         console.log("ws:","socket closed");
@@ -42,6 +55,7 @@ Sudokl = (function() {
       ws.onclose = function() { console.log("ws:","socket closed"); };
       ws.onopen = function() { console.log("ws:","connected..."); ws.send("hello server"); };
     },
+
     update: function(i, j, number) {
       this.board.update(i, j, number);
     }
@@ -115,7 +129,7 @@ Sudokl = (function() {
             "font-size": "32px",
             "color": "white"
           });
-          
+
           this.numberSquares[i][j] = text;
           this.backgroundSquares[i][j] = square;
 

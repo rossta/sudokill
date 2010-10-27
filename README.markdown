@@ -1,15 +1,25 @@
 Sudokl
 ======
 
-Sudoku backed by EventMachine based, async WebSocket server. 
+Sudoku backed by EventMachine based, asynchronous WebSocket server.
 
 Start server
 
   ./script/server
 
-Start client
+Testing the game board
 
-  ./script/client
+	Start server proxy for testing
 
-Open index.html
+	  ./script/echo
 
+	Start websocket client
+
+	  ./script/view
+
+	Open index.html
+
+	Use STDIN on echo server to send data to the websocket client. Example:
+		
+		{"action":"UPDATE","x":1,"y":1,"value":7}
+		

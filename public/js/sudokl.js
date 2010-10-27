@@ -14,14 +14,15 @@ Sudokl = (function() {
       this.$msg.attr("id", "msg").appendTo(this.$sudokl);
     },
 
+// Example Sudokl.game.connect("ws://linserv1.cims.nyu.edu:25252")
     connect: function(url) {
       var self = this,
       url = url || "ws://localhost:8080/";
       ws = new WebSocket(url);
-      ws.onmessage = function(evt) {
-        self.$msg.append("<p>"+evt.data+"</p>").scrollTop(self.$msg.height());
+      ws.onmessage = function(e) {
+        self.$msg.append("<p>"+e.data+"</p>").scrollTop(self.$msg.height());
         console.log("ws: receiving message");
-        console.log("ws: message", evt);
+        console.log("ws: " + e.data, e);
       };
       ws.onclose = function() {
         console.log("ws:","socket closed");

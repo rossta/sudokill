@@ -5,7 +5,16 @@ require "socket"
 require "eventmachine"
 require "em-websocket"
 
-%w[ proxy web_socket ].each do |file|
-  require "sudokl/#{file}"
+%w[ base ].each do |file|
+  require "sudokl/app/#{file}"
 end
+
+%w[ base ].each do |file|
+  require "sudokl/client/#{file}"
+end
+
+%w[ proxy web_socket controller ].each do |file|
+  require "sudokl/view/#{file}"
+end
+
 

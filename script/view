@@ -1,0 +1,17 @@
+#! /usr/bin/env ruby
+
+lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
+$LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
+require 'sudokl'
+
+host = ARGV.shift
+port = ARGV.shift
+sock = ARGV.shift
+
+controller = Sudokl::View::Controller.new({
+  :host => host,
+  :port => port,
+  :sock => sock
+})
+
+controller.connect!

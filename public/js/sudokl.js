@@ -6,58 +6,40 @@ Sudokl = (function() {
       this.$sudokl  = $(selector);
 
       this.board    = new SuBoard(selector);
-      this.board.build();
-
       this.score    = new ScoreTable();
+      this.messager = new Messager();
 
-      this.$msg     = $("<div>");
-      this.$msg.attr("id", "msg").appendTo('body');
+      this.client   = new WebSocketClient(this);
+
+      this.board.build();
     },
 
 // Example Sudokl.game.connect("ws://linserv1.cims.nyu.edu:25252")
     connect: function(url) {
-      var self = this,
-      url = url || "ws://localhost:8080/";
-      ws = new WebSocket(url);
-      ws.onmessage = function(e) {
-        var message = e.data.trim();
-        self.$msg.append("<p>"+message+"</p>").scrollTop(self.$msg.height());
-        console.log("ws: receiving message");
-        console.log("ws: " + message, e);
-        debugger;
-        try {
-          var json = $.parseJSON(message);
-          switch (json.action) {
-            case "UPDATE":
-              self.update(json.x, json.y, json.value);
-            else
-              console.log("Unrecognized action", json.action, json);
-          }
-        } catch (e) {
-          console.log("Error parsing JSON", e.toString());
-        }
-      };
-      ws.onclose = function() {
-        console.log("ws:","socket closed");
-      };
-      ws.onopen = function() {
-        console.log("ws:","connected...");
-        ws.send("hello server");
-      };
+      this.client.connect(url);
     },
 
-    echo: function() {
+    update: function(i, j, value) {
+      console.log("UPDATE", i, j, value);
+      this.board.update(i, j, value);
+      return this;
+    },
+
+    dispatch: function(message) {
       var self = this;
-      ws = new WebSocket("ws://localhost:8080/");
-      ws.onmessage = function(evt) {
-        self.$msg.append("<p>"+evt.data+"</p>");
-      };
-      ws.onclose = function() { console.log("ws:","socket closed"); };
-      ws.onopen = function() { console.log("ws:","connected..."); ws.send("hello server"); };
-    },
-
-    update: function(i, j, number) {
-      this.board.update(i, j, number);
+      try {
+        var json = $.parseJSON(message);
+        switch (json.action) {
+          case "UPDATE":
+            self.update(json.x, json.y, json.value);
+            break;
+          default:
+            console.log("Unrecognized action", json.action, json);
+        }
+      } catch (e) {
+        console.log("Error parsing JSON", e.toString());
+      }
+      return json;
     }
   },
 
@@ -159,7 +141,6 @@ Sudokl = (function() {
     }
   });
 
-
   var MultiArray = function(rows, cols) {
     var i;
     var j;
@@ -175,5 +156,51 @@ Sudokl = (function() {
        return(a);
   };
 
+  var Messager = Base.extend({
+    constructor: function() {
+      this.$msg     = $("<div>");
+      this.$msg.attr("id", "msg").appendTo('body');
+    },
+
+    log: function(message) {
+      var self = this;
+      self.$msg.append("<p>"+message+"</p>").scrollTop(self.$msg.height());
+      return message;
+    }
+  });
+
+  var WebSocketClient = Base.extend({
+    constructor: function(game) {
+      this.game = game;
+    },
+    connect: function(url) {
+      var self = this,
+      game = self.game,
+      url = url || "ws://localhost:8080/";
+      ws = new WebSocket(url);
+      ws.onmessage = function(e) {
+        var message = e.data.trim();
+        game.dispatch(message);
+        game.messager.log("Server >> " + message);
+        console.log("ws: receiving message");
+        console.log("ws: " + message, e);
+      };
+      ws.onclose = function() {
+        console.log("ws:","socket closed");
+      };
+      ws.onopen = function() {
+        console.log("ws:","connected...");
+        ws.send("hello server");
+      };
+    },
+    echo: function() {
+      var self = this;
+      ws = new WebSocket("ws://localhost:8080/");
+      ws.onmessage = function(e) { console.log("ws:", e.data, e); };
+      ws.onclose = function() { console.log("ws:","socket closed"); };
+      ws.onopen = function() { console.log("ws:","connected..."); ws.send("hello server"); };
+    }
+  });
+  
   return Base.extend(instanceMethods, classMethods);
 })();

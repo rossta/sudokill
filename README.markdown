@@ -20,6 +20,5 @@ Testing the game board
 	Open index.html
 
 	Use STDIN on echo server to send data to the websocket client. Example:
-		
+
 		{"action":"UPDATE","x":1,"y":1,"value":7}
-		

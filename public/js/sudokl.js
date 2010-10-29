@@ -2,16 +2,26 @@ Sudokl = (function() {
 
   var instanceMethods = {
     constructor: function(selector) {
-      this.selector = "#" + selector;
-      this.$sudokl  = $(selector);
+      var self = this;
+      self.selector = "#" + selector;
+      self.$sudokl  = $(selector);
 
-      this.board    = new SuBoard(selector);
-      this.score    = new ScoreTable();
-      this.messager = new Messager();
+      self.board    = new SuBoard(selector);
+      self.score    = new ScoreTable();
+      self.messager = new Messager();
+      self.client   = new WebSocketClient(this);
 
-      this.client   = new WebSocketClient(this);
+      self.board.build();
 
-      this.board.build();
+      self.$connectForm = $("<form><input value='Connect' type='submit'/><input value='Disconnect' type='button'/></form>");
+      $('body').append(this.$connectForm);
+      self.$connectForm.submit(function(){
+        self.client.connect();
+        return false;
+      }).find("input[value=Disconnect]").click(function(){
+        self.client.close();
+        return false;
+      });
     },
 
 // Example Sudokl.game.connect("ws://linserv1.cims.nyu.edu:25252")
@@ -25,6 +35,11 @@ Sudokl = (function() {
       return this;
     },
 
+    create: function(values) {
+      this.board.create(values);
+      return this;
+    },
+
     dispatch: function(message) {
       var self = this;
       try {
@@ -32,6 +47,9 @@ Sudokl = (function() {
         switch (json.action) {
           case "UPDATE":
             self.update(json.x, json.y, json.value);
+            break;
+          case "CREATE":
+            self.create(json.values);
             break;
           default:
             console.log("Unrecognized action", json.action, json);
@@ -66,6 +84,18 @@ Sudokl = (function() {
         rsquare.animate({fill:"none"}, 300);
       });
       return rtext;
+    },
+    create: function(values) {
+      var self = this;
+      $(values).each(function(i, row) {
+        $(row).each(function(j, value) {
+          if (value > 0) {
+            self.update(i, j, value);
+          } else {
+            self.update(i, j, "");
+          }
+        });
+      });
     },
     build: function() {
       var r = this.r,
@@ -186,12 +216,14 @@ Sudokl = (function() {
         console.log("ws: " + message, e);
       };
       ws.onclose = function() {
+        game.messager.log("Websocket >> Closed connection.");
         console.log("ws:","socket closed");
       };
       ws.onopen = function() {
         console.log("ws:","connected...");
-        ws.send("hello server");
+        ws.send("NEW CONNECTION\n");
       };
+      self.ws = ws;
     },
     echo: function() {
       var self = this;
@@ -199,8 +231,11 @@ Sudokl = (function() {
       ws.onmessage = function(e) { console.log("ws:", e.data, e); };
       ws.onclose = function() { console.log("ws:","socket closed"); };
       ws.onopen = function() { console.log("ws:","connected..."); ws.send("hello server"); };
+    },
+    close: function() {
+      this.ws.close();
     }
   });
-  
+
   return Base.extend(instanceMethods, classMethods);
 })();

@@ -13,7 +13,7 @@ module Sudokl
           @websocket.send(line) if @websocket
         end
       end
-
+      
     end
 
   end

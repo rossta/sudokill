@@ -7,8 +7,14 @@ require 'sudokl'
 
 host = ARGV.shift
 port = ARGV.shift
+view_host = ARGV.shift
+view_port = ARGV.shift
 
 client = Sudokl::App.start({
   :host => host,
-  :port => port
+  :port => port,
+  :view => {
+    :host => view_host,
+    :port => view_port
+  }
 })

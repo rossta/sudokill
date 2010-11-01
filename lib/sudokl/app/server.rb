@@ -12,15 +12,18 @@ module Sudokl
         @host = opts[:host] || '0.0.0.0'
         @port = opts[:port] || 44444
         @view_host = opts[:view] && opts[:view][:host] || '0.0.0.0'
-        @view_port = opts[:view] && opts[:view][:port] || 55555
+        @view_port = opts[:view] && opts[:view][:port] || 45454
       end
 
       def start
+        server = self
         EventMachine.run do
           client_server = EventMachine::start_server @host, @port, ClientHandler
-          view_server   = EventMachine::start_server @view_host, @view_port, ViewHandler
+          view_server   = EventMachine::start_server @view_host, @view_port, ViewHandler do |handler|
+            handler.app = self
+          end
 
-          puts "Listening for clients on #{@host}:#{@port}"
+          log "Listening for clients on #{@host}:#{@port}"
         end
       end
 

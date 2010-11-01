@@ -5,7 +5,7 @@ require "socket"
 require "eventmachine"
 require "em-websocket"
 
-%w[ server board client_handler view_handler logger ].each do |file|
+%w[ server board move client_handler view_handler logger ].each do |file|
   require "sudokl/app/#{file}"
 end
 

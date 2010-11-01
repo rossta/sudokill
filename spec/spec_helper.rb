@@ -1,11 +1,11 @@
 require 'em-http'
 require File.dirname(__FILE__) + '/../lib/sudokl'
 
-Sudokl::App::Logger.suppress_logging!
+Sudokl::App::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
 
-class FakeWebSocketClient < EM::Connection
+class FakeWebSocketProxy < EM::Connection
   attr_writer :onopen, :onclose, :onmessage
-  attr_reader :handshake_response, :packets
+  attr_reader :response, :packets
 
   def initialize
     @state = :new
@@ -14,14 +14,15 @@ class FakeWebSocketClient < EM::Connection
 
   def receive_data(data)
     # puts "RECEIVE DATA #{data}"
-    if @state == :new
-      @handshake_response = data
-      @onopen.call if @onopen
-      @state = :open
-    else
+    # if @state == :new
+    #   @response = data
+    #   @onopen.call if @onopen
+    #   @state = :open
+    # else
+      @response = data
       @onmessage.call if @onmessage
       @packets << data
-    end
+    # end
   end
 
   def send(data)

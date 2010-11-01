@@ -7,7 +7,7 @@ class EchoServer
 
   def initialize(host, port)
     @host = host || '127.0.0.1'
-    @port = port || 55555
+    @port = port || 45454
     
     begin
       @server = TCPServer.new(@host, @port)

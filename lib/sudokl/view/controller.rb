@@ -6,7 +6,7 @@ module Sudokl
 
       def initialize(opts = {})
         @host = opts[:host] || '127.0.0.1'
-        @port = opts[:port] || 55555
+        @port = opts[:port] || 45454
         @sock = opts[:sock] || 8080
         @debug = opts[:debug] || true
         @proxy = nil

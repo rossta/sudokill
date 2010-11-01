@@ -2,7 +2,7 @@ module Sudokl
   module App
 
     class Board
-
+      
       attr_reader :config
 
       def build_from_string(string = CONFIG_1)

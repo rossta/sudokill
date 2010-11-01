@@ -21,6 +21,7 @@ def log(message)
   Sudokl::App::Logger.log(message)
 end
 
+module Sudokl
 CONFIG_1 = <<-TXT
 7 0 5 0 0 0 2 9 4
 0 0 1 2 0 6 0 0 0
@@ -44,3 +45,4 @@ CONFIG_2 = <<-TXT
 0 0 0 0 0 0 0 0 0
 7 0 0 2 0 0 0 0 4
 TXT
+end

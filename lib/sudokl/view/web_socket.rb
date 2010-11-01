@@ -5,16 +5,16 @@ module Sudokl
     module WebSocket
 
       def self.start(options, &block)
-        server = EM.start_server(options[:host], options[:port],
+        server = EM.start_server(options.delete(:host), options.delete(:port),
           EventMachine::WebSocket::Connection, options) do |c|
           block.call(c)
         end
-        puts "Sudokl WebSocket server started on #{options[:host]}:#{options[:port]}"
+        log "Sudokl WebSocket server started on #{options[:host]}:#{options[:port]}"
         server
       end
 
       def self.stop
-        puts "Terminating WebSocket Server"
+        log "Terminating WebSocket Server"
         EventMachine.stop
       end
     end

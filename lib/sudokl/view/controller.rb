@@ -20,7 +20,7 @@ module Sudokl
 
           @proxy = EM.connect @host, @port, Sudokl::View::Proxy
 
-          Sudokl::View::WebSocket.start(:host => "0.0.0.0", :port => @sock, :debug => @debug) do |ws|
+          Sudokl::View::WebSocket.start(:host => "0.0.0.0", :port => @sock, :debug => @debug, :logging => true) do |ws|
 
             ws.onopen    {
               @proxy.websocket = ws
@@ -32,7 +32,7 @@ module Sudokl
 
             ws.onclose   {
               ws.send "Closing time"
-              puts "WebSocket closed"
+              log "WebSocket closed"
             }
 
           end

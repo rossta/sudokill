@@ -8,7 +8,7 @@ module Sudokl
       def receive_data(data)
         (@buf ||= '') << data
         if line = @buf.slice!(/(.+)\r?\n/)
-          puts "Server >> #{line}"
+          log "Server >> #{line}"
           send_data("Proxy >> #{line}")
           @websocket.send(line) if @websocket
         end

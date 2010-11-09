@@ -3,7 +3,7 @@ module Sudokl
   module App
 
     class ViewHandler < EventMachine::Connection
-      attr_accessor :app
+      attr_accessor :app, :websocket
 
       def post_init
         log message("View connected")

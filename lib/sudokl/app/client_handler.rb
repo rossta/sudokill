@@ -1,8 +1,10 @@
 module Sudokl
-  
+
   module App
-    
+
     class ClientHandler < EventMachine::Connection
+      attr_accessor :app
+
       def post_init
         @name = nil
         puts message("someone connected")
@@ -32,6 +34,6 @@ module Sudokl
         "Echo >> #{response}"
       end
     end
-    
+
   end
 end

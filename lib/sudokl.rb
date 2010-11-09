@@ -4,6 +4,7 @@ $LOAD_PATH << File.expand_path(File.dirname(__FILE__)) + "/../vendor/em-websocke
 require "rubygems"
 require "socket"
 require "eventmachine"
+require "addressable/uri"
 require "em-websocket"
 
 %w[ server board move client_handler view_handler logger ].each do |file|

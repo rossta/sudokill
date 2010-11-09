@@ -206,7 +206,7 @@ Sudokl = (function() {
     connect: function(url) {
       var self = this,
       game = self.game,
-      url = url; //|| "ws://localhost:8080/";
+      url = url || "ws://localhost:8080/";
       console.log("connecting to " + url);
       ws = new WebSocket(url);
       ws.onmessage = function(e) {

@@ -26,12 +26,13 @@ module Sudokl
             handler.app = self
           end
           
-          @proxy = EM.connect @view_host, @view_port, ViewHandler do |handler|
+          view_server = EM.start_server @view_host, @view_port, ViewHandler do |handler|
             handler.app = self
           end
           
+          @proxy = EM.connect @view_host, @view_port, Sudokl::View::Proxy
+          
           Sudokl::View::WebSocket.start(:host => "0.0.0.0", :port => @sock, :debug => @debug, :logging => true) do |ws|
-
             ws.onopen    {
               @proxy.websocket = ws
             }

@@ -1,19 +1,19 @@
 require 'spec_helper'
 require 'json'
 
-describe Sudokl::App::ViewHandler do
+describe Sudokl::ViewHandler do
   describe "receive_data" do
 
     describe "NEW CONNECTION" do
       it "should send data: board json" do
-        board = stub(Sudokl::App::Board, :to_json => '[1, 2, 3]')
+        board = stub(Sudokl::Board, :to_json => '[1, 2, 3]')
         data = %Q|{"action":"CREATE","values":#{board.to_json}}|
 
         EM.run do
           EM.add_timer(0.1) do
 
-            EventMachine::start_server '0.0.0.0', 12345, Sudokl::App::ViewHandler do |handler|
-              handler.app = stub(Sudokl::App::Server, :board => board)
+            EventMachine::start_server '0.0.0.0', 12345, Sudokl::ViewHandler do |handler|
+              handler.app = stub(Sudokl::Server, :board => board)
             end
 
             connection = EM.connect('0.0.0.0', 12345, FakeWebSocketProxy)
@@ -34,14 +34,14 @@ describe Sudokl::App::ViewHandler do
 
     describe "UPDATE" do
       it "should send data: current json" do
-        move = stub(Sudokl::App::Move, :to_json => '[1, 2, 3]')
+        move = stub(Sudokl::Move, :to_json => '[1, 2, 3]')
         data = %Q|{"action":"UPDATE","value":#{move.to_json}}|
 
         EM.run do
           EM.add_timer(0.1) do
 
-            EventMachine::start_server '0.0.0.0', 12345, Sudokl::App::ViewHandler do |handler|
-              handler.app = stub(Sudokl::App::Server, :current_move => move)
+            EventMachine::start_server '0.0.0.0', 12345, Sudokl::ViewHandler do |handler|
+              handler.app = stub(Sudokl::Server, :current_move => move)
             end
 
             connection = EM.connect('0.0.0.0', 12345, FakeWebSocketProxy)

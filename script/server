@@ -10,7 +10,7 @@ port = ARGV.shift
 view_host = ARGV.shift
 view_port = ARGV.shift
 
-client = Sudokl::App.start({
+client = Sudokl::Server.start({
   :host => host,
   :port => port,
   :view => {

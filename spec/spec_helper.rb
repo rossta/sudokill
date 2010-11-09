@@ -1,7 +1,7 @@
 require 'em-http'
 require File.dirname(__FILE__) + '/../lib/sudokl'
 
-Sudokl::App::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
+Sudokl::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
 
 class FakeWebSocketProxy < EM::Connection
   attr_writer :onopen, :onclose, :onmessage

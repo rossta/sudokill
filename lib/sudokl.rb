@@ -7,20 +7,12 @@ require "eventmachine"
 require "addressable/uri"
 require "em-websocket"
 
-%w[ server board move client_handler view_handler logger ].each do |file|
-  require "sudokl/app/#{file}"
-end
-
-%w[ base ].each do |file|
-  require "sudokl/client/#{file}"
-end
-
-%w[ proxy web_socket controller ].each do |file|
-  require "sudokl/view/#{file}"
+%w[ server board move client_handler view_handler logger proxy web_socket client ].each do |file|
+  require "sudokl/#{file}"
 end
 
 def log(message)
-  Sudokl::App::Logger.log(message)
+  Sudokl::Logger.log(message)
 end
 
 module Sudokl

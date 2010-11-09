@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe Sudokl::App::Board do
+describe Sudokl::Board do
 
   describe "build_from_string" do
 
     it "should load CONFIG_1 config" do
-      board = Sudokl::App::Board.new
+      board = Sudokl::Board.new
       board.build_from_string(Sudokl::CONFIG_1)
       values = Sudokl::CONFIG_1.split("\n").map(&:split)
       values.each_with_index do |row, i|
@@ -18,7 +18,7 @@ describe Sudokl::App::Board do
 
   describe "to_json" do
     before(:each) do
-      @board = Sudokl::App::Board.new
+      @board = Sudokl::Board.new
       @board.build_from_string(Sudokl::CONFIG_1)
     end
     it "should return stringified json version of board" do

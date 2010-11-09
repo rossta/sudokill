@@ -8,7 +8,7 @@ host = ARGV.shift
 port = ARGV.shift
 sock = ARGV.shift
 
-controller = Sudokl::View::Controller.new({
+controller = Sudokl::Controller.new({
   :host => host,
   :port => port,
   :sock => sock

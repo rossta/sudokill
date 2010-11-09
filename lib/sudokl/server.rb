@@ -34,23 +34,31 @@ module Sudokl
 
         Sudokl::WebSocket.start(:host => "0.0.0.0", :port => @sock, :debug => @debug, :logging => true) do |ws|
           ws.onopen    {
+            server_log "View connected"
+            server_log "WebSocket open"
             @proxy.websocket = ws
           }
 
           ws.onmessage { |msg|
+            server_log "Websocket: #{msg}"
             @proxy.send_data(msg)
           }
 
           ws.onclose   {
             ws.send "Closing time"
-            log "WebSocket closed"
+            server_log "View connected"
+            server_log "WebSocket closed"
           }
 
         end
 
 
-        log "Listening for clients on #{@host}:#{@port}"
+        server_log "Listening for clients on #{@host}:#{@port}"
       end
+    end
+    
+    def server_log(message)
+      log "Server >> #{message}"
     end
 
   end

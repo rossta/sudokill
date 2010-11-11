@@ -1,4 +1,4 @@
-module Sudokl
+module Sudokoup
 
   class Client
 
@@ -87,11 +87,11 @@ module Sudokl
     end
 
     def echo(command)
-      puts "#{@name} >> #{command}"
+      log command, @name
     end
 
     def hear(command)
-      puts "Server >> #{command}"
+      log command
     end
 
     protected

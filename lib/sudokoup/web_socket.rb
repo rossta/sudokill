@@ -1,4 +1,4 @@
-module Sudokl
+module Sudokoup
 
   module WebSocket
 
@@ -8,7 +8,7 @@ module Sudokl
       server = EM.start_server(host, port, EventMachine::WebSocket::Connection, options) do |c|
         block.call(c)
       end
-      log "Sudokl WebSocket server started on #{host}:#{port}"
+      log "Sudokoup WebSocket server started on #{host}:#{port}"
       server
     end
 

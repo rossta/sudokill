@@ -1,4 +1,4 @@
-module Sudokl
+module Sudokoup
 
   class ClientHandler < EventMachine::Connection
     attr_accessor :app

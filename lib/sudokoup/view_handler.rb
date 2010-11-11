@@ -1,4 +1,4 @@
-module Sudokl
+module Sudokoup
 
   class ViewHandler < EventMachine::Connection
     attr_accessor :app, :websocket
@@ -14,8 +14,7 @@ module Sudokl
           json = %Q|{"action":"CREATE","values":#{@app.board.to_json}}|
           send_data(json + "\n")
         when /UPDATE/
-          json = %Q|{"action":"UPDATE","x":#{rand(9)}, "y":#{rand(9)}, "value":#{rand(9) + 1}}|
-          # json = %Q|{"action":"UPDATE","value":#{@app.current_move.to_json}}|
+          json = %Q|{"action":"UPDATE","value":#{@app.current_move.to_json}}|
           send_data(json + "\n")
         end
       end
@@ -27,7 +26,7 @@ module Sudokl
     protected
 
     def ensure_app
-      raise "Instance of Sudokl::Server not defined" unless @app
+      raise "Instance of Sudokoup::Server not defined" unless @app
     end
 
   end

@@ -1,19 +1,19 @@
 require 'spec_helper'
 require 'json'
 
-describe Sudokl::ViewHandler do
+describe Sudokoup::ViewHandler do
   describe "receive_data" do
 
     describe "NEW CONNECTION" do
       it "should send data: board json" do
-        board = stub(Sudokl::Board, :to_json => '[1, 2, 3]')
+        board = stub(Sudokoup::Board, :to_json => '[[1, 2, 3],[4, 5, 6],[7, 8, 9]]')
         data = %Q|{"action":"CREATE","values":#{board.to_json}}|
 
         EM.run do
           EM.add_timer(0.1) do
 
-            EventMachine::start_server '0.0.0.0', 12345, Sudokl::ViewHandler do |handler|
-              handler.app = stub(Sudokl::Server, :board => board)
+            EventMachine::start_server '0.0.0.0', 12345, Sudokoup::ViewHandler do |handler|
+              handler.app = stub(Sudokoup::Server, :board => board)
             end
 
             connection = EM.connect('0.0.0.0', 12345, FakeWebSocketProxy)
@@ -22,7 +22,7 @@ describe Sudokl::ViewHandler do
               connection.response.should == data + "\n"
               json = JSON.parse(connection.response)
               json["action"].should == "CREATE"
-              json["values"].should == [1, 2, 3]
+              json["values"].should == [[1, 2, 3],[4, 5, 6],[7, 8, 9]]
               EM.stop
             }
             connection.send_data("NEW CONNECTION\r\n")
@@ -34,14 +34,14 @@ describe Sudokl::ViewHandler do
 
     describe "UPDATE" do
       it "should send data: current json" do
-        move = stub(Sudokl::Move, :to_json => '[1, 2, 3]')
+        move = stub(Sudokoup::Move, :to_json => '[1, 2, 3]')
         data = %Q|{"action":"UPDATE","value":#{move.to_json}}|
 
         EM.run do
           EM.add_timer(0.1) do
 
-            EventMachine::start_server '0.0.0.0', 12345, Sudokl::ViewHandler do |handler|
-              handler.app = stub(Sudokl::Server, :current_move => move)
+            EventMachine::start_server '0.0.0.0', 12345, Sudokoup::ViewHandler do |handler|
+              handler.app = stub(Sudokoup::Server, :current_move => move)
             end
 
             connection = EM.connect('0.0.0.0', 12345, FakeWebSocketProxy)

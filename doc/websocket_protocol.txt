@@ -1,4 +1,4 @@
-Sudokl Websocket JSON Protocol
+Sudokoup Websocket JSON Protocol
 
 Accepts commands in JSON format
 

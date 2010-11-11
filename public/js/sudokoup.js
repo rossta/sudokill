@@ -1,10 +1,10 @@
-Sudokl = (function() {
+Sudokoup = (function() {
 
   var instanceMethods = {
     constructor: function(selector) {
       var self = this;
       self.selector = "#" + selector;
-      self.$sudokl  = $(selector);
+      self.$sudokoup  = $(selector);
 
       self.board    = new SuBoard(selector);
       self.score    = new ScoreTable();
@@ -24,7 +24,7 @@ Sudokl = (function() {
       });
     },
 
-// Example Sudokl.game.connect("ws://linserv1.cims.nyu.edu:25252")
+// Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
     connect: function(url) {
       this.client.connect(url);
     },
@@ -46,7 +46,7 @@ Sudokl = (function() {
         var json = $.parseJSON(message);
         switch (json.action) {
           case "UPDATE":
-            self.update(json.x, json.y, json.value);
+            self.update(json[0], json[1], json[2]);
             break;
           case "CREATE":
             self.create(json.values);
@@ -63,9 +63,9 @@ Sudokl = (function() {
 
   classMethods = {
     play : function(opts) {
-      var sudokl = new Sudokl(opts);
-      // sudokl.connect();
-      this.game = sudokl;
+      var sudokoup = new Sudokoup(opts);
+      // sudokoup.connect();
+      this.game = sudokoup;
     }
   };
 
@@ -212,7 +212,7 @@ Sudokl = (function() {
       ws.onmessage = function(e) {
         var message = e.data.trim();
         game.dispatch(message);
-        game.messager.log("Server >> " + message);
+        game.messager.log(message);
         console.log("ws: receiving message");
         console.log("ws: " + message, e);
       };

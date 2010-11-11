@@ -2,23 +2,23 @@
 
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
-require 'sudokl'
+require 'sudokoup'
 
 name = ARGV.shift
 host = ARGV.shift
 port = ARGV.shift
 
-client = Sudokl::Client.start({
+client = Sudokoup::Client.start({
   :name => name,
   :host => host,
   :port => port
 })
 
 client.call(client.name)
-puts "Server >> " + client.read
+log client.read
 
 loop do
   input = STDIN.gets
   client.call(input)
-  puts "Server >> " + client.read
+  log client.read
 end

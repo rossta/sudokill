@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Sudokl::Proxy do
+describe Sudokoup::Proxy do
 
   describe "receive_data" do
     before(:each) do
-      @proxy = Sudokl::Proxy.new(mock(EventMachine))
+      @proxy = Sudokoup::Proxy.new(mock(EventMachine))
       @proxy.stub!(:send_data)
     end
     it "should acknowledge data received to server" do

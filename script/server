@@ -3,14 +3,14 @@
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
-require 'sudokl'
+require 'sudokoup'
 
 host = ARGV.shift
 port = ARGV.shift
 view_host = ARGV.shift
 view_port = ARGV.shift
 
-client = Sudokl::Server.start({
+client = Sudokoup::Server.start({
   :host => host,
   :port => port,
   :view => {

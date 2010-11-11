@@ -1,4 +1,4 @@
-module Sudokl
+module Sudokoup
 
   class Proxy < EventMachine::Connection
     attr_accessor :websocket
@@ -6,7 +6,7 @@ module Sudokl
     def receive_data(data)
       (@buf ||= '') << data
       if line = @buf.slice!(/(.+)\r?\n/)
-        log "Server >> #{line}"
+        log line
         send_data("Proxy >> #{line}")
         @websocket.send(line) if @websocket
       end

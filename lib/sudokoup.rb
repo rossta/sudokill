@@ -8,14 +8,14 @@ require "addressable/uri"
 require "em-websocket"
 
 %w[ server board move client_handler view_handler logger proxy web_socket client ].each do |file|
-  require "sudokl/#{file}"
+  require "sudokoup/#{file}"
 end
 
-def log(message)
-  Sudokl::Logger.log(message)
+def log(message, name = "Server")
+  Sudokoup::Logger.log "%-10s>> #{message}" % name
 end
 
-module Sudokl
+module Sudokoup
 CONFIG_1 = <<-TXT
 7 0 5 0 0 0 2 9 4
 0 0 1 2 0 6 0 0 0

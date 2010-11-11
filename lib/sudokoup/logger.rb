@@ -1,4 +1,4 @@
-module Sudokl
+module Sudokoup
 
   class Logger
     @@log = true

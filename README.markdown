@@ -1,4 +1,4 @@
-Sudokl
+Sudokoup
 ======
 
 Sudoku backed by EventMachine based, asynchronous WebSocket server.

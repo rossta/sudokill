@@ -5,7 +5,7 @@ module Sudokoup
 
     def post_init
       @name = nil
-      puts message("someone connected")
+      log "initializing a connection..."
     end
 
     def receive_data(data)
@@ -19,18 +19,15 @@ module Sudokoup
         end
       end
       if response
-        puts message(response)
+        log response
         send_data("#{response}\r\n")
       end
     end
 
     def unbind
-      puts message "#{@name} disconnected"
+      log "#{@name} disconnected"
     end
 
-    def message(response)
-      "Echo >> #{response}"
-    end
   end
 
 end

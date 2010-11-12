@@ -212,7 +212,7 @@ Sudokoup = (function() {
       ws.onmessage = function(e) {
         var message = e.data.trim();
         game.dispatch(message);
-        game.messager.log(message);
+        game.messager.log("Server >> " + message);
         console.log("ws: receiving message");
         console.log("ws: " + message, e);
       };

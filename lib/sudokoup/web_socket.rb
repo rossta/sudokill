@@ -8,7 +8,7 @@ module Sudokoup
       server = EM.start_server(host, port, EventMachine::WebSocket::Connection, options) do |c|
         block.call(c)
       end
-      log "Sudokoup WebSocket server started on #{host}:#{port}"
+      log "WebSocket server started on #{host}:#{port}"
       server
     end
 

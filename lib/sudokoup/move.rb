@@ -6,11 +6,11 @@ module Sudokoup
       @y = y
       @value = value
     end
-    
+
     def to_json
       "[#{to_coord.join(", ")}]"
     end
-    
+
     def to_coord
       [x, y, value]
     end

@@ -1,26 +1,20 @@
 module Sudokoup
 
-  class ViewHandler < EventMachine::Connection
-    attr_accessor :app, :websocket
-
-    def post_init
-    end
+  class ViewHandler < EventMachine::WebSocket::Connection
+    attr_accessor :app
 
     def receive_data(data)
-      (@buf ||= '') << data
-      if line = @buf.slice!(/(.+)\r?\n/)
+      super(data)
+      if line = data.slice!(/(.+)\r?\n/)
         case line
         when /NEW CONNECTION/
           json = %Q|{"action":"CREATE","values":#{@app.board.to_json}}|
-          send_data(json + "\n")
+          send(json)
         when /UPDATE/
           json = %Q|{"action":"UPDATE","value":#{@app.current_move.to_json}}|
-          send_data(json + "\n")
+          send(json)
         end
       end
-    end
-
-    def unbind
     end
 
     protected

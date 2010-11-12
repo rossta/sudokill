@@ -7,8 +7,12 @@ require "eventmachine"
 require "addressable/uri"
 require "em-websocket"
 
-%w[ server board move client_handler view_handler logger proxy web_socket client ].each do |file|
+%w[ server board move logger client ].each do |file|
   require "sudokoup/#{file}"
+end
+
+%w[ client web_socket ].each do |file|
+  require "sudokoup/connection/#{file}"
 end
 
 def log(message, name = "Server")

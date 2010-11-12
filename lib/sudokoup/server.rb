@@ -22,13 +22,13 @@ module Sudokoup
         trap("INT")  { stop }
 
 
-        EventMachine::start_server @host, @port, ClientHandler do |conn|
+        EventMachine::start_server @host, @port, Connection::Client do |conn|
           conn.app = self
         end
 
         @channel  = EM::Channel.new
         
-        EventMachine::start_server(@ws_host, @ws_port, ViewHandler, :debug => @debug, :logging => true) do |ws|
+        EventMachine::start_server(@ws_host, @ws_port, Connection::WebSocket, :debug => @debug, :logging => true) do |ws|
             ws.app = self
             ws.onopen    {
               sid = @channel.subscribe { |msg| ws.send msg }

@@ -12,16 +12,6 @@ Sudokoup = (function() {
       self.client   = new WebSocketClient(this);
 
       self.board.build();
-
-      self.$connectForm = $("<form><input value='Connect' type='submit'/><input value='Disconnect' type='button'/></form>");
-      $('body').append(this.$connectForm);
-      self.$connectForm.submit(function(){
-        self.client.connect();
-        return false;
-      }).find("input[value=Disconnect]").click(function(){
-        self.client.close();
-        return false;
-      });
     },
 
 // Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
@@ -30,7 +20,7 @@ Sudokoup = (function() {
     },
 
     update: function(i, j, value) {
-      console.log("UPDATE", i, j, value);
+      log("UPDATE", i, j, value);
       this.board.update(i, j, value);
       return this;
     },
@@ -38,6 +28,11 @@ Sudokoup = (function() {
     create: function(values) {
       this.board.create(values);
       return this;
+    },
+    
+    log: function() {
+      console.log.apply(console, arguments);
+      this.messager.log.apply(this.messager, arguments);
     },
 
     dispatch: function(message) {
@@ -52,7 +47,7 @@ Sudokoup = (function() {
             self.create(json.values);
             break;
           default:
-            console.log("Unrecognized action", json.action, json);
+            self.log("Unrecognized action", json.action, json);
         }
       } catch (e) {
         console.log("Error parsing JSON", e.toString());
@@ -192,36 +187,54 @@ Sudokoup = (function() {
       this.$msg.attr("id", "msg").appendTo('body');
     },
 
-    log: function(message) {
-      var self = this;
-      self.$msg.append("<p>"+message+"</p>").scrollTop(self.$msg.height());
+    log: function() {
+      var self = this,
+      message = _(arguments).toArray();
+      
+      self.$msg.append("<p>"+message.join(" ")+"</p>").scrollTop(self.$msg.height());
       return message;
     }
   });
 
   var WebSocketClient = Base.extend({
     constructor: function(game) {
-      this.game = game;
+      var self = this;
+      self.game = game;
+      self.$connectForm = $("<form><input value='Connect' type='submit'/></form>");
+
+      $('body').append(self.$connectForm);
+      self.$connectForm.submit(function(){
+          self.connect();
+          return false;
+        }).
+        bind("connected", function(){
+          $(this).find("input").attr("value", "Disconnect");
+        }).
+        delegate("input[value=Disconnect]", "click", function(){
+          self.close();
+          $(this).find("input").attr("value", "Connect");
+          return false;
+        });
+
     },
     connect: function(url) {
       var self = this,
       game = self.game,
-      url = url || "ws://localhost:8080/";
-      console.log("connecting to " + url);
+      url = url || "ws://localhost:8080/",
       ws = new WebSocket(url);
+      game.log("Websocket", "connecting to " + url);
       ws.onmessage = function(e) {
         var message = e.data.trim();
         game.dispatch(message);
-        game.messager.log("Server >> " + message);
-        console.log("ws: receiving message");
-        console.log("ws: " + message, e);
+        game.log("Websocket","receiving message:");
+        game.log("Websocket", message, e);
       };
       ws.onclose = function() {
-        game.messager.log("Websocket >> Closed connection.");
-        console.log("ws:","socket closed");
+        game.log("Websocket", "Closed connection.");
       };
       ws.onopen = function() {
-        console.log("ws:","connected...");
+        game.log("Websocket", "Connected!");
+        self.$connectForm.trigger("connected");
         ws.send("NEW CONNECTION\n");
       };
       self.ws = ws;
@@ -229,9 +242,9 @@ Sudokoup = (function() {
     echo: function() {
       var self = this;
       ws = new WebSocket("ws://localhost:8080/");
-      ws.onmessage = function(e) { console.log("ws:", e.data, e); };
-      ws.onclose = function() { console.log("ws:","socket closed"); };
-      ws.onopen = function() { console.log("ws:","connected..."); ws.send("hello server"); };
+      ws.onmessage = function(e) { self.game.log("ws:", e.data, e); };
+      ws.onclose = function() { self.game.log("ws:","socket closed"); };
+      ws.onopen = function() { self.game.log("ws:","connected..."); ws.send("hello server"); };
     },
     close: function() {
       this.ws.close();

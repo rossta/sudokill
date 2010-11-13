@@ -20,7 +20,7 @@ Sudokoup = (function() {
     },
 
     update: function(i, j, value) {
-      log("UPDATE", i, j, value);
+      this.log("UPDATE", i, j, value);
       this.board.update(i, j, value);
       return this;
     },
@@ -29,7 +29,7 @@ Sudokoup = (function() {
       this.board.create(values);
       return this;
     },
-    
+
     log: function() {
       console.log.apply(console, arguments);
       this.messager.log.apply(this.messager, arguments);
@@ -59,7 +59,6 @@ Sudokoup = (function() {
   classMethods = {
     play : function(opts) {
       var sudokoup = new Sudokoup(opts);
-      // sudokoup.connect();
       this.game = sudokoup;
     }
   };
@@ -190,7 +189,7 @@ Sudokoup = (function() {
     log: function() {
       var self = this,
       message = _(arguments).toArray();
-      
+
       self.$msg.append("<p>"+message.join(" ")+"</p>").scrollTop(self.$msg.height());
       return message;
     }
@@ -200,51 +199,64 @@ Sudokoup = (function() {
     constructor: function(game) {
       var self = this;
       self.game = game;
-      self.$connectForm = $("<form><input value='Connect' type='submit'/></form>");
-
+      self.$connectForm = $("<form></form>");
       $('body').append(self.$connectForm);
+
+      self.$connectForm.append("<fieldset class='optional'></fieldset>");
+      var $fields = self.$connectForm.find("fieldset.optional");
+      $fields.append("<label for='s_name'>Name</label>");
+      $fields.append("<input id='s_name' type='text' name='name' class='name' />");
+      $fields.append("<br/>");
+      $fields.append("<label for='s_host' class='host'>Host</label>");
+      $fields.append("<input id='s_host' type='text' name='host' class='host'/>");
+      $fields.append("<br/>");
+      $fields.append("<label for='s_port' class='port'>Port</label>");
+      $fields.append("<input id='s_port' type='text' name='port' class='port' />");
+      $fields.append("<br/>");
+      self.$connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
+
       self.$connectForm.submit(function(){
-          self.connect();
+          var $this = $(this),
+              host = $this.find('input[name=host]').val(),
+              port = $this.find('input[name=port]').val(),
+              name = $this.find('input[name=name]').val();
+
+          self.connect(name, host, port);
           return false;
         }).
         bind("connected", function(){
-          $(this).find("input").attr("value", "Disconnect");
+          $(this).find("input.submit").attr("value", "Disconnect");
         }).
-        delegate("input[value=Disconnect]", "click", function(){
+        delegate("input.submit[value=Disconnect]", "click", function(){
           self.close();
-          $(this).find("input").attr("value", "Connect");
+          $(this).attr("value", "Connect");
           return false;
         });
 
     },
-    connect: function(url) {
+    connect: function(name, host, port) {
       var self = this,
-      game = self.game,
-      url = url || "ws://localhost:8080/",
+      game  = self.game,
+      name  = name || 'Player',
+      host  = host || 'localhost',
+      port  = port || '8080',
+      url   = "ws://" + host + ":" + port + "/",
       ws = new WebSocket(url);
-      game.log("Websocket", "connecting to " + url);
+      game.log("ws:", "connecting to " + url);
       ws.onmessage = function(e) {
         var message = e.data.trim();
         game.dispatch(message);
-        game.log("Websocket","receiving message:");
-        game.log("Websocket", message, e);
+        game.log("ws:", message, e);
       };
       ws.onclose = function() {
-        game.log("Websocket", "Closed connection.");
+        game.log("ws:", "closed connection.");
       };
       ws.onopen = function() {
-        game.log("Websocket", "Connected!");
+        game.log("ws:", "connected!");
         self.$connectForm.trigger("connected");
         ws.send("NEW CONNECTION\n");
       };
       self.ws = ws;
-    },
-    echo: function() {
-      var self = this;
-      ws = new WebSocket("ws://localhost:8080/");
-      ws.onmessage = function(e) { self.game.log("ws:", e.data, e); };
-      ws.onclose = function() { self.game.log("ws:","socket closed"); };
-      ws.onopen = function() { self.game.log("ws:","connected..."); ws.send("hello server"); };
     },
     close: function() {
       this.ws.close();

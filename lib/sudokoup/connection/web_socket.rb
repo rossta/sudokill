@@ -2,7 +2,7 @@ module Sudokoup
   
   module Connection
     class WebSocket < EventMachine::WebSocket::Connection
-      attr_accessor :app
+      attr_accessor :app, :name, :sid
 
       def receive_data(data)
         super(data)
@@ -16,6 +16,12 @@ module Sudokoup
             send(json)
           end
         end
+      end
+      
+      def display_name
+        return @name if @name
+        return "Visitor #{@sid}" if @sid
+        "Anonymous Visitor"
       end
 
       protected

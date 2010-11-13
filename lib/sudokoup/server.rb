@@ -27,24 +27,25 @@ module Sudokoup
         end
 
         @channel  = EM::Channel.new
-        
+
         EventMachine::start_server(@ws_host, @ws_port, Connection::WebSocket, :debug => @debug, :logging => true) do |ws|
             ws.app = self
             ws.onopen    {
-              sid = @channel.subscribe { |msg| ws.send msg }
-              msg = "Visitor #{sid} connected!"
-              @channel.push msg
+              ws.sid = @channel.subscribe { |msg| ws.send msg }
+              msg = "#{ws.display_name} just joined the game room"
               log msg, "WebSocket"
-              
-              log "Websocket connected!"
-              
+              @channel.push msg
+
               ws.onmessage { |msg|
-                log "Message: #{msg}", "WebSocket"
+                log msg, "WebSocket"
+                @channel.push msg
               }
 
               ws.onclose   {
+                msg = "#{ws.display_name} just left the game room"
+                log msg, "WebSocket"
+                @channel.push msg
                 ws.send "Bye!"
-                log "Visitor #{sid} disconnected", "WebSocket"
               }
             }
         end
@@ -53,7 +54,7 @@ module Sudokoup
         log "WebSocket server started on #{@ws_host}:#{@ws_port}"
       end
     end
-    
+
     def stop
       log "Stopping server"
       EventMachine.stop

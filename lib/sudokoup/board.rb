@@ -1,9 +1,8 @@
 module Sudokoup
 
   class Board
-
     attr_reader :config
-
+    
     def build_from_string(string = CONFIG_1)
       @config = string.split("\n").map(&:split).map { |row| row.map!(&:to_i) }
       @config
@@ -18,7 +17,13 @@ module Sudokoup
       rows = @config.map { |row| "[#{row.join(", ")}]" }.join(", ")
       "[#{rows}]"
     end
-
+    
+    def add_move(x, y, value)
+      allowed = @config[x][y].zero?
+      @config[x][y] = value if allowed
+      allowed
+    end
+    
   end
 
   class MultiArray

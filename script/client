@@ -42,7 +42,7 @@ module Echo
 
     def reconnect
       disconnect
-      connect
+      connect!
     end
 
     def connected?

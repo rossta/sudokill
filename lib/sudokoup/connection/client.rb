@@ -1,15 +1,22 @@
 module Sudokoup
-  
+
   module Connection
     class Client < EventMachine::Connection
-      attr_accessor :app
+      attr_accessor :game, :name
 
       def post_init
-        @name = nil
         log "initializing a connection..."
       end
 
       def receive_data(data)
+        if @game.full?
+          send_data "Sorry. Game is full. Come back again soon"
+          close_connection_after_writing
+          return
+        end
+
+        @game.join_game(self)
+
         (@buf ||= '') << data
         if line = @buf.slice!(/(.+)\r?\n/)
           if @name.nil?

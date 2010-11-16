@@ -12,8 +12,6 @@ module Sudokoup
       @port = opts[:port] || 44444
       @ws_host = opts[:view] && opts[:view][:host] || '0.0.0.0'
       @ws_port = opts[:view] && opts[:view][:host] || 8080
-      @board = Board.new
-      @board.build
     end
 
     def start
@@ -21,15 +19,16 @@ module Sudokoup
         trap("TERM") { stop }
         trap("INT")  { stop }
 
+        @channel  = EM::Channel.new
+        @game     = Game.new
 
-        EventMachine::start_server @host, @port, Connection::Client do |conn|
-          conn.app = self
+        @server = EventMachine::start_server @host, @port, Connection::Client do |client|
+          client.game = @gawme
         end
 
-        @channel  = EM::Channel.new
-
-        EventMachine::start_server(@ws_host, @ws_port, Connection::WebSocket, :debug => @debug, :logging => true) do |ws|
-            ws.app = self
+        EventMachine::start_server(@ws_host, @ws_port, Connection::WebSocket,
+          :debug => @debug, :logging => true) do |ws|
+            ws.game = @game
             ws.onopen    {
               ws.sid = @channel.subscribe { |msg| ws.send msg }
               msg = "#{ws.display_name} just joined the game room"
@@ -58,9 +57,6 @@ module Sudokoup
     def stop
       log "Stopping server"
       EventMachine.stop
-    end
-
-    def current_move
     end
 
   end

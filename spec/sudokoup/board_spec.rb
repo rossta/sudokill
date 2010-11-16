@@ -28,4 +28,31 @@ JSON
       @board.to_json.should == json.chomp
     end
   end
+  
+  describe "add_move" do
+    before(:each) do
+      @board = Sudokoup::Board.new
+      @board.build
+    end
+    describe "no previous value" do
+      it "should return true" do
+        @board.add_move(1, 1, 9).should be_true
+      end
+      it "should add to config" do
+        @board.config[1][1].should be_zero
+        @board.add_move(1, 1, 9).should be_true
+        @board.config[1][1].should == 9
+      end
+    end
+    describe "previous value" do
+      it "should return false" do
+        @board.add_move(0, 0, 9).should be_false
+      end
+      it "should not add to config if existing value" do
+        @board.config[0][0].should == 7
+        @board.add_move(0, 0, 9).should be_false
+        @board.config[0][0].should == 7
+      end
+    end
+  end
 end

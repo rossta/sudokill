@@ -2,17 +2,17 @@ module Sudokoup
   
   module Connection
     class WebSocket < EventMachine::WebSocket::Connection
-      attr_accessor :app, :name, :sid
+      attr_accessor :game, :name, :sid
 
       def receive_data(data)
         super(data)
         if line = data.slice!(/(.+)\r?\n/)
           case line
           when /NEW CONNECTION/
-            json = %Q|{"action":"CREATE","values":#{@app.board.to_json}}|
+            json = %Q|{"action":"CREATE","values":#{@game.board.to_json}}|
             send(json)
           when /UPDATE/
-            json = %Q|{"action":"UPDATE","value":#{@app.current_move.to_json}}|
+            json = %Q|{"action":"UPDATE","value":#{@game.current_move.to_json}}|
             send(json)
           end
         end

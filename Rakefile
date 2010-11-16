@@ -1,3 +1,6 @@
+require "rubygems"
+require "rake"
+
 namespace :sudokoup do
   
   namespace :server do
@@ -8,3 +11,6 @@ namespace :sudokoup do
     
   end
 end
+
+require 'jasmine'
+load 'jasmine/tasks/jasmine.rake'

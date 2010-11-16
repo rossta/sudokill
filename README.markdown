@@ -27,34 +27,41 @@ Server and player scripts accept optional command line parameters for
 
 Server Messages
 
-READY
+**READY**
+
 Ready message from the server indicates the connection was accepted and player has entered the game.
 
-WAIT
+**WAIT**
+
 Wait message indicates the connection was accepted but the player is in the queue waiting to enter the game.
 
-START | Player number | Row 0 (top) | Row 1 | Row 2 | ... | Row 8 (bottom)
+**START | Player number | Row 0 (top) | Row 1 | Row 2 | ... | Row 8 (bottom)**
+
 Start message indicates game has begun.
 
 Examples:
-
-Player 1
-
+	
+	// Game is starting, you're Player 1
 	START | 1 | 0 0 0 1 3 4 0 8 9 | 3 0 0 0 0 5 0 0 0 | ... | 0 2 0 0 1 0 0 6 0
 
-Player 2
-
+	// Game is starting, you're Player 2
 	START | 2 | 0 0 0 1 3 4 0 8 9 | 3 0 0 0 0 5 0 0 0 | ... | 0 2 0 0 1 0 0 6 0
 
-ADD | Previous move | Row 0 (top) | Row 1 | Row 2 | ... | Row 8 (bottom)
-Add message indicates it is your turn to add a number to the board. The first number set indicates the previous move made by the other player. Current values of board rows follow.
+**ADD | Previous move | Row 0 (top) | Row 1 | Row 2 | ... | Row 8 (bottom)**
+
+Add message indicates it is your turn to add a number to the board. The first number set indicates the previous move made by the other player. Move "0 0 0" means no move made previously Current values of board rows follow.
 
 Examples:
 
-First move message to player one
-
+	// First move message to Player 1
 	MOVE | 0 0 0 | 0 0 0 1 3 4 0 8 9 | 3 0 0 0 0 5 0 0 0 | ... | 0 2 0 0 1 0 0 6 0
-
-Second move message goes to player two, after player one move is "0 0 9"
-
+	
+	// First move message to Player 2, after Player 1 move is '0 0 9'
 	MOVE | 0 0 9 | 9 0 0 1 3 4 0 8 9 | 3 0 0 0 0 5 0 0 0 | ... | 0 2 0 0 1 0 0 6 0
+
+**REJECT**
+
+**WIN**
+
+**LOSE**
+

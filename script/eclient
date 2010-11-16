@@ -21,7 +21,7 @@ module Echo
 
     def receive_data(data)
       @data << data
-      if line = @data.slice!(/(.+)\r?\n/).chop
+      if line = @data.slice!(/(.+)\r?\n/).chomp
         puts format("Server >> #{line}")
       end
     end
@@ -31,7 +31,7 @@ module Echo
     end
     
     def format(text)
-      "#{text}\n"
+      "#{text}\r\n"
     end
   end
 end
@@ -41,6 +41,13 @@ host = ARGV.shift || "0.0.0.0"
 port = (ARGV.shift || 44444).to_i
 
 EM.run {
+  stop = proc {
+    puts "Bye"
+    EM.stop
+  }
+  trap("TERM") { stop.call }
+  trap("INT") { stop.call }
+  
   client = EM.connect host, port, Echo::Client, :name => name
 
   client.callback { |text|

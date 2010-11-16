@@ -17,7 +17,7 @@ module Sudokoup
       def receive_data(data)
         log data, @dispatch.name
         @data << data
-        if line = @data.slice!(/(.+)\r?\n/).chop
+        if line = @data.slice!(/(.+)\r?\n/).chomp
           action, response = @dispatch.call(line)
           case action
           when :send
@@ -34,7 +34,7 @@ module Sudokoup
       end
       
       def format(text)
-        "#{text}\n"
+        "#{text}\r\n"
       end
       
       def send(text)

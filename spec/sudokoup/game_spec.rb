@@ -50,4 +50,38 @@ describe Sudokoup::Game do
       end
     end
   end
+  
+  describe "states" do
+    before(:each) do
+      @game = Sudokoup::Game.new
+    end
+    describe "in_progress?" do
+      it "should be false if game state != :in_progress" do
+        @game.state.should_not == :in_progress
+        @game.in_progress?.should be_false
+      end
+      it "should return true if game state == :in_progress" do
+        @game.state = :in_progress
+        @game.in_progress?.should be_true
+      end
+    end
+    describe "waiting?" do
+      it "should be false if game state != :waiting" do
+        @game.state = :in_progress
+        @game.waiting?.should be_false
+      end
+      it "should return true if game state == :waiting" do
+        @game.waiting?.should be_true
+      end
+    end
+    describe "ready?" do
+      it "should be false if game state != :waiting" do
+        @game.ready?.should be_false
+      end
+      it "should return true if game state == :waiting" do
+        @game.state = :ready
+        @game.ready?.should be_true
+      end
+    end
+  end
 end

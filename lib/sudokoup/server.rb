@@ -5,7 +5,7 @@ module Sudokoup
       new(opts).start
     end
 
-    attr_reader :board
+    attr_reader :game
 
     def initialize(opts = {})
       @host = opts[:host] || '0.0.0.0'
@@ -21,13 +21,30 @@ module Sudokoup
 
         @channel  = EM::Channel.new
         @game     = Game.new
+        @queue    = []
+        
+        entering  = EM::DefaultDeferrable.new
+        entering.callback { |player|
+          if @game.open?
+            @game.join_game player
+            player.send("READY")
+          else
+            @queue << player
+            player.send("WAIT")
+          end
+        }
 
-        @server = EventMachine::start_server @host, @port, Connection::Client do |client|
-          client.game = @gawme
+        @server = EventMachine::start_server @host, @port, Connection::Client, :app => self do |client|
+          entering.succeed(client)
         end
 
-        EventMachine::start_server(@ws_host, @ws_port, Connection::WebSocket,
-          :debug => @debug, :logging => true) do |ws|
+        EventMachine.add_periodic_timer(5) {
+          @channel.push @game.time if @game.in_progress?
+          @queue.each { |p| p.send("WAIT") }
+        }
+
+        EventMachine::start_server @ws_host, @ws_port, Connection::WebSocket,
+          :debug => @debug, :logging => true do |ws|
             ws.game = @game
             ws.onopen    {
               ws.sid = @channel.subscribe { |msg| ws.send msg }

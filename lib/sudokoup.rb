@@ -7,7 +7,7 @@ require "eventmachine"
 require "addressable/uri"
 require "em-websocket"
 
-%w[ server board move logger game ].each do |file|
+%w[ server board move dispatch logger game ].each do |file|
   require "sudokoup/#{file}"
 end
 

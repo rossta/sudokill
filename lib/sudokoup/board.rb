@@ -18,6 +18,10 @@ module Sudokoup
       "[#{rows}]"
     end
     
+    def to_msg
+      @config.map { |row| row.join(" ") }.join(" | ")
+    end
+    
     def add_move(x, y, value)
       allowed = @config[x][y].zero?
       @config[x][y] = value if allowed

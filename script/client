@@ -3,146 +3,70 @@
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
-module Echo
-  class Client
-    def self.start(opts = {})
-      client = new(opts)
-      client.connect!
-      client
-    end
+require 'rubygems'
+require 'eventmachine'
 
-    attr_reader :host, :port, :timeout, :sock, :name
+module Echo
+  class Client < EventMachine::Connection
+    include EM::Deferrable
 
     def initialize(options = {})
-      @name     = options[:name]  || "Client"
-      @host     = options[:host]  || "127.0.0.1"
-      @port     = (options[:port] || 44444).to_i
-      @timeout  = (options[:timeout] || 5).to_i
-      @sock     = nil
+      @name = options[:name]
     end
 
-    def connect!
-      require 'socket'
-      with_timeout(@timeout) do
-        @sock = TCPSocket.new(host, port)
+    def post_init
+      @data = ''
+      send @name
+    end
+
+    def receive_data(data)
+      @data << data
+      if line = @data.slice!(/(.+)\r?\n/).chomp
+        puts format("Server >> #{line}")
       end
     end
 
-    def disconnect
-      # untested
-      return unless connected?
-
-      begin
-        @sock.close
-      rescue
-      ensure
-        @sock = nil
-      end
+    def send(text)
+      send_data format(text)
     end
-
-    def reconnect
-      disconnect
-      connect!
+    
+    def format(text)
+      "#{text}\r\n"
     end
-
-    def connected?
-      !! @sock
-    end
-
-    def call(command)
-      process(command)
-    end
-
-    def read
-      begin
-        response = @sock.recvfrom( 1024 )[0].chomp
-      rescue Errno::EAGAIN
-        disconnect
-        raise Errno::EAGAIN, "Timeout reading from the socket"
-      end
-      raise Errno::ECONNRESET, "Connection lost" unless response
-
-      response
-    end
-
-    def process(command)
-      ensure_connected do
-        @sock.puts(command)
-        @sock.flush
-        yield if block_given?
-      end
-    end
-
-    begin
-      require "system_timer"
-
-      def with_timeout(seconds, &block)
-        SystemTimer.timeout_after(seconds, &block)
-      end
-
-    rescue LoadError
-      warn "WARNING: using the built-in Timeout class" unless RUBY_VERSION >= "1.9" || RUBY_PLATFORM =~ /java/
-
-      require "timeout"
-
-      def with_timeout(seconds, &block)
-        Timeout.timeout(seconds, &block)
-      end
-    end
-
-    def echo(command)
-      puts "#{@name} >> #{command}"
-    end
-
-    def hear(command)
-      puts command
-    end
-
-    protected
-
-    def ensure_connected
-      connect unless connected?
-
-      begin
-        yield
-      rescue Errno::ECONNRESET, Errno::EPIPE, Errno::ECONNABORTED
-        if reconnect
-          yield
-        else
-          raise Errno::ECONNRESET
-        end
-      end
-    end
-
-    def logging(command)
-      begin
-        echo command
-
-        t1 = Time.now
-        yield
-      ensure
-        echo "%0.2fms" % ((Time.now - t1) * 1000)
-      end
-    end
-
   end
 end
 
-name = ARGV.shift
-host = ARGV.shift
-port = ARGV.shift
+name = ARGV.shift || "Client"
+host = ARGV.shift || "0.0.0.0"
+port = (ARGV.shift || 44444).to_i
 
-client = Echo::Client.start({
-  :name => name,
-  :host => host,
-  :port => port
-})
+EM.run {
+  stop = proc {
+    puts "Bye"
+    EM.stop
+  }
+  trap("TERM") { stop.call }
+  trap("INT") { stop.call }
+  
+  client = EM.connect host, port, Echo::Client, :name => name
 
-client.call(client.name)
-puts client.read
+  client.callback { |text|
+    client.send text
+  }
+  client.errback {
+    puts "Something went wrong!"
+  }
+  
+  read_and_write = proc {
+    EM.defer(proc {
+      line = STDIN.gets
+      line.chop
+    }, proc { |text|
+      client.send text
+    })
+    EM.next_tick(&read_and_write)
+  }
+  EM.next_tick(&read_and_write)
 
-loop do
-  input = STDIN.gets
-  client.call(input)
-  puts client.read
-end
+}
+

@@ -9,13 +9,6 @@ module Sudokoup
     end
 
     def call(data)
-      if game.full?
-        @state = :closed
-        [:close, "Sorry. Game is full. Come back again soon"]
-      end
-
-      game.join_game(self)
-
       if @name.nil?
         @name = data
         [:send, "#{@name} now connected"]

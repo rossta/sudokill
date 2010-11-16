@@ -16,16 +16,30 @@ describe Sudokoup::Board do
     end
   end
 
-  describe "to_json" do
+  describe "formatting" do
     before(:each) do
       @board = Sudokoup::Board.new
       @board.build_from_string(Sudokoup::CONFIG_1)
     end
-    it "should return stringified json version of board" do
+    describe "to_json" do
+      it "should return stringified json version of board" do
       json = <<-JSON
 [[7, 0, 5, 0, 0, 0, 2, 9, 4], [0, 0, 1, 2, 0, 6, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 7], [9, 0, 4, 5, 0, 0, 0, 2, 0], [0, 0, 7, 3, 6, 2, 1, 0, 0], [0, 2, 0, 0, 0, 1, 7, 0, 8], [1, 0, 0, 0, 9, 0, 0, 0, 0], [0, 0, 0, 7, 0, 5, 9, 0, 0], [5, 3, 9, 0, 0, 0, 8, 0, 2]]
 JSON
-      @board.to_json.should == json.chomp
+        @board.to_json.should == json.chomp
+      end
+    end
+  
+    describe "to_msg" do
+      it "should return space delimited values, pipe joined rows" do
+        msg = <<-MSG
+7 0 5 0 0 0 2 9 4 | 0 0 1 2 0 6 0 0 0 | 0 0 0 0 0 0 0 0 7 | 9 0 4 5 0 0 0 2 0 | 0 0 7 3 6 2 1 0 0 | 0 2 0 0 0 1 7 0 8 | 1 0 0 0 9 0 0 0 0 | 0 0 0 7 0 5 9 0 0 | 5 3 9 0 0 0 8 0 2
+MSG
+        @board.to_msg.should == msg.chomp
+      end
+      it "should be parseable with split" do
+        @board.to_msg.split(" | ").map { |row| row.split(" ") }
+      end
     end
   end
   

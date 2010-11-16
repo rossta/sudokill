@@ -1,7 +1,6 @@
 module Sudokoup
-
   module Connection
-    class Client < EventMachine::Connection
+    class Player < EventMachine::Connection
       attr_accessor :app
 
       def initialize(opts = {})
@@ -33,14 +32,16 @@ module Sudokoup
         log "#{@dispatch.name} disconnected"
       end
       
+      def send(text)
+        send_data format(text)
+      end
+      
+      protected
+
       def format(text)
         "#{text}\r\n"
       end
       
-      def send(text)
-        send_data format(text)
-      end
-
     end
   end
 

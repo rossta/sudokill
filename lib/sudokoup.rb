@@ -11,7 +11,7 @@ require "em-websocket"
   require "sudokoup/#{file}"
 end
 
-%w[ client websocket ].each do |file|
+%w[ player websocket ].each do |file|
   require "sudokoup/connection/#{file}"
 end
 

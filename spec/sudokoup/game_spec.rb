@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe Sudokoup::Game do
+  before(:each) do
+    @game = Sudokoup::Game.new
+  end
   describe "initialize" do
     it "should build a board" do
       board = mock(Sudokoup::Board)
@@ -24,7 +27,6 @@ describe Sudokoup::Game do
   
   describe "player_move" do
     before(:each) do
-      @game = Sudokoup::Game.new
       @board = mock(Sudokoup::Board, :add_move => true)
       @game.board = @board
     end
@@ -50,10 +52,52 @@ describe Sudokoup::Game do
       end
     end
   end
-  
+  describe "join_game" do
+    it "should return true if successful, false if not" do
+      @game.join_game(:player_1).should be_true
+      @game.join_game(:player_2).should be_true
+      @game.join_game(:player_3).should be_false
+    end
+    it "should add to players" do
+      @game.players.should be_empty
+      @game.join_game(:player_1)
+      @game.players.size.should == 1
+      @game.players.should include(:player_1)
+      @game.join_game(:player_2)
+      @game.players.size.should == 2
+      @game.players.should include(:player_2)
+      @game.join_game(:player_3)
+      @game.players.size.should == 2
+      @game.players.should_not include(:player_3)
+    end
+    it "should change state from waiting to ready when full" do
+      @game.waiting?.should be_true
+      @game.ready?.should be_false
+
+      @game.join_game(:player_1)
+      @game.waiting?.should be_true
+      @game.ready?.should be_false
+
+      @game.join_game(:player_2)
+      @game.waiting?.should be_false
+      @game.ready?.should be_true
+    end
+  end
   describe "states" do
-    before(:each) do
-      @game = Sudokoup::Game.new
+    describe "available?" do
+      it "should be true if waiting and player size < num players" do
+        @game.state = :waiting
+        @game.available?.should be_true
+      end
+      it "should be false if not waiting" do
+        @game.state = :ready
+        @game.available?.should be_false
+      end
+      it "should be false if player size == num players" do
+        @game.join_game(:player_1)
+        @game.join_game(:player_2)
+        @game.available?.should be_false
+      end
     end
     describe "in_progress?" do
       it "should be false if game state != :in_progress" do
@@ -75,13 +119,28 @@ describe Sudokoup::Game do
       end
     end
     describe "ready?" do
-      it "should be false if game state != :waiting" do
+      it "should be false if game state != :ready" do
         @game.ready?.should be_false
       end
-      it "should return true if game state == :waiting" do
+      it "should return true if game state == :ready" do
         @game.state = :ready
         @game.ready?.should be_true
       end
+    end
+    describe "over?" do
+      it "should be false if game state != :ready" do
+        @game.over?.should be_false
+      end
+      it "should return true if game state == :ready" do
+        @game.state = :over
+        @game.over?.should be_true
+      end
+    end
+  end
+  
+  describe "status" do
+    it "should return 'Waiting for more players' if waiting" do
+      @game.status.should == 'Game waiting for more players'
     end
   end
 end

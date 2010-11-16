@@ -18,6 +18,10 @@ Sudokoup = (function() {
     connect: function(url) {
       this.client.connect(url);
     },
+    
+    send: function(msg) {
+      this.client.send(msg);
+    },
 
     update: function(i, j, value) {
       this.log("UPDATE", i, j, value);
@@ -242,6 +246,7 @@ Sudokoup = (function() {
       port  = port || '8080',
       url   = "ws://" + host + ":" + port + "/",
       ws = new WebSocket(url);
+      self.ws = ws;
       game.log("ws:", "connecting to " + url);
       ws.onmessage = function(e) {
         var message = e.data.trim();
@@ -256,10 +261,12 @@ Sudokoup = (function() {
         self.$connectForm.trigger("connected");
         ws.send("NEW CONNECTION\n");
       };
-      self.ws = ws;
     },
     close: function() {
       this.ws.close();
+    },
+    send: function(msg) {
+      this.ws.send(msg + "\n");
     }
   });
 

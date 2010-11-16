@@ -1,6 +1,7 @@
 module Sudokoup
   class Game
-    attr_accessor :board, :players, :state
+    attr_accessor :board, :state
+    attr_reader :players
 
     def self.acts_as_state_machine(*states)
       states.each do |state|
@@ -11,7 +12,7 @@ module Sudokoup
         SRC
       end
     end
-    acts_as_state_machine :waiting, :ready, :in_progress
+    acts_as_state_machine :waiting, :ready, :in_progress, :over
 
     def initialize(opts = {})
       @num_players = opts[:num_players] || 2
@@ -33,8 +34,16 @@ module Sudokoup
       @players.size == @num_players
     end
 
-    def open?
-      @players.size < @num_players
+    def available?
+      !full? && waiting?
+    end
+
+    def play!
+      raise "Game not ready for play" unless ready?
+      @state == :in_progress
+      @players.each do |p|
+        p.send(@board.to_msg)
+      end
     end
 
     def in_progress?
@@ -42,8 +51,20 @@ module Sudokoup
     end
 
     def join_game(player)
-      @players << player
-      @state == :ready if full?
+      if joined = available?
+        @players << player
+        @state = :ready if full?
+      end
+      joined
+    end
+
+    def status
+      case state
+      when :waiting
+        "Game waiting for more players"
+      else
+        "Game #{state.to_s}"
+      end
     end
   end
 

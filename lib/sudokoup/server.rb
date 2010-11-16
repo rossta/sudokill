@@ -12,6 +12,9 @@ module Sudokoup
       @port = opts[:port] || 44444
       @ws_host = opts[:view] && opts[:view][:host] || '0.0.0.0'
       @ws_port = opts[:view] && opts[:view][:host] || 8080
+
+      @game     = Game.new
+      @queue    = []
     end
 
     def start
@@ -20,32 +23,17 @@ module Sudokoup
         trap("INT")  { stop }
 
         @channel  = EM::Channel.new
-        @game     = Game.new
-        @queue    = []
-        
-        entering  = EM::DefaultDeferrable.new
-        entering.callback { |player|
-          if @game.open?
-            @game.join_game player
-            player.send("READY")
-          else
-            @queue << player
-            player.send("WAIT")
-          end
-        }
 
-        @server = EventMachine::start_server @host, @port, Connection::Client, :app => self do |client|
-          entering.succeed(client)
+        @server = EventMachine::start_server @host, @port, Connection::Player, :app => self do |player|
+          connected.succeed(player)
         end
-
-        EventMachine.add_periodic_timer(5) {
-          @channel.push @game.time if @game.in_progress?
+        
+        EventMachine.add_periodic_timer(10) {
           @queue.each { |p| p.send("WAIT") }
         }
 
-        EventMachine::start_server @ws_host, @ws_port, Connection::WebSocket,
+        EventMachine::start_server @ws_host, @ws_port, Connection::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
-            ws.game = @game
             ws.onopen    {
               ws.sid = @channel.subscribe { |msg| ws.send msg }
               msg = "#{ws.display_name} just joined the game room"
@@ -54,6 +42,7 @@ module Sudokoup
 
               ws.onmessage { |msg|
                 log msg, "WebSocket"
+                
                 @channel.push msg
               }
 
@@ -75,6 +64,30 @@ module Sudokoup
       log "Stopping server"
       EventMachine.stop
     end
-
+    
+    def play_game
+      play = EM::DefaultDeferrable.new
+      play.callback {
+        if @game.ready?
+          @game.play!
+        else
+          @channel.push @game.status
+        end
+      }
+      play
+    end
+    
+    def connected
+      conn = EM::DefaultDeferrable.new
+      conn.callback { |player|
+        if @game.join_game(player)
+          player.send("READY")
+        else
+          @queue << player
+          player.send("WAIT")
+        end
+      }
+      conn
+    end
   end
 end

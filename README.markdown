@@ -1,24 +1,27 @@
-Sudokoup
-======
+# Sudokoup #
 
-Sudoku backed by EventMachine based, asynchronous WebSocket server.
+Competitive Sudoku backed by EventMachine and HTML5 Websockets
 
-Start server
+## Try it out ##
 
-  ./script/server
+	Start the server
 
-Testing the game board
+		$ ./script/server
 
-	Start server proxy for testing
+	Run sample clients and forward messages to server via STDIN:
 
-	  ./script/echo
+  	$ ./script/play NAME
 
-	Start websocket client
+	Open index.html and press "Connect" to view game
 
-	  ./script/view
 
-	Open index.html
+## Configure ##
 
-	Use STDIN on echo server to send data to the websocket client. Example:
+	Server and player scripts accept optional command line parameters for
 
-		{"action":"UPDATE","x":1,"y":1,"value":7}
+		$ ./script/server HOST PORT VIEW_HOST VIEW_PORT
+		$ ./script/play NAME HOST PORT
+
+		HOST:PORT 					- socket for player clients
+		VIEW_HOST:VIEW_PORT - socket for websocket clients
+

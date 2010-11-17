@@ -4,6 +4,13 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 
 ## Try it out ##
 
+Install
+
+	cd to directory of your choice
+	$ git clone git://github.com/rosskaff/sudokoup.git
+	$ git submodule init
+	$ git submodule update
+
 Start the server
 
 	$ ./script/server

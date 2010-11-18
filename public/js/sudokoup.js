@@ -45,7 +45,7 @@ Sudokoup = (function() {
         var json = $.parseJSON(message);
         switch (json.action) {
           case "UPDATE":
-            move = json.value
+            move = json.value;
             self.update(move[0], move[1], move[2]);
             break;
           case "CREATE":
@@ -188,14 +188,15 @@ Sudokoup = (function() {
   var Messager = Base.extend({
     constructor: function() {
       this.$msg     = $("<div>");
+      this.$pane    = $("<div>");
       this.$msg.attr("id", "msg").appendTo('body');
+      this.$pane.attr("id", "pane").appendTo(this.$msg);
     },
 
     log: function() {
       var self = this,
       message = _(arguments).toArray();
-
-      self.$msg.append("<p>"+message.join(" ")+"</p>").scrollTop(self.$msg.height());
+      self.$pane.append("<p>"+message.join(" ")+"</p>").scrollTop(self.$pane.attr("scrollHeight"));
       return message;
     }
   });
@@ -270,7 +271,7 @@ Sudokoup = (function() {
       ws.onopen = function() {
         game.log("ws:", "connected!");
         self.$connectForm.trigger("connected");
-        ws.send("NEW CONNECTION|"+name+"\n");
+        ws.send(["NEW CONNECTION", name].join("|") + "\n");
       };
     },
     close: function() {

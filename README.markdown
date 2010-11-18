@@ -6,10 +6,16 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 
 Install
 
-	cd to directory of your choice
+	# cd ~/your/projects/
 	$ git clone git://github.com/rosskaff/sudokoup.git
 	$ git submodule init
 	$ git submodule update
+
+	or
+
+	# download
+	$ gem install addressable
+	$ gem install em-websocket
 
 Start the server
 
@@ -19,16 +25,16 @@ Run sample clients and forward messages to server via STDIN:
 
 	$ ./script/play NAME
 
-Open index.html and press "Connect" to view game
+Open index.html, enter name, and "Connect"
 
-Server and player scripts accept optional command line parameters for
+Server and player scripts accept optional command line parameters
 
-	$ ./script/server HOST PORT VIEW_HOST VIEW_PORT
+	$ ./script/server HOST PORT VIEW_PORT
 
 	$ ./script/play NAME HOST PORT
 
-	HOST:PORT 					- socket for player clients
-	VIEW_HOST:VIEW_PORT - socket for websocket clients
+	HOST:PORT 		 - socket for player clients
+	HOST:VIEW_PORT - socket for websocket clients
 
 ## Server Protocol ##
 

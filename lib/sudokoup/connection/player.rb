@@ -1,11 +1,11 @@
 module Sudokoup
   module Connection
     class Player < EventMachine::Connection
-      attr_accessor :app
+      attr_accessor :dispatch
 
       def initialize(opts = {})
         @dispatch     = Dispatch.new
-        @dispatch.app = opts[:app]
+        @app          = opts[:app]
         @data = ''
       end
 
@@ -21,6 +21,8 @@ module Sudokoup
           case action
           when :send
             send response
+          when :move
+            @app.add_move.succeed(self, response)
           when :close
             send response
             close_connection_after_writing
@@ -31,17 +33,25 @@ module Sudokoup
       def unbind
         log "#{@dispatch.name} disconnected"
       end
-      
+
       def send(text)
         send_data format(text)
       end
       
+      def name
+        @dispatch.name
+      end
+      
+      def turn?
+        true
+      end
+
       protected
 
       def format(text)
         "#{text}\r\n"
       end
-      
+
     end
   end
 

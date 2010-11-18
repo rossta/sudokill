@@ -1,11 +1,9 @@
 module Sudokoup
   class Dispatch
-    attr_accessor :app, :state
+    attr_accessor :app, :name
 
-    # states: :waiting, :playing, :closed
     def initialize
       @name   = nil
-      @state  = :waiting
     end
 
     def call(data)
@@ -13,12 +11,13 @@ module Sudokoup
         @name = data
         [:send, "#{@name} now connected"]
       else
-        [:send, "#{@name} said: #{data}"]
+        case data
+        when /^\d+ \d+ \d+$/
+          [:move, data]
+        else
+          [:send, "#{@name} said: #{data}"]
+        end
       end
-    end
-
-    def game
-      @app.game
     end
 
     def name

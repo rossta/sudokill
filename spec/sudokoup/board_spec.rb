@@ -68,5 +68,33 @@ MSG
         @board.config[0][0].should == 7
       end
     end
+    describe "out of range" do
+      it "should return false" do
+        @board.add_move(9, 9, 9).should be_false
+      end
+    end
+    describe "non-sudoku value" do
+      it "should return false" do
+        @board.add_move(1, 1, 10).should be_false
+      end
+    end
+  end
+  
+  describe "available?" do
+    before(:each) do
+      @board = Sudokoup::Board.new
+      @board.build
+    end
+    describe "valid value" do
+      it "should return true if no previous value" do
+        @board.config[1][1].should be_zero
+        @board.available? 1, 1, 9
+      end
+    end
+    describe "invalid value" do
+      it "should return true if no previous value" do
+        @board.available? 1, 1, 10
+      end
+    end
   end
 end

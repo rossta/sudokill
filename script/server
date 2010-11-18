@@ -7,14 +7,12 @@ require 'sudokoup'
 
 host = ARGV.shift
 port = ARGV.shift
-view_host = ARGV.shift
 view_port = ARGV.shift
 
 client = Sudokoup::Server.start({
   :host => host,
   :port => port,
   :view => {
-    :host => view_host,
     :port => view_port
   }
 })

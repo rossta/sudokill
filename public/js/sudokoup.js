@@ -18,7 +18,7 @@ Sudokoup = (function() {
     connect: function(url) {
       this.client.connect(url);
     },
-    
+
     send: function(msg) {
       this.client.send(msg);
     },
@@ -45,7 +45,8 @@ Sudokoup = (function() {
         var json = $.parseJSON(message);
         switch (json.action) {
           case "UPDATE":
-            self.update(json[0], json[1], json[2]);
+            move = json.value
+            self.update(move[0], move[1], move[2]);
             break;
           case "CREATE":
             self.create(json.values);
@@ -206,17 +207,20 @@ Sudokoup = (function() {
       self.$connectForm = $("<form></form>");
       $('body').append(self.$connectForm);
 
-      self.$connectForm.append("<fieldset class='optional'></fieldset>");
-      var $fields = self.$connectForm.find("fieldset.optional");
-      $fields.append("<label for='s_name'>Name</label>");
-      $fields.append("<input id='s_name' type='text' name='name' class='name' />");
-      $fields.append("<br/>");
-      $fields.append("<label for='s_host' class='host'>Host</label>");
-      $fields.append("<input id='s_host' type='text' name='host' class='host'/>");
-      $fields.append("<br/>");
-      $fields.append("<label for='s_port' class='port'>Port</label>");
-      $fields.append("<input id='s_port' type='text' name='port' class='port' />");
-      $fields.append("<br/>");
+      self.$connectForm.append("<div class='required'></div>");
+      var $name = self.$connectForm.find("div.required");
+          $name.append("<label for='s_name'>Name</label>");
+          $name.append("<input id='s_name' type='text' name='name' class='name' />");
+
+      var $toggle = $("<a></a>").attr("href", "#").text("Options").addClass("toggle");
+          $name.append($toggle);
+
+      self.$connectForm.append("<div class='optional'></div>");
+      var $opts = self.$connectForm.find("div.optional");
+          $opts.append("<label for='s_host' class='host'>Host</label>");
+          $opts.append("<input id='s_host' type='text' name='host' class='host'/>");
+          $opts.append("<label for='s_port' class='port'>Port</label>");
+          $opts.append("<input id='s_port' type='text' name='port' class='port' />");
       self.$connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
 
       self.$connectForm.submit(function(){
@@ -235,13 +239,20 @@ Sudokoup = (function() {
           self.close();
           $(this).attr("value", "Connect");
           return false;
+        }).
+        delegate("a.toggle", "click", function() {
+          var text = $(this).text();
+          text = text == "Options" ? "Hide" : "Options";
+          $(this).text(text);
+          $(this).parents("form").find(".optional").toggle();
+          return false;
         });
 
     },
     connect: function(name, host, port) {
       var self = this,
       game  = self.game,
-      name  = name || 'Player',
+      name  = name || 'Patron ' + userAgentName(),
       host  = host || 'localhost',
       port  = port || '8080',
       url   = "ws://" + host + ":" + port + "/",
@@ -259,7 +270,7 @@ Sudokoup = (function() {
       ws.onopen = function() {
         game.log("ws:", "connected!");
         self.$connectForm.trigger("connected");
-        ws.send("NEW CONNECTION\n");
+        ws.send("NEW CONNECTION|"+name+"\n");
       };
     },
     close: function() {
@@ -269,6 +280,13 @@ Sudokoup = (function() {
       this.ws.send(msg + "\n");
     }
   });
+
+  var userAgentName = function() {
+    var name = "Unknown Agent";
+    if (navigator.userAgent) name = navigator.userAgent.slice(0, 30);
+    return name;
+  };
+
 
   return Base.extend(instanceMethods, classMethods);
 })();

@@ -10,6 +10,7 @@ Sudokoup = (function() {
       self.board    = new GameBoard('board');
       self.score    = new ScoreTable();
       self.messager = new Messager(self.selector);
+      
       self.client   = new WebSocketClient(this);
 
       self.board.build();
@@ -262,6 +263,7 @@ Sudokoup = (function() {
 
     },
     connect: function(name, host, port) {
+      WebSocket.__swfLocation = "public/javascripts/WebSocketMain.swf";
       var self = this,
       game  = self.game,
       name  = name || 'Patron ' + userAgentName(),

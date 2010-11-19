@@ -5,18 +5,19 @@ Sudokoup = (function() {
       var self = this;
       self.selector = "#" + selector;
       self.$sudokoup  = $(selector);
+      $("<div id='board' />").appendTo(self.selector);
 
-      self.board    = new SuBoard(selector);
+      self.board    = new GameBoard('board');
       self.score    = new ScoreTable();
-      self.messager = new Messager();
+      self.messager = new Messager(self.selector);
       self.client   = new WebSocketClient(this);
 
       self.board.build();
     },
 
 // Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
-    connect: function(url) {
-      this.client.connect(url);
+    connect: function(name, host, port) {
+      this.client.connect(name, host, port);
     },
 
     send: function(msg) {
@@ -39,14 +40,18 @@ Sudokoup = (function() {
       this.messager.log.apply(this.messager, arguments);
     },
 
+    print: function(message) {
+      this.messager.print(message);
+    },
+
     dispatch: function(message) {
-      var self = this;
+      var self = this, value;
       try {
         var json = $.parseJSON(message);
         switch (json.action) {
           case "UPDATE":
-            move = json.value;
-            self.update(move[0], move[1], move[2]);
+            value = json.value;
+            self.update(value[0], value[1], value[2]);
             break;
           case "CREATE":
             self.create(json.values);
@@ -55,20 +60,21 @@ Sudokoup = (function() {
             self.log("Unrecognized action", json.action, json);
         }
       } catch (e) {
-        console.log("Error parsing JSON", e.toString());
+        console.log("Catch JSON parse error", e.toString());
+        self.print(message);
       }
       return json;
     }
   },
 
   classMethods = {
-    play : function(opts) {
-      var sudokoup = new Sudokoup(opts);
-      this.game = sudokoup;
+    play : function(selector) {
+      this.game = new Sudokoup(selector);
+      return this.game;
     }
   };
 
-  var SuBoard = Base.extend({
+  var GameBoard = Base.extend({
     constructor: function(selector) {
       this.r = Raphael(selector, 450, 450);
       this.dim            = 50;
@@ -186,10 +192,10 @@ Sudokoup = (function() {
   };
 
   var Messager = Base.extend({
-    constructor: function() {
+    constructor: function(selector) {
       this.$msg     = $("<div>");
       this.$pane    = $("<div>");
-      this.$msg.attr("id", "msg").appendTo('body');
+      this.$msg.attr("id", "msg").appendTo(selector);
       this.$pane.attr("id", "pane").appendTo(this.$msg);
     },
 
@@ -197,6 +203,11 @@ Sudokoup = (function() {
       var self = this,
       message = _(arguments).toArray();
       self.$pane.append("<p>"+message.join(" ")+"</p>").scrollTop(self.$pane.attr("scrollHeight"));
+      return message;
+    },
+
+    print: function(message) {
+      this.log(message);
       return message;
     }
   });
@@ -206,7 +217,7 @@ Sudokoup = (function() {
       var self = this;
       self.game = game;
       self.$connectForm = $("<form></form>");
-      $('body').append(self.$connectForm);
+      $(game.selector).append(self.$connectForm);
 
       self.$connectForm.append("<div class='required'></div>");
       var $name = self.$connectForm.find("div.required");
@@ -288,6 +299,10 @@ Sudokoup = (function() {
     return name;
   };
 
+  classMethods.GameBoard = GameBoard;
+  classMethods.ScoreTable = ScoreTable;
+  classMethods.Messager = Messager;
+  classMethods.WebSocketClient = WebSocketClient;
 
   return Base.extend(instanceMethods, classMethods);
 })();

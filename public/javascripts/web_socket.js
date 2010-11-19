@@ -8,7 +8,7 @@
   if (window.WebSocket) return;
 
   var console = window.console;
-  if (!console) console = {log: function(){ }, error: function(){ }};
+  // if (!console) console = {log: function(){ }, error: function(){ }};
 
   function hasFlash() {
     if ('navigator' in window && 'plugins' in navigator && navigator.plugins['Shockwave Flash']) {
@@ -78,9 +78,9 @@
         }
       });
 
-      //console.log("[WebSocket] Flash object is ready");
+      console.log("[WebSocket] Flash object is ready");
     });
-  }
+  };
 
   WebSocket.prototype.send = function(data) {
     if (!this.__flash || this.readyState == WebSocket.CONNECTING) {
@@ -247,6 +247,7 @@
   WebSocket.__tasks = [];
 
   WebSocket.__initialize = function() {
+    debugger;
     if (!WebSocket.__swfLocation) {
       //console.error("[WebSocket] set WebSocket.__swfLocation to location of WebSocketMain.swf");
       //return;
@@ -268,11 +269,12 @@
       null, {bridgeName: "webSocket"}, null, null,
       function(e) {
         if (!e.success) console.error("[WebSocket] swfobject.embedSWF failed");
+        else console.log("[WebSocket] swfobject.embedSWF success!");
       }
     );
     FABridge.addInitializationCallback("webSocket", function() {
       try {
-        //console.log("[WebSocket] FABridge initializad");
+        console.log("[WebSocket] FABridge initializad");
         WebSocket.__flash = FABridge.webSocket.root();
         WebSocket.__flash.setCallerUrl(location.href);
         for (var i = 0; i < WebSocket.__tasks.length; ++i) {
@@ -291,7 +293,7 @@
     } else {
       WebSocket.__tasks.push(task);
     }
-  }
+  };
 
   // called from Flash
   function webSocketLog(message) {

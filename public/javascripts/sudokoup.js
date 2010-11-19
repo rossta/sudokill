@@ -263,7 +263,6 @@ Sudokoup = (function() {
 
     },
     connect: function(name, host, port) {
-      WebSocket.__swfLocation = "public/javascripts/WebSocketMain.swf";
       var self = this,
       game  = self.game,
       name  = name || 'Patron ' + userAgentName(),

@@ -7,9 +7,7 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 Install
 
 	# cd ~/your/projects/
-	$ git clone git://github.com/rosskaff/sudokoup.git
-	$ git submodule init
-	$ git submodule update
+	$ git clone git://github.com/rosskaff/sudokoup.git --recursive
 
 	or
 
@@ -25,7 +23,9 @@ Run sample clients and forward messages to server via STDIN:
 
 	$ ./script/play NAME
 
-Open index.html, enter name, and "Connect"
+Join the audience to see the game in action
+
+	$ 
 
 Server and player scripts accept optional command line parameters
 

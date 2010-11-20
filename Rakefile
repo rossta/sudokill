@@ -2,14 +2,16 @@ require "rubygems"
 require "rake"
 
 namespace :sudokoup do
-  
-  namespace :server do
-    
-    task :echo do
-      system "ruby examples/echo.rb"
+  namespace :watch do
+    task :default do
+      system "ruby app.rb"
     end
-    
+    task :production do
+      # ruby app.rb [-h] [-x] [-e production] [-p linserv1.cims.nyu.edu] [-o 45678] [-s HANDLER]
+      system "ruby app.rb -e production -o 45678"
+    end
   end
+  task :watch => "sudokoup:watch:default"
 end
 
 require 'jasmine'

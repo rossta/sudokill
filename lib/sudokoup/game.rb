@@ -65,19 +65,15 @@ module Sudokoup
     end
 
     def request_player_move(player, move)
-      return [:error, "#{player.name} is not currently playing"] unless @players.include? player
-      return [:error, "It's not your turn, #{player.name}!"] unless player.turn?
-
+      return [:reject, "Not in the game, #{player.name}"] unless @players.include? player
+      return [:reject, "Wait your turn, #{player.name}"] unless player.turn?
+      
       if @board.add_move *move.split.map(&:to_i)
-        @moves << [player, move]
-        msg = "#{player.name} played: #{move}"
-        if @board.violated?
-          [:game_over, [msg, "VIOLATION!", "#{previous_player(player).name} WINS!"].join(" ")]
-        else
-          [:ok, msg]
-        end
+        [:ok, "#{player.name} played: #{move}"]
+      elsif @board.violated?
+        [:violation, "#{player.name} played: #{move} and violated the constraints!"]
       else
-        [:error, "Move #{move} is not available"]
+        [:reject, "Illegal move. #{player.name} cannot play #{move}"]
       end
     end
 

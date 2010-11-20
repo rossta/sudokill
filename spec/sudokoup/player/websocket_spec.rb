@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'json'
 
-describe Sudokoup::Connection::WebSocket do
+describe Sudokoup::Player::WebSocket do
   # before(:each) do
   #   @request = {
   #     :port => 80,
@@ -41,7 +41,7 @@ describe Sudokoup::Connection::WebSocket do
   #       EM.run do
   #         EM.add_timer(0.1) do
   # 
-  #           EventMachine::start_server '0.0.0.0', 12345, Sudokoup::Connection::WebSocket, {} do |ws|
+  #           EventMachine::start_server '0.0.0.0', 12345, Sudokoup::Player::WebSocket, {} do |ws|
   #             ws.app = stub(Sudokoup::Server, :board => board)
   #           end
   # 
@@ -71,7 +71,7 @@ describe Sudokoup::Connection::WebSocket do
   #       EM.run do
   #         EM.add_timer(0.1) do
   # 
-  #           EventMachine::start_server '0.0.0.0', 12345, Sudokoup::Connection::WebSocket, {} do |ws|
+  #           EventMachine::start_server '0.0.0.0', 12345, Sudokoup::Player::WebSocket, {} do |ws|
   #             ws.app = stub(Sudokoup::Server, :current_move => move)
   #           end
   # 

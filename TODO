@@ -1,4 +1,18 @@
+PLAYER
+send START message to all players
+send MOVE message to current player
+verify current player's turn
+allow free move when row/col full
+better error message for illegal moves
+start new game with players from queue
+
+HUMAN PLAYER
+enter game queue as human
+accept/send input for human player
+
+VIEW
 win logic
 chrome
 welcome screen
 fav.ico
+display game queue

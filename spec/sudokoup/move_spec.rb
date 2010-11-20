@@ -2,16 +2,16 @@ require 'spec_helper'
 
 describe Sudokoup::Move do
   describe "initialize" do
-    it "should have x, y, value" do
+    it "should have row, col, val" do
       move = Sudokoup::Move.new(4, 5, 6)
-      move.x.should == 4
-      move.y.should == 5
-      move.value.should == 6
+      move.row.should == 4
+      move.col.should == 5
+      move.val.should == 6
     end
   end
   
   describe "to_json" do
-    it "should return {x:x,y:y,value:value}" do
+    it "should return {row:row,col:col,val:val}" do
       move = Sudokoup::Move.new(4, 5, 6)
       move.to_json.should == "[4, 5, 6]"
     end

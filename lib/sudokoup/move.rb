@@ -1,10 +1,10 @@
 module Sudokoup
   class Move
-    attr_reader :x, :y, :value
-    def initialize(x, y, value)
-      @x = x
-      @y = y
-      @value = value
+    attr_reader :row, :col, :val
+    def initialize(row, col, val)
+      @row = row
+      @col = col
+      @val = val
     end
 
     def to_json
@@ -12,7 +12,7 @@ module Sudokoup
     end
 
     def to_coord
-      [x, y, value]
+      [row, col, val]
     end
   end
 end

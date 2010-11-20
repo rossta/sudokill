@@ -11,8 +11,8 @@ require "em-websocket"
   require "sudokoup/#{file}"
 end
 
-%w[ player websocket ].each do |file|
-  require "sudokoup/connection/#{file}"
+%w[ socket websocket ].each do |file|
+  require "sudokoup/player/#{file}"
 end
 
 def log(message, name = "Server")

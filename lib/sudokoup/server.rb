@@ -24,7 +24,7 @@ module Sudokoup
 
         @channel  = EM::Channel.new
 
-        @server = EventMachine::start_server @host, @port, Connection::Player, :app => self do |player|
+        @server = EventMachine::start_server @host, @port, Player::Socket, :app => self do |player|
           connected.succeed(player)
         end
 
@@ -32,7 +32,7 @@ module Sudokoup
           @queue.each { |p| p.send("WAIT") }
         }
 
-        EventMachine::start_server @ws_host, @ws_port, Connection::WebSocket, :app => self,
+        EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
             ws.onopen    {
               ws.sid = @channel.subscribe { |msg| ws.send msg }
@@ -81,33 +81,65 @@ module Sudokoup
     end
 
     def add_move
-      move = EM::DefaultDeferrable.new
-      move.callback { |player, move|
+      defer = EM::DefaultDeferrable.new
+      defer.callback { |player, move|
         status, msg = @game.request_player_move(player, move)
         case status
         when :ok
-          @channel.push %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json}}|
+          @channel.push %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"ok"}|
           @channel.push msg
-        when :error
-          player.send msg
-        when :game_over
-          @game.players.each { |p| player send(msg) }
+        when :reject
+          player.send ["REJECT", msg].join(" | ")
+          @channel.push msg
+        when :violation
+          @channel.push %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"violation"}|
+          @game.players.each { |p| p.send(["GAME OVER!", msg].join(" | ")) }
+          new_game.succeed
         end
       }
-      move
+      defer
     end
 
     def connected
-      conn = EM::DefaultDeferrable.new
-      conn.callback { |player|
-        if @game.join_game(player)
-          player.send("READY")
+      defer = EM::DefaultDeferrable.new
+      defer.callback { |player|
+        if @game.available?
+          join_game player
         else
-          @queue << player
-          player.send("WAIT")
+          join_queue player
         end
       }
-      conn
+      defer
+    end
+
+    def new_game
+      defer = EM::DefaultDeferrable.new
+      defer.callback {
+        @game = Game.new
+        while @game.available? && @queue.any?
+          join_game @queue.shift
+        end
+        @channel.push board_json
+      }
+      defer
+    end
+
+    def join_game(player)
+      joined = @game.join_game(player)
+      if joined
+        player.send("READY")
+        @channel.push "Ready to begin" if @game.ready?
+      end
+      joined
+    end
+
+    def join_queue(player)
+      @queue << player
+      player.send("WAIT")
+    end
+    
+    def board_json
+      %Q|{"action":"CREATE","values":#{@game.board.to_json}}|
     end
   end
 end

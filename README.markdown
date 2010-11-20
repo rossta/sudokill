@@ -23,15 +23,19 @@ Run sample clients and forward messages to server via STDIN:
 
 	$ ./script/play NAME
 
-Join the audience to see the game in action
+Join the audience to see the game in action:
 
-	$ 
+	$ ruby app.rb
+	
+	// Go to http://localhost:4567/sudokoup
 
 Server and player scripts accept optional command line parameters
 
-	$ ./script/server HOST PORT VIEW_PORT
+	$ ./script/server [HOST] [PORT] [VIEW_PORT]
 
-	$ ./script/play NAME HOST PORT
+	$ ./script/play NAME [HOST] [PORT]
+
+	$ ruby app.rb [-p HOST] [-o PORT]
 
 	HOST:PORT 		 - socket for player clients
 	HOST:VIEW_PORT - socket for websocket clients
@@ -99,5 +103,5 @@ Examples:
 	// Places value 9 in row 0, column 0 (top left)
 	0 0 9
 
-	// Places value 1 in row 8, columnb 8 (bottom right)
+	// Places value 1 in row 8, column 8 (bottom right)
 	8 8 1

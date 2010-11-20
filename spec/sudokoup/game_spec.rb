@@ -27,8 +27,8 @@ describe Sudokoup::Game do
   
   describe "request_player_move" do
     before(:each) do
-      @player_1 = mock(Sudokoup::Connection::Player, :name => "Player 1")
-      @player_2 = mock(Sudokoup::Connection::Player, :name => "Player 2")
+      @player_1 = mock(Sudokoup::Player::Socket, :name => "Player 1")
+      @player_2 = mock(Sudokoup::Player::Socket, :name => "Player 2")
       @board = mock(Sudokoup::Board, :add_move => true, :violated? => false)
       @game.board = @board
       @game.players << @player_1
@@ -39,18 +39,14 @@ describe Sudokoup::Game do
       @game.request_player_move(@player_1, "1 2 3")
     end
     it "should verify player is in game" do
-      @non_player = mock(Sudokoup::Connection::Player, :name => "Party crasher")
+      @non_player = mock(Sudokoup::Player::Socket, :name => "Party crasher")
       @non_player.should_not_receive(:turn?)
       @board.should_not_receive(:add_move)
-      @game.request_player_move(@non_player, "1 2 3").should == [:error, "Party crasher is not currently playing"]
+      @game.request_player_move(@non_player, "1 2 3").should == [:reject, "Not in the game, Party crasher"]
     end
     describe "player's turn" do
       before(:each) do
         @player_1.stub!(:turn? => true)
-      end
-      it "should record move" do
-        @game.request_player_move(@player_1, "1 2 3")
-        @game.moves.last.should == [@player_1, "1 2 3"]
       end
       it "should add_move to board if available?" do
         @board.should_receive(:add_move).with(1, 2, 3).and_return(true)
@@ -61,17 +57,19 @@ describe Sudokoup::Game do
       end
       it "should send reject message to player_1 if move is an error" do
         @board.stub!(:add_move).and_return(false)
-        @game.request_player_move(@player_1, "0 0 0").should == [:error, "Move 0 0 0 is not available"]
+        @game.request_player_move(@player_1, "0 0 0").should == [:reject, "Illegal move. Player 1 cannot play 0 0 0"]
       end
       describe "game ends on player move" do
         it "should notify players if player 1 move results in board violation" do
+          @board.stub!(:add_move).and_return(false)
           @board.should_receive(:violated?).and_return(true)
-          @game.request_player_move(@player_1, "1 2 3").should == [:game_over, "Player 1 played: 1 2 3 VIOLATION! Player 2 WINS!"]
+          @game.request_player_move(@player_1, "1 2 3").should == [:violation, "Player 1 played: 1 2 3 and violated the constraints!"]
         end
         it "should notify players if player 2 move results in board violation" do
+          @board.stub!(:add_move).and_return(false)
           @player_2.stub!(:turn?).and_return(true)
           @board.should_receive(:violated?).and_return(true)
-          @game.request_player_move(@player_2, "1 2 3").should == [:game_over, "Player 2 played: 1 2 3 VIOLATION! Player 1 WINS!"]
+          @game.request_player_move(@player_2, "1 2 3").should == [:violation, "Player 2 played: 1 2 3 and violated the constraints!"]
         end
       end
     end
@@ -83,7 +81,7 @@ describe Sudokoup::Game do
         @board.should_not_receive(:add_move)
       end
       it "should not send update to game display" do
-        @game.request_player_move(@player_1, "1 2 3").should == [:error, "It's not your turn, Player 1!"]
+        @game.request_player_move(@player_1, "1 2 3").should == [:reject, "Wait your turn, Player 1"]
       end
     end
   end

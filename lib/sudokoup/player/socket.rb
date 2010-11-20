@@ -1,6 +1,6 @@
 module Sudokoup
-  module Connection
-    class Player < EventMachine::Connection
+  module Player
+    class Socket < EventMachine::Connection
       attr_accessor :dispatch
 
       def initialize(opts = {})

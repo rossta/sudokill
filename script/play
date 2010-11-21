@@ -22,7 +22,7 @@ module Echo
     def receive_data(data)
       @data << data
       if line = @data.slice!(/(.+)\r?\n/).chomp
-        puts format("Server >> #{line}")
+        puts "Server >> #{line}"
       end
     end
 

@@ -283,14 +283,14 @@ Sudokoup = (function() {
       ws.onopen = function() {
         game.log("ws:", "connected!");
         self.$connectForm.trigger("connected");
-        ws.send(["NEW CONNECTION", name].join("|") + "\n");
+        ws.send(name + "\r\n");
       };
     },
     close: function() {
       this.ws.close();
     },
     send: function(msg) {
-      this.ws.send(msg + "\n");
+      this.ws.send(msg + "\r\n");
     }
   });
 

@@ -2,21 +2,32 @@ module Sudokoup
 
   module Player
     class WebSocket < EventMachine::WebSocket::Connection
-      attr_accessor :app, :name, :sid
+      attr_accessor :app, :name, :sid, :number
 
       def initialize(opts = {})
         super
-        @app = opts[:app]
+        @dispatch = Dispatch.new
+        @app      = opts[:app]
+        @data     = ''
       end
 
       def receive_data(data)
         super(data)
-        if line = data.slice!(/(.+)\r?\n/)
-          case line
-          when /NEW CONNECTION/
-            send(app.board_json)
-          when /PLAY/
-            app.play_game.succeed
+        if line = @data.slice!(/(.+)\r?\n/).chomp
+          action, response = @dispatch.call(line)
+          case action
+          when :send
+            send response
+          when :new_connection
+            send app.board_json
+            send response
+          when :play
+            @app.play_game.succeed
+            @app.broadcast.succeed response
+          when :move
+            @app.add_move.succeed(self, response)
+          when :close
+            send response
           end
         end
       end
@@ -27,8 +38,8 @@ module Sudokoup
         "Anonymous Visitor"
       end
 
-      def game
-        @app.game
+      def name
+        @dispatch.name
       end
 
       protected

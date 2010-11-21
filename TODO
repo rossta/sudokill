@@ -1,10 +1,13 @@
 PLAYER
-send START message to all players
 send MOVE message to current player
 verify current player's turn
 allow free move when row/col full
 better error message for illegal moves
+declare winner,loser, num moves
 start new game with players from queue
+EM.run server specs
+timer
+kill connections when server shuts down
 
 HUMAN PLAYER
 enter game queue as human
@@ -16,3 +19,4 @@ chrome
 welcome screen
 fav.ico
 display game queue
+display player times

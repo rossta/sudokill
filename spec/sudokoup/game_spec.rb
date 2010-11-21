@@ -13,7 +13,7 @@ describe Sudokoup::Game do
       game.board.should == board
     end
   end
-  
+
   describe "reset" do
     it "should rebuild board" do
       game = Sudokoup::Game.new
@@ -24,7 +24,31 @@ describe Sudokoup::Game do
       game.board.should == board
     end
   end
-  
+
+  describe "play!" do
+    it "should raise warning if not ready" do
+      lambda { subject.play! }.should raise_error
+    end
+    before(:each) do
+      @game = Sudokoup::Game.new
+      @player_1 = mock(Sudokoup::Player::Socket, :enter_game => nil)
+      @player_2 = mock(Sudokoup::Player::Socket, :enter_game => nil)
+      @game.join_game @player_1
+      @game.join_game @player_2
+    end
+    it "should set state to in_progress" do
+      @game.play!
+      @game.in_progress?.should be_true
+    end
+
+    it "should enter game and assign player numbers" do
+      @player_1.should_receive(:enter_game).with(1)
+      @player_2.should_receive(:enter_game).with(2)
+      @game.play!
+    end
+
+  end
+
   describe "request_player_move" do
     before(:each) do
       @player_1 = mock(Sudokoup::Player::Socket, :name => "Player 1")
@@ -35,18 +59,18 @@ describe Sudokoup::Game do
       @game.players << @player_2
     end
     it "should verify player's turn" do
-      @player_1.should_receive(:turn?).and_return(true)
+      @player_1.should_receive(:has_turn?).and_return(true)
       @game.request_player_move(@player_1, "1 2 3")
     end
     it "should verify player is in game" do
       @non_player = mock(Sudokoup::Player::Socket, :name => "Party crasher")
-      @non_player.should_not_receive(:turn?)
+      @non_player.should_not_receive(:has_turn?)
       @board.should_not_receive(:add_move)
       @game.request_player_move(@non_player, "1 2 3").should == [:reject, "Not in the game, Party crasher"]
     end
     describe "player's turn" do
       before(:each) do
-        @player_1.stub!(:turn? => true)
+        @player_1.stub!(:has_turn? => true)
       end
       it "should add_move to board if available?" do
         @board.should_receive(:add_move).with(1, 2, 3).and_return(true)
@@ -67,7 +91,7 @@ describe Sudokoup::Game do
         end
         it "should notify players if player 2 move results in board violation" do
           @board.stub!(:add_move).and_return(false)
-          @player_2.stub!(:turn?).and_return(true)
+          @player_2.stub!(:has_turn?).and_return(true)
           @board.should_receive(:violated?).and_return(true)
           @game.request_player_move(@player_2, "1 2 3").should == [:violation, "Player 2 played: 1 2 3 and violated the constraints!"]
         end
@@ -75,7 +99,7 @@ describe Sudokoup::Game do
     end
     describe "not player's turn" do
       before(:each) do
-        @player_1.stub!(:turn? => false)
+        @player_1.stub!(:has_turn? => false)
       end
       it "should not update the game board" do
         @board.should_not_receive(:add_move)
@@ -85,7 +109,7 @@ describe Sudokoup::Game do
       end
     end
   end
-  
+
   describe "add_move" do
     before(:each) do
       @board = mock(Sudokoup::Board, :add_move => true)
@@ -198,10 +222,20 @@ describe Sudokoup::Game do
       end
     end
   end
-  
+
   describe "status" do
     it "should return 'Waiting for more players' if waiting" do
       @game.status.should == 'Game waiting for more players'
+    end
+  end
+
+  describe "current_player" do
+    it "should return player with status of :has_turn" do
+      @player_1 = mock(Sudokoup::Player::Socket, :has_turn? => false)
+      @player_2 = mock(Sudokoup::Player::Socket, :has_turn? => true)
+      @game.join_game @player_1
+      @game.join_game @player_2
+      @game.current_player.should == @player_2
     end
   end
 end

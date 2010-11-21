@@ -1,18 +1,10 @@
 module Sudokoup
   class Game
+    include Sudokoup::StateMachine
+    acts_as_state_machine :waiting, :ready, :in_progress, :over
+
     attr_accessor :board, :state, :moves
     attr_reader :players
-
-    def self.acts_as_state_machine(*states)
-      states.each do |state|
-        class_eval <<-SRC
-          def #{state.to_s.downcase}?
-            @state == :#{state}
-          end
-        SRC
-      end
-    end
-    acts_as_state_machine :waiting, :ready, :in_progress, :over
 
     def initialize(opts = {})
       @num_players = opts[:num_players] || 2
@@ -20,7 +12,7 @@ module Sudokoup
     end
 
     def reset
-      @state = :waiting
+      waiting!
       @players = []
       @board = Board.new
       @board.build
@@ -37,14 +29,10 @@ module Sudokoup
 
     def play!
       raise "Game not ready for play" unless ready?
-      @state == :in_progress
-      @players.each do |p|
-        p.send(@board.to_msg)
+      in_progress!
+      @players.each_with_index do |player, i|
+        player.enter_game(i + 1)
       end
-    end
-
-    def in_progress?
-      @state == :in_progress
     end
 
     def status
@@ -59,15 +47,15 @@ module Sudokoup
     def join_game(player)
       if joined = available?
         @players << player
-        @state = :ready if full?
+        ready! if full?
       end
       joined
     end
 
     def request_player_move(player, move)
       return [:reject, "Not in the game, #{player.name}"] unless @players.include? player
-      return [:reject, "Wait your turn, #{player.name}"] unless player.turn?
-      
+      return [:reject, "Wait your turn, #{player.name}"] unless player.has_turn?
+
       if @board.add_move *move.split.map(&:to_i)
         [:ok, "#{player.name} played: #{move}"]
       elsif @board.violated?
@@ -83,6 +71,10 @@ module Sudokoup
 
     def previous_player(player)
       @players[@players.index(player) - 1]
+    end
+
+    def current_player
+      @players.detect { |p| p.has_turn? }
     end
 
   end

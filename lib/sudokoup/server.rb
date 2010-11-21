@@ -1,5 +1,6 @@
 module Sudokoup
   class Server
+    PIPE = " | "
 
     def self.start(opts = {})
       new(opts).start
@@ -25,7 +26,11 @@ module Sudokoup
         @channel  = EM::Channel.new
 
         @server = EventMachine::start_server @host, @port, Player::Socket, :app => self do |player|
-          connected.succeed(player)
+          if @game.available?
+            join_game player
+          else
+            join_queue player
+          end
         end
 
         EventMachine.add_periodic_timer(10) {
@@ -39,14 +44,12 @@ module Sudokoup
 
               ws.onmessage { |msg|
                 log msg, "WebSocket"
-
-                if msg =~ /NEW CONNECTION/
-                  type, name = msg.split("|")
-                  ws.name = name.chomp
-                  msg = "#{ws.display_name} just joined the game room"
-                end
-
-                @channel.push msg
+                #
+                # if msg =~ /NEW CONNECTION/
+                #   type, name = msg.split("|")
+                #   ws.name = name.chomp
+                #   msg = "#{ws.display_name} just joined the game room"
+                # end
               }
 
               ws.onclose   {
@@ -65,19 +68,32 @@ module Sudokoup
 
     def stop
       log "Stopping server"
+      @players.map(&:close)
       EventMachine.stop
     end
 
     def play_game
-      play = EM::DefaultDeferrable.new
-      play.callback {
+      defer = EM::DefaultDeferrable.new
+      defer.callback {
         if @game.ready?
+          @channel.push board_json
           @game.play!
+          @game.players.each do |p|
+            p.send start_message(p)
+          end
         else
           @channel.push @game.status
         end
       }
-      play
+      defer
+    end
+
+    def broadcast
+      defer = EM::DefaultDeferrable.new
+      defer.callback { |msg|
+        @channel.push msg
+      }
+      defer
     end
 
     def add_move
@@ -86,40 +102,20 @@ module Sudokoup
         status, msg = @game.request_player_move(player, move)
         case status
         when :ok
-          @channel.push %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"ok"}|
+          @channel.push move_json(move, status.to_s)
           @channel.push msg
+          @game.current_player.send add_message(move)
         when :reject
-          player.send ["REJECT", msg].join(" | ")
+          player.send reject_message(msg)
           @channel.push msg
         when :violation
-          @channel.push %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"violation"}|
-          @game.players.each { |p| p.send(["GAME OVER!", msg].join(" | ")) }
-          new_game.succeed
+          @channel.push move_json(move, status.to_s)
+          @game.players.each { |p| p.send game_over_message(msg) }
+          @game = Game.new
+          while @game.available? && @queue.any?
+            join_game @queue.shift
+          end
         end
-      }
-      defer
-    end
-
-    def connected
-      defer = EM::DefaultDeferrable.new
-      defer.callback { |player|
-        if @game.available?
-          join_game player
-        else
-          join_queue player
-        end
-      }
-      defer
-    end
-
-    def new_game
-      defer = EM::DefaultDeferrable.new
-      defer.callback {
-        @game = Game.new
-        while @game.available? && @queue.any?
-          join_game @queue.shift
-        end
-        @channel.push board_json
       }
       defer
     end
@@ -137,9 +133,29 @@ module Sudokoup
       @queue << player
       player.send("WAIT")
     end
-    
+
     def board_json
       %Q|{"action":"CREATE","values":#{@game.board.to_json}}|
+    end
+
+    def move_json(move, status)
+      %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"#{status}"}|
+    end
+
+    def start_message(player)
+      ["START", player.number, @game.board.to_msg].join(PIPE)
+    end
+
+    def reject_message(reason)
+      ["REJECT", reason].join(PIPE)
+    end
+    
+    def game_over_message(reason)
+      ["GAME OVER", reason].join(PIPE)
+    end
+    
+    def add_message(move)
+      ["ADD", move, @game.board.to_msg].join(PIPE)
     end
   end
 end

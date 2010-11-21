@@ -7,8 +7,8 @@ namespace :sudokoup do
       system "ruby app.rb"
     end
     task :production do
-      # ruby app.rb [-h] [-x] [-e production] [-p linserv1.cims.nyu.edu] [-o 45678] [-s HANDLER]
-      system "ruby app.rb -e production -o 45678"
+      # ruby app.rb [-h] [-x] [-e production] [-o linserv1.cims.nyu.edu] [-p 45678] [-s HANDLER]
+      system "ruby app.rb -e production -p 45678"
     end
   end
   task :watch => "sudokoup:watch:default"

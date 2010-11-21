@@ -1,12 +1,15 @@
 require 'rubygems'
 require 'sinatra'
 
-configure :production do
+configure :production do |c|
+  set :port, 45678
+  puts "Supported browsers: Chrome Safari 3+ Firefox 3+"
+  puts "Go to http://localhost:#{c.port}/sudokoup"
 end
 
-configure :development do
-  puts "Go to http://localhost:4567/sudokoup"
+configure :development do |c|
   puts "Supported browsers: Chrome Safari 3+ Firefox 3+"
+  puts "Go to http://localhost:#{c.port}/sudokoup"
 end
 
 get "/sudokoup" do

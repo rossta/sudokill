@@ -14,5 +14,9 @@ namespace :sudokoup do
   task :watch => "sudokoup:watch:default"
 end
 
-require 'jasmine'
-load 'jasmine/tasks/jasmine.rake'
+begin
+  require 'jasmine'
+  load 'jasmine/tasks/jasmine.rake'
+rescue
+  warn "jasmine gem not available"
+end

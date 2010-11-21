@@ -1,6 +1,7 @@
 module Sudokoup
   class Server
     PIPE = " | "
+    BLANK_MOVE = " - "
 
     def self.start(opts = {})
       new(opts).start
@@ -53,7 +54,7 @@ module Sudokoup
               }
 
               ws.onclose   {
-                msg = "#{ws.display_name} just left the game room"
+                msg = "#{ws.name} just left the game room"
                 log msg, "WebSocket"
                 @channel.push msg
                 ws.send "Bye!"
@@ -68,7 +69,7 @@ module Sudokoup
 
     def stop
       log "Stopping server"
-      @players.map(&:close)
+      @queue.map(&:close)
       EventMachine.stop
     end
 
@@ -81,6 +82,7 @@ module Sudokoup
           @game.players.each do |p|
             p.send start_message(p)
           end
+          request_next_player_move(BLANK_MOVE)
         else
           @channel.push @game.status
         end
@@ -99,18 +101,20 @@ module Sudokoup
     def add_move
       defer = EM::DefaultDeferrable.new
       defer.callback { |player, move|
-        status, msg = @game.request_player_move(player, move)
+        status, msg = @game.add_player_move(player, move)
         case status
         when :ok
           @channel.push move_json(move, status.to_s)
           @channel.push msg
-          @game.current_player.send add_message(move)
+          request_next_player_move(move)
         when :reject
           player.send reject_message(msg)
           @channel.push msg
         when :violation
           @channel.push move_json(move, status.to_s)
-          @game.players.each { |p| p.send game_over_message(msg) }
+          @game.players.each { |p|
+            p.send game_over_message(msg)
+          }
           @game = Game.new
           while @game.available? && @queue.any?
             join_game @queue.shift
@@ -134,6 +138,11 @@ module Sudokoup
       player.send("WAIT")
     end
 
+    def request_next_player_move(move)
+      @game.next_player.has_turn!
+      @game.current_player.send add_message(move)
+    end
+
     def board_json
       %Q|{"action":"CREATE","values":#{@game.board.to_json}}|
     end
@@ -149,11 +158,11 @@ module Sudokoup
     def reject_message(reason)
       ["REJECT", reason].join(PIPE)
     end
-    
+
     def game_over_message(reason)
       ["GAME OVER", reason].join(PIPE)
     end
-    
+
     def add_message(move)
       ["ADD", move, @game.board.to_msg].join(PIPE)
     end

@@ -52,7 +52,7 @@ module Sudokoup
       joined
     end
 
-    def request_player_move(player, move)
+    def add_player_move(player, move)
       return [:reject, "Not in the game, #{player.name}"] unless @players.include? player
       return [:reject, "Wait your turn, #{player.name}"] unless player.has_turn?
 
@@ -69,12 +69,22 @@ module Sudokoup
       @board.add_move(x, y, value)
     end
 
-    def previous_player(player)
-      @players[@players.index(player) - 1]
-    end
-
     def current_player
       @players.detect { |p| p.has_turn? }
+    end
+    
+    def current_player_index
+      @players.index(current_player)
+    end
+
+    def next_player
+      return @players.first if current_player.nil?
+      @players[current_player_index - @players.length + 1]
+    end
+
+    def previous_player
+      return nil if current_player.nil?
+      @players[current_player_index - 1]
     end
 
   end

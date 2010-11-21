@@ -31,7 +31,7 @@ module Sudokoup
             @app.add_move.succeed(self, response)
           when :play
             @app.play_game.succeed
-            @app.broadcast.succeed response
+            @app.broadcast response
           when :close
             send response
             close_connection_after_writing

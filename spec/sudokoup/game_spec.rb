@@ -226,46 +226,62 @@ describe Sudokoup::Game do
       @game.status.should == 'Game waiting for more players'
     end
   end
-  
+
   describe "players" do
     before(:each) do
-      @player_1 = mock(Sudokoup::Player::Socket, :has_turn? => false)
-      @player_2 = mock(Sudokoup::Player::Socket, :has_turn? => false)
+      @player_1 = Sudokoup::Player::Socket.new({})
+      @player_2 = Sudokoup::Player::Socket.new({})
       @game.join_game @player_1
       @game.join_game @player_2
     end
     describe "current_player" do
       it "should return player with status of :has_turn" do
-        @player_2.stub!(:has_turn? => true)
+        @player_2.has_turn!
         @game.current_player.should == @player_2
       end
     end
-  
+
     describe "next_player" do
       it "should return player after current player in list" do
-        @player_1.stub!(:has_turn? => true)
+        @player_1.has_turn!
         @game.next_player.should == @player_2
       end
       it "should return player at start of list if at end of list" do
-        @player_2.stub!(:has_turn? => true)
+        @player_2.has_turn!
         @game.next_player.should == @player_1
       end
       it "should return first player if current_player is nil" do
         @game.next_player.should == @player_1
       end
     end
-    
+
     describe "previous_player" do
       it "should return player before player in list" do
-        @player_2.stub!(:has_turn? => true)
+        @player_2.has_turn!
         @game.previous_player.should == @player_1
       end
       it "should return player at end of list if at start of list" do
-        @player_1.stub!(:has_turn? => true)
+        @player_1.has_turn!
         @game.previous_player.should == @player_2
       end
       it "should return nil if current_player is nil" do
         @game.previous_player.should be_nil
+      end
+    end
+
+    describe "next_player!" do
+      it "should select first player if no current_player" do
+        @game.current_player.should be_nil
+        @game.next_player!
+        @game.current_player.should == @player_1
+        @game.players.select { |p| p.has_turn? }.size.should == 1
+      end
+      it "should result in next player being current player" do
+        @player_1.has_turn!
+        @game.current_player.should == @player_1
+        @game.next_player!
+        @game.current_player.should == @player_2
+        @game.players.select { |p| p.has_turn? }.size.should == 1
       end
     end
   end

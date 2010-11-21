@@ -6,40 +6,32 @@ module Sudokoup
 
       def initialize(opts = {})
         super
-        @dispatch = Dispatch.new
         @app      = opts[:app]
         @data     = ''
       end
 
       def receive_data(data)
         super(data)
-        if line = @data.slice!(/(.+)\r?\n/).chomp
-          action, response = @dispatch.call(line)
-          case action
-          when :send
-            send response
-          when :new_connection
-            send app.board_json
-            send response
-          when :play
+        if line = data.slice!(/(.+)\r?\n/)
+          case line
+          when /NEW CONNECTION/
+            send @app.board_json
+          when /PLAY/
             @app.play_game.succeed
-            @app.broadcast.succeed response
-          when :move
+            @app.broadcast "New game about to begin!"
+          when /^\d+ \d+ \d+$/
             @app.add_move.succeed(self, response)
-          when :close
-            send response
           end
+          log line, logger_name
         end
       end
 
-      def display_name
-        return @name if @name
-        return "Visitor #{@sid}" if @sid
-        "Anonymous Visitor"
+      def name
+        @name
       end
 
-      def name
-        @dispatch.name
+      def logger_name
+        "WS[#{name || 'new'}]"
       end
 
       protected

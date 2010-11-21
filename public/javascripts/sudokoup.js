@@ -38,7 +38,7 @@ Sudokoup = (function() {
 
     log: function() {
       console.log.apply(console, arguments);
-      this.messager.log.apply(this.messager, arguments);
+      // this.messager.log.apply(this.messager, arguments);
     },
 
     print: function(message) {
@@ -283,7 +283,7 @@ Sudokoup = (function() {
       ws.onopen = function() {
         game.log("ws:", "connected!");
         self.$connectForm.trigger("connected");
-        ws.send(name + "\r\n");
+        ws.send(["NEW CONNECTION", name].join(" | ") + "\r\n");
       };
     },
     close: function() {

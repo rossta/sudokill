@@ -1,7 +1,8 @@
 module Sudokoup
+  PIPE = " | "
+  BLANK_MOVE = " - "
+
   class Server
-    PIPE = " | "
-    BLANK_MOVE = " - "
 
     def self.start(opts = {})
       new(opts).start
@@ -41,21 +42,23 @@ module Sudokoup
         EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
             ws.onopen    {
-              ws.sid = @channel.subscribe { |msg| ws.send msg }
+              ws.sid = @channel.subscribe { |msg|
+                ws.send msg
+              }
 
               ws.onmessage { |msg|
-                log msg, "WebSocket"
-                #
-                # if msg =~ /NEW CONNECTION/
-                #   type, name = msg.split("|")
-                #   ws.name = name.chomp
-                #   msg = "#{ws.display_name} just joined the game room"
-                # end
+                if msg =~ /NEW CONNECTION/
+                  type, name = msg.split(PIPE)
+                  ws.name = name.chomp
+                  broadcast "#{ws.name} just joined the game room"
+                else
+                  broadcast msg, ws.name
+                end
               }
 
               ws.onclose   {
                 msg = "#{ws.name} just left the game room"
-                log msg, "WebSocket"
+                log msg, ws.logger_name
                 @channel.push msg
                 ws.send "Bye!"
               }
@@ -90,12 +93,8 @@ module Sudokoup
       defer
     end
 
-    def broadcast
-      defer = EM::DefaultDeferrable.new
-      defer.callback { |msg|
-        @channel.push msg
-      }
-      defer
+    def broadcast(msg, name = 'Sudokoup')
+      @channel.push "#{name}: #{msg}"
     end
 
     def add_move
@@ -139,7 +138,7 @@ module Sudokoup
     end
 
     def request_next_player_move(move)
-      @game.next_player.has_turn!
+      @game.next_player!
       @game.current_player.send add_message(move)
     end
 

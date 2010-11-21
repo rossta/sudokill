@@ -12,24 +12,29 @@ module Echo
 
     def initialize(options = {})
       @name = options[:name]
+      @data = ''
     end
 
     def post_init
-      @data = ''
       send @name
     end
 
     def receive_data(data)
       @data << data
-      if line = @data.slice!(/(.+)\r?\n/).chomp
-        puts "Server >> #{line}"
+      puts "data: #{data.chomp}"
+      while line = @data.slice!(/(.+)\r?\n/)
+        puts "Server >> #{line.chomp}"
+        case line
+        when /^GAME OVER/
+          close_connection_after_writing
+        end
       end
     end
 
     def send(text)
       send_data format(text)
     end
-    
+
     def format(text)
       "#{text}\r\n"
     end
@@ -41,13 +46,14 @@ host = ARGV.shift || "0.0.0.0"
 port = (ARGV.shift || 44444).to_i
 
 EM.run {
+  @queue = []
   stop = proc {
-    puts "Bye"
     EM.stop
+    puts "Bye"
   }
   trap("TERM") { stop.call }
   trap("INT") { stop.call }
-  
+
   client = EM.connect host, port, Echo::Client, :name => name
 
   client.callback { |text|
@@ -56,17 +62,19 @@ EM.run {
   client.errback {
     puts "Something went wrong!"
   }
-  
+
   read_and_write = proc {
     EM.defer(proc {
       line = STDIN.gets
-      line.chop
+      line = line.chomp
+      @queue << line
+      line
     }, proc { |text|
-      client.send text
+      line = @queue.shift
+      client.send line unless line.nil?
     })
     EM.next_tick(&read_and_write)
   }
   EM.next_tick(&read_and_write)
 
 }
-

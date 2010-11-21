@@ -72,7 +72,7 @@ module Sudokoup
     def current_player
       @players.detect { |p| p.has_turn? }
     end
-    
+
     def current_player_index
       @players.index(current_player)
     end
@@ -85,6 +85,12 @@ module Sudokoup
     def previous_player
       return nil if current_player.nil?
       @players[current_player_index - 1]
+    end
+
+    def next_player!
+      player = next_player
+      @players.map(&:waiting!)
+      player.has_turn!
     end
 
   end

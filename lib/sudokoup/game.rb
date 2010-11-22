@@ -1,13 +1,13 @@
 module Sudokoup
   class Game
     include Sudokoup::StateMachine
-    acts_as_state_machine :waiting, :ready, :in_progress, :over
+    has_states :waiting, :ready, :in_progress, :over
 
-    attr_accessor :board, :state, :moves
+    attr_accessor :board, :state, :moves, :size
     attr_reader :players
 
     def initialize(opts = {})
-      @num_players = opts[:num_players] || 2
+      @size = opts[:size] || 2
       reset
     end
 
@@ -20,7 +20,7 @@ module Sudokoup
     end
 
     def full?
-      @players.size == @num_players
+      @players.size == @size
     end
 
     def available?
@@ -90,7 +90,7 @@ module Sudokoup
 
     def next_player!
       player = next_player
-      @players.map(&:waiting!)
+      @players.map(&:playing!)
       player.has_turn!
     end
 

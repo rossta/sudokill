@@ -136,34 +136,66 @@ describe Sudokoup::Game do
     end
   end
   describe "join_game" do
-    it "should return true if successful, false if not" do
-      @game.join_game(:player_1).should be_true
-      @game.join_game(:player_2).should be_true
-      @game.join_game(:player_3).should be_false
-    end
-    it "should add to players" do
-      @game.players.should be_empty
-      @game.join_game(:player_1)
-      @game.players.size.should == 1
-      @game.players.should include(:player_1)
-      @game.join_game(:player_2)
-      @game.players.size.should == 2
-      @game.players.should include(:player_2)
-      @game.join_game(:player_3)
-      @game.players.size.should == 2
-      @game.players.should_not include(:player_3)
-    end
-    it "should change state from waiting to ready when full" do
-      @game.waiting?.should be_true
-      @game.ready?.should be_false
+    describe "game size is 2" do
+      it "should return true if successful, false if not" do
+        @game.join_game(:player_1).should be_true
+        @game.join_game(:player_2).should be_true
+        @game.join_game(:player_3).should be_false
+      end
+      it "should add to players" do
+        @game.players.should be_empty
+        @game.join_game(:player_1)
+        @game.players.size.should == 1
+        @game.players.should include(:player_1)
+        @game.join_game(:player_2)
+        @game.players.size.should == 2
+        @game.players.should include(:player_2)
+        @game.join_game(:player_3)
+        @game.players.size.should == 2
+        @game.players.should_not include(:player_3)
+      end
+      it "should change state from waiting to ready when full" do
+        @game.waiting?.should be_true
+        @game.ready?.should be_false
 
-      @game.join_game(:player_1)
-      @game.waiting?.should be_true
-      @game.ready?.should be_false
+        @game.join_game(:player_1)
+        @game.waiting?.should be_true
+        @game.ready?.should be_false
 
-      @game.join_game(:player_2)
-      @game.waiting?.should be_false
-      @game.ready?.should be_true
+        @game.join_game(:player_2)
+        @game.waiting?.should be_false
+        @game.ready?.should be_true
+      end
+    end
+    describe "game size is 3" do
+      before(:each) do
+        @game.size = 3
+      end
+      it "should return true if successful, false if not" do
+        @game.join_game(:player_1).should be_true
+        @game.join_game(:player_2).should be_true
+        @game.join_game(:player_3).should be_true
+        @game.join_game(:player_4).should be_false
+      end
+      it "should add to players" do
+        @game.join_game(:player_1)
+        @game.join_game(:player_2)
+        @game.join_game(:player_3)
+        @game.players.size.should == 3
+        @game.players.should include(:player_3)
+        @game.join_game(:player_4)
+        @game.players.size.should == 3
+        @game.players.should_not include(:player_4)
+      end
+      it "should change state from waiting to ready when full" do
+        @game.join_game(:player_1)
+        @game.join_game(:player_2)
+        @game.waiting?.should be_true
+        @game.ready?.should be_false
+        @game.join_game(:player_3)
+        @game.waiting?.should be_false
+        @game.ready?.should be_true
+      end
     end
   end
   describe "states" do

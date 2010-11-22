@@ -20,14 +20,14 @@ module Sudokoup
             @app.play_game.succeed
             @app.broadcast "New game about to begin!"
           when /^\d+ \d+ \d+$/
-            @app.add_move.succeed(self, response)
+            @app.request_add_move.succeed(self, response)
           end
           log line, logger_name
         end
       end
 
       def name
-        @name
+        @name || 'WS Client'
       end
 
       def logger_name

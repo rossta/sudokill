@@ -1,6 +1,4 @@
 PLAYER
-send MOVE message to current player
-verify current player's turn
 allow free move when row/col full
 better error message for illegal moves
 declare winner,loser, num moves

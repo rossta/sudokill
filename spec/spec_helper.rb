@@ -13,13 +13,13 @@ class FakeSocketClient < EventMachine::Connection
   end
 
   def receive_data(data)
-    puts "RECEIVE DATA #{data}"
+    log "RECEIVE DATA #{data}"
     @data << data
     if @state == :new
       @onopen.call if @onopen
       @state = :open
     else
-      @onmessage.call if @onmessage
+      @onmessage.call(data) if @onmessage
     end
   end
 
@@ -30,21 +30,36 @@ end
 
 class FakeWebSocketClient < EM::Connection
   attr_writer :onopen, :onclose, :onmessage
-  attr_reader :handshake_response, :packets
+  attr_reader :handshake_response, :packets, :request
 
   def initialize
     @state = :new
     @packets = []
+    @request = {
+      :port => 80,
+      :method => "GET",
+      :path => "/demo",
+      :headers => {
+        'Host' => 'example.com',
+        'Connection' => 'Upgrade',
+        'Sec-WebSocket-Key2' => '12998 5 Y3 1  .P00',
+        'Sec-WebSocket-Protocol' => 'sample',
+        'Upgrade' => 'WebSocket',
+        'Sec-WebSocket-Key1' => '4 @1  46546xW%0l 1 5',
+        'Origin' => 'http://example.com'
+      },
+      :body => '^n:ds[4U'
+    }
   end
 
   def receive_data(data)
-    # puts "RECEIVE DATA #{data}"
+    log "RECEIVE DATA #{data}"
     if @state == :new
       @handshake_response = data
       @onopen.call if @onopen
       @state = :open
     else
-      @onmessage.call if @onmessage
+      @onmessage.call(data) if @onmessage
       @packets << data
     end
   end

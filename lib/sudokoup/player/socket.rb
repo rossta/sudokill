@@ -2,7 +2,7 @@ module Sudokoup
   module Player
     class Socket < EventMachine::Connection
       include Sudokoup::StateMachine
-      acts_as_state_machine :waiting, :playing, :has_turn
+      has_states :waiting, :playing, :has_turn
 
       attr_accessor :dispatch, :number
 
@@ -28,7 +28,7 @@ module Sudokoup
           when :new_connection
             send response
           when :move
-            @app.add_move.succeed(self, response)
+            @app.request_add_move.succeed(self, response)
           when :play
             @app.play_game.succeed
             @app.broadcast response

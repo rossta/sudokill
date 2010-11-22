@@ -15,7 +15,7 @@ module Sudokoup
       @host = opts[:host] || '0.0.0.0'
       @port = (opts[:port] || 44444).to_i
       @ws_host = '0.0.0.0'  # opts[:view] && opts[:view][:host] || '0.0.0.0'
-      @ws_port = opts[:view] && (opts[:view][:port] || 8080).to_i
+      @ws_port = (opts[:view] && (opts[:view][:port]).to_i) || 8080
 
       @game     = Game.new
       @queue    = []
@@ -89,10 +89,19 @@ module Sudokoup
           @game.play! do |player|
             player.send start_message(player)
           end
-          request_next_player_move(BLANK_MOVE)
+          next_move.succeed(BLANK_MOVE)
+          # request_next_player_move(BLANK_MOVE)
         else
           broadcast @game.status, SUDOKOUP
         end
+      }
+      defer
+    end
+    
+    def next_move
+      defer = EM::DefaultDeferrable.new
+      defer.callback { |move|
+        request_next_player_move(move)
       }
       defer
     end
@@ -102,7 +111,7 @@ module Sudokoup
       @channel.push msg
     end
 
-    def add_move
+    def request_add_move
       defer = EM::DefaultDeferrable.new
       defer.callback { |player, move|
         status, msg = @game.add_player_move(player, move)
@@ -110,7 +119,7 @@ module Sudokoup
         when :ok
           broadcast move_json(move, status.to_s)
           broadcast msg, SUDOKOUP
-          request_next_player_move(move)
+          next_move.succeed(move)
         when :reject
           player.send reject_message(msg)
           broadcast msg, SUDOKOUP
@@ -156,7 +165,7 @@ module Sudokoup
     end
 
     def start_message(player)
-      ["START", player.number, @game.board.to_msg].join(PIPE)
+      ["START", player.number, @game.size].join(PIPE)
     end
 
     def reject_message(reason)

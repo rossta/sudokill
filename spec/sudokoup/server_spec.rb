@@ -30,10 +30,8 @@ describe Sudokoup::Server do
       @server.game.join_game(player_2)
       message = @server.start_message(player_1).split(" | ")
       message.shift.should == "START"
-      message.shift.should == "1"
-      9.times do
-        message.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
-      end
+      message.shift.should == "1" # you're player 1
+      message.shift.should == "2" # 2 players total
     end
   end
   describe "reject_message" do

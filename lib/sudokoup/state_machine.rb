@@ -6,7 +6,7 @@ module Sudokoup
     end
 
     module ClassMethods
-      def acts_as_state_machine(*states)
+      def has_states(*states)
         states.each do |state|
           state_name = state.to_s.downcase
           class_eval <<-SRC

@@ -50,17 +50,17 @@ Ready message from the server indicates the connection was accepted and player h
 
 Wait message indicates the connection was accepted but the player is in the queue waiting to enter the game.
 
-**START | Player number | Row 0 (top) | Row 1 | Row 2 | ... | Row 8 (bottom)**
+**START | Your player number | Player total**
 
 Start message indicates game has begun.
 
 Examples:
 
-	// Game is starting, you're Player 1
-	START | 1 | 0 0 0 1 3 4 0 8 9 | 3 0 0 0 0 5 0 0 0 | ... | 0 2 0 0 1 0 0 6 0
+	// Game is starting, you're Player 1 of 2 players
+	START | 1 | 2
 
-	// Game is starting, you're Player 2
-	START | 2 | 0 0 0 1 3 4 0 8 9 | 3 0 0 0 0 5 0 0 0 | ... | 0 2 0 0 1 0 0 6 0
+	// Game is starting, you're Player 2 of 2 players
+	START | 2 | 2
 
 **ADD | Previous move | Row 0 (top) | Row 1 | Row 2 | ... | Row 8 (bottom)**
 

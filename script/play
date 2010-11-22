@@ -12,6 +12,7 @@ module Echo
 
     def initialize(options = {})
       @name = options[:name]
+      @stop = options[:stop]
       @data = ''
     end
 
@@ -21,12 +22,13 @@ module Echo
 
     def receive_data(data)
       @data << data
-      puts "data: #{data.chomp}"
+      # puts "data: #{data.chomp}"
       while line = @data.slice!(/(.+)\r?\n/)
         puts "Server >> #{line.chomp}"
         case line
         when /^GAME OVER/
           close_connection_after_writing
+          @stop.call
         end
       end
     end
@@ -54,7 +56,7 @@ EM.run {
   trap("TERM") { stop.call }
   trap("INT") { stop.call }
 
-  client = EM.connect host, port, Echo::Client, :name => name
+  client = EM.connect host, port, Echo::Client, :name => name, :stop => stop
 
   client.callback { |text|
     client.send text

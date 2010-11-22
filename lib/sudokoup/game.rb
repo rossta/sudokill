@@ -32,6 +32,7 @@ module Sudokoup
       in_progress!
       @players.each_with_index do |player, i|
         player.enter_game(i + 1)
+        yield(player) if block_given?
       end
     end
 

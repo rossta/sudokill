@@ -1,7 +1,8 @@
 module Sudokoup
   PIPE = " | "
   BLANK_MOVE = " - "
-
+  SUDOKOUP = 'Sudokoup'
+  
   class Server
 
     def self.start(opts = {})
@@ -35,9 +36,9 @@ module Sudokoup
           end
         end
 
-        EventMachine.add_periodic_timer(10) {
-          @queue.each { |p| p.send("WAIT") }
-        }
+        # EventMachine.add_periodic_timer(10) {
+        #   @queue.each { |p| p.send("WAIT") }
+        # }
 
         EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
@@ -50,7 +51,7 @@ module Sudokoup
                 if msg =~ /NEW CONNECTION/
                   type, name = msg.split(PIPE)
                   ws.name = name.chomp
-                  broadcast "#{ws.name} just joined the game room"
+                  broadcast "#{ws.name} just joined the game room", SUDOKOUP
                 else
                   broadcast msg, ws.name
                 end
@@ -59,7 +60,7 @@ module Sudokoup
               ws.onclose   {
                 msg = "#{ws.name} just left the game room"
                 log msg, ws.logger_name
-                @channel.push msg
+                broadcast msg, SUDOKOUP
                 ws.send "Bye!"
               }
             }
@@ -84,21 +85,21 @@ module Sudokoup
       defer = EM::DefaultDeferrable.new
       defer.callback {
         if @game.ready?
-          @channel.push board_json
-          @game.play!
-          @game.players.each do |p|
-            p.send start_message(p)
+          broadcast board_json
+          @game.play! do |player|
+            player.send start_message(player)
           end
           request_next_player_move(BLANK_MOVE)
         else
-          @channel.push @game.status
+          broadcast @game.status, SUDOKOUP
         end
       }
       defer
     end
 
-    def broadcast(msg, name = 'Sudokoup')
-      @channel.push "#{name}: #{msg}"
+    def broadcast(msg, name = nil)
+      msg = "#{name}: #{msg}" unless name.nil?
+      @channel.push msg
     end
 
     def add_move
@@ -107,14 +108,14 @@ module Sudokoup
         status, msg = @game.add_player_move(player, move)
         case status
         when :ok
-          @channel.push move_json(move, status.to_s)
-          @channel.push msg
+          broadcast move_json(move, status.to_s)
+          broadcast msg, SUDOKOUP
           request_next_player_move(move)
         when :reject
           player.send reject_message(msg)
-          @channel.push msg
+          broadcast msg, SUDOKOUP
         when :violation
-          @channel.push move_json(move, status.to_s)
+          broadcast move_json(move, status.to_s)
           @game.players.each { |p|
             p.send game_over_message(msg)
           }
@@ -131,7 +132,7 @@ module Sudokoup
       joined = @game.join_game(player)
       if joined
         player.send("READY")
-        @channel.push "Ready to begin" if @game.ready?
+        broadcast("Ready to begin", SUDOKOUP) if @game.ready?
       end
       joined
     end

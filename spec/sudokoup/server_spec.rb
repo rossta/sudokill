@@ -62,5 +62,5 @@ describe Sudokoup::Server do
         message.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
       end
     end
-  end
+  end 
 end

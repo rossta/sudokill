@@ -8,7 +8,7 @@ module Sudokoup
       new(opts).start
     end
 
-    attr_reader :game
+    attr_reader :game, :queue
 
     def initialize(opts = {})
       @host = opts[:host] || '0.0.0.0'
@@ -74,6 +74,10 @@ module Sudokoup
       log "Stopping server"
       @queue.map(&:close)
       EventMachine.stop
+    end
+    
+    def players
+      @game.players
     end
 
     def play_game

@@ -4,6 +4,30 @@ Sudokoup::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
 require 'pp'
 require 'em-http'
 
+class FakeSocketClient < EventMachine::Connection
+  attr_writer :onopen, :onclose, :onmessage
+  attr_reader :data
+  def initialize
+    @state = :new
+    @data = []
+  end
+
+  def receive_data(data)
+    puts "RECEIVE DATA #{data}"
+    @data << data
+    if @state == :new
+      @onopen.call if @onopen
+      @state = :open
+    else
+      @onmessage.call if @onmessage
+    end
+  end
+
+  def unbind
+    @onclose.call if @onclose
+  end
+end
+
 class FakeWebSocketClient < EM::Connection
   attr_writer :onopen, :onclose, :onmessage
   attr_reader :handshake_response, :packets

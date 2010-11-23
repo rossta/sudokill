@@ -14,8 +14,8 @@ module Sudokoup
     def initialize(opts = {})
       @host = opts[:host] || '0.0.0.0'
       @port = (opts[:port] || 44444).to_i
-      @ws_host = '0.0.0.0'  # opts[:view] && opts[:view][:host] || '0.0.0.0'
-      @ws_port = (opts[:view] && (opts[:view][:port]).to_i) || 8080
+      @ws_host = '0.0.0.0'
+      @ws_port = (opts[:view] && (opts[:view][:port]) || 8080).to_i
 
       @game     = Game.new
       @queue    = []

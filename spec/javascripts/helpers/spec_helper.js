@@ -7,7 +7,9 @@ beforeEach(function() {
 });
 
 var fixture = function() {
-  return $("<div></div>").attr("id","sudokoup").appendTo("body");
+  return $("<div></div>").attr("id","sudokoup").css({
+    position:"absolute",left:"-3000px",top:"0px"
+  }).appendTo("body");
 },
 
 removeFixture = function() {

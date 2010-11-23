@@ -1,11 +1,8 @@
 describe("Sudokoup", function() {
-  beforeEach(function() {
-    fixture();
-  });
 
-  afterEach(function() {
-    removeFixture();
-  });
+  beforeEach(fixture);
+  afterEach(removeFixture);
+
   describe("constructor", function() {
     it("should have a board, score table, messager, websocket client", function() {
       var sudokoup = new Sudokoup("sudokoup");

@@ -37,8 +37,7 @@ Sudokoup = (function() {
     },
 
     log: function() {
-      console.log.apply(console, arguments);
-      // this.messager.log.apply(this.messager, arguments);
+      this.messager.log.apply(this.messager, arguments);
     },
 
     print: function(message) {
@@ -200,15 +199,15 @@ Sudokoup = (function() {
       this.$pane.attr("id", "pane").appendTo(this.$msg);
     },
 
-    log: function() {
+    print: function() {
       var self = this,
       message = _(arguments).toArray();
       self.$pane.append("<p>"+message.join(" ")+"</p>").scrollTop(self.$pane.attr("scrollHeight"));
       return message;
     },
 
-    print: function(message) {
-      this.log(message);
+    log: function(message) {
+      console.log.apply(console, arguments);
       return message;
     }
   });

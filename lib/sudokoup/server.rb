@@ -89,8 +89,7 @@ module Sudokoup
           @game.play! do |player|
             player.send start_message(player)
           end
-          next_move.succeed(BLANK_MOVE)
-          # request_next_player_move(BLANK_MOVE)
+          request_next_player_move(BLANK_MOVE)
         else
           broadcast @game.status, SUDOKOUP
         end
@@ -119,7 +118,7 @@ module Sudokoup
         when :ok
           broadcast move_json(move, status.to_s)
           broadcast msg, SUDOKOUP
-          next_move.succeed(move)
+          request_next_player_move(move)
         when :reject
           player.send reject_message(msg)
           broadcast msg, SUDOKOUP

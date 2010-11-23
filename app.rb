@@ -3,8 +3,9 @@ require 'sinatra'
 
 enable :run
 
+set :port, 45678
+
 configure :production do |c|
-  set :port, 45678
   puts "Supported browsers: Chrome Safari 3+ Firefox 3+"
   puts "Go to http://localhost:#{c.port}/sudokoup"
 end

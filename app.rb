@@ -4,6 +4,8 @@ require 'sinatra'
 enable :run
 
 set :port, 45678
+set :root, File.dirname(__FILE__)
+set :public, Proc.new { File.join(root, "public") }
 
 configure :production do |c|
   puts "Supported browsers: Chrome Safari 3+ Firefox 3+"

@@ -47,15 +47,18 @@ module Connection
 
     def read
       begin
-        response = @sock.gets.chomp
+        response = @sock.gets
+        response = response.chomp if response
       rescue Errno::EAGAIN
         disconnect
         raise Errno::EAGAIN, "Timeout reading from the socket"
       end
       raise Errno::ECONNRESET, "Connection lost" unless response
-
-      hear response
-      response
+      
+      if response
+        hear response
+        response
+      end
     end
 
     def process(command)

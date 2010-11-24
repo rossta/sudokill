@@ -4,19 +4,25 @@ Sudokoup = (function() {
     constructor: function(selector) {
       var self = this;
       self.selector = "#" + selector;
-      self.$sudokoup  = $(selector);
+      self.$sudokoup  = $(self.selector);
       $("<div id='board' />").appendTo(self.selector);
 
       self.board    = new GameBoard('board');
       self.score    = new ScoreTable();
       self.messager = new Messager(self.selector);
-      
+
       self.client   = new WebSocketClient(this);
 
       self.board.build();
+
+      // listen for events
+      self.$sudokoup
+        .bind("send_message", function(e, text) {
+          self.send(text);
+        });
     },
 
-// Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
+    // Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
     connect: function(name, host, port) {
       this.client.connect(name, host, port);
     },
@@ -193,10 +199,27 @@ Sudokoup = (function() {
 
   var Messager = Base.extend({
     constructor: function(selector) {
-      this.$msg     = $("<div>");
-      this.$pane    = $("<div>");
-      this.$msg.attr("id", "msg").appendTo(selector);
-      this.$pane.attr("id", "pane").appendTo(this.$msg);
+      var self = this;
+      self.$selector  = $(selector);
+      self.$msg       = $("<div>");
+      self.$pane      = $("<div>");
+      self.$form      = $("<form></form>");
+      self.$input     = $("<input type='text' name='message'/>");
+
+      self.$msg.attr("id", "msg").appendTo(selector);
+      self.$pane.attr("id", "pane").appendTo(self.$msg);
+
+      self.$form.appendTo(self.$msg);
+      self.$input.attr("id", "msg_field").appendTo(self.$form);
+
+      self.$form.submit(function() {
+        var $this   = $(this),
+            message = self.$input.val();
+
+        self.send(message);
+        self.$input.val("");
+        return false;
+      });
     },
 
     print: function() {
@@ -209,6 +232,10 @@ Sudokoup = (function() {
     log: function(message) {
       console.log.apply(console, arguments);
       return message;
+    },
+
+    send: function(text) {
+      this.$selector.trigger("send_message", text);
     }
   });
 

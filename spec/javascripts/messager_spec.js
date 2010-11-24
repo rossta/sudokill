@@ -32,4 +32,16 @@ describe("Sudokoup.Messager", function() {
     });
   });
 
+  describe("send", function() {
+    it("should trigger send message event with text", function() {
+      var messager = new Sudokoup.Messager('#sudokoup');
+      var spy = jasmine.createSpy();
+      $("#sudokoup").bind("send_message", function(e, text){
+        spy(text);
+      });
+      messager.send("What a game!");
+      expect(spy).toHaveBeenCalledWith("What a game!");
+    });
+  });
+  
 });

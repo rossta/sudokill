@@ -79,5 +79,15 @@ describe("Sudokoup", function() {
         expect(sudokoup.board.create).toHaveBeenCalledWith([1, 2, 3]);
       });
     });
+    describe("events", function() {
+      describe("send_message", function() {
+        it("should call send with given text", function() {
+          var sudokoup = Sudokoup.play('sudokoup');
+          spyOn(sudokoup, "send");
+          $("#sudokoup").trigger("send_message", "What a game!");
+          expect(sudokoup.send).toHaveBeenCalledWith("What a game!");
+        });
+      });
+    });
   });
 });

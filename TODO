@@ -13,9 +13,13 @@ accept/send input for human player
 
 VIEW
 win logic
+timers
 chrome
-welcome screen
 highlight playable col/row
 fav.ico
 display game queue
 display player times
+connected feedback
+
+BUGS
+FF connect form submit w/o console no worky

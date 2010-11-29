@@ -5,7 +5,7 @@ describe("Sudokoup", function() {
 
   describe("constructor", function() {
     it("should have a board, score table, messager, websocket client", function() {
-      var sudokoup = new Sudokoup("sudokoup");
+      var sudokoup = new Sudokoup("sudokoup").show();
       expect(sudokoup.board).toEqual(jasmine.any(Sudokoup.GameBoard));
       expect(sudokoup.score).toEqual(jasmine.any(Sudokoup.ScoreTable));
       expect(sudokoup.messager).toEqual(jasmine.any(Sudokoup.Messager));
@@ -13,18 +13,18 @@ describe("Sudokoup", function() {
     });
     it("should build the game board", function(){
       spyOn(Sudokoup.GameBoard.prototype, "build");
-      new Sudokoup('sudokoup');
+      new Sudokoup('sudokoup').show();
       expect(Sudokoup.GameBoard.prototype.build).toHaveBeenCalled();
     });
     it("should append div#board to selector", function(){
-      var sudokoup = new Sudokoup('sudokoup'),
+      var sudokoup = new Sudokoup('sudokoup').show(),
       $sudokoup = $("#sudokoup");
       expect($sudokoup).toHaveSelector("#board");
     });
   });
   describe("connect", function(){
     it("should call client connect", function() {
-      var sudokoup = Sudokoup.play('sudokoup');
+      var sudokoup = Sudokoup.setup('sudokoup');
       spyOn(sudokoup.client, "connect");
       sudokoup.connect("Rossta", "localhost", "8080");
       expect(sudokoup.client.connect).toHaveBeenCalledWith("Rossta", "localhost", "8080");
@@ -32,7 +32,7 @@ describe("Sudokoup", function() {
   });
   describe("send", function() {
     it("should call client send", function() {
-      var sudokoup = Sudokoup.play('sudokoup');
+      var sudokoup = Sudokoup.setup('sudokoup');
       spyOn(sudokoup.client, "send");
       sudokoup.send("message");
       expect(sudokoup.client.send).toHaveBeenCalledWith("message");
@@ -40,7 +40,7 @@ describe("Sudokoup", function() {
   });
   describe("update", function() {
     it("should update the board", function() {
-      var sudokoup = Sudokoup.play('sudokoup');
+      var sudokoup = Sudokoup.setup('sudokoup');
       spyOn(sudokoup.board, "update");
       sudokoup.update(0, 0, 9);
       expect(sudokoup.board.update).toHaveBeenCalledWith(0, 0, 9);
@@ -48,7 +48,7 @@ describe("Sudokoup", function() {
   });
   describe("create", function() {
     it("should create the board", function() {
-      var sudokoup = Sudokoup.play('sudokoup');
+      var sudokoup = Sudokoup.setup('sudokoup');
       spyOn(sudokoup.board, "create");
       sudokoup.create([1, 2, 3]);
       expect(sudokoup.board.create).toHaveBeenCalledWith([1, 2, 3]);
@@ -56,7 +56,7 @@ describe("Sudokoup", function() {
   });
   describe("dispatch", function() {
     it("should print text message", function() {
-      var sudokoup = Sudokoup.play('sudokoup');
+      var sudokoup = Sudokoup.setup('sudokoup');
       spyOn(sudokoup.messager, "print");
       sudokoup.dispatch("text message");
       expect(sudokoup.messager.print).toHaveBeenCalledWith("text message");
@@ -64,7 +64,7 @@ describe("Sudokoup", function() {
     describe("{ action: UPDATE }", function() {
       it("should update game board with given values", function() {
         var json = "{\"action\":\"UPDATE\",\"value\":[1, 2, 3]}";
-        var sudokoup = Sudokoup.play('sudokoup');
+        var sudokoup = Sudokoup.setup('sudokoup');
         spyOn(sudokoup.board, "update");
         sudokoup.dispatch(json);
         expect(sudokoup.board.update).toHaveBeenCalledWith(1, 2, 3);
@@ -73,7 +73,7 @@ describe("Sudokoup", function() {
     describe("{ action: CREATE }", function() {
       it("should create game board with given values", function() {
         var json = "{\"action\":\"CREATE\",\"values\":[1, 2, 3]}";
-        var sudokoup = Sudokoup.play('sudokoup');
+        var sudokoup = Sudokoup.setup('sudokoup');
         spyOn(sudokoup.board, "create");
         sudokoup.dispatch(json);
         expect(sudokoup.board.create).toHaveBeenCalledWith([1, 2, 3]);
@@ -81,11 +81,19 @@ describe("Sudokoup", function() {
     });
     describe("events", function() {
       describe("send_message", function() {
-        it("should call send with given text", function() {
-          var sudokoup = Sudokoup.play('sudokoup');
+        it("should send given text", function() {
+          var sudokoup = Sudokoup.setup('sudokoup');
           spyOn(sudokoup, "send");
           $("#sudokoup").trigger("send_message", "What a game!");
           expect(sudokoup.send).toHaveBeenCalledWith("What a game!");
+        });
+      });
+      describe("connected", function() {
+        it("should build", function() {
+          var sudokoup = Sudokoup.setup('sudokoup');
+          spyOn(sudokoup, "show");
+          $("#sudokoup").trigger("connected");
+          expect(sudokoup.show).toHaveBeenCalled();
         });
       });
     });

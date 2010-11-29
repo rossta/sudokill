@@ -27,7 +27,9 @@ TXT
           board[i][j].should == value.to_i
         end
       end
+      
     end
+
   end
 
   describe "formatting" do

@@ -1,4 +1,13 @@
-body { background: black; color: white;}
+body { background: black; color: white; font-family: Georgia, Times, serif;}
+input {font-family: Georgia, Times, serif;}
+.title  {
+  background: transparent url(/images/title.png) no-repeat center;
+  text-indent:-4000em; height:200px; width:612px; margin:2em auto 1em;
+}
+.logo   {
+  background: transparent url(/images/logo.png) no-repeat center;
+  height:67px; width:231px; display:none;
+}
 .border { border: 1px solid #666; }
 .table { display:table; border-collapse:collapse;}
 .row { display:table-row;}
@@ -16,10 +25,29 @@ body { background: black; color: white;}
   color: #333;
   border:3px solid #CCC;
   border-radius:5px;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
   padding:5px;
 }
 #msg p { margin: 0 0 1em;}
 #msg input { border:1px solid #999; padding:5px;width:80%;}
 #pane { overflow:auto; height: 12em; }
 #board .cell { width: 50px; height:50px; border:1px solid #666;}
-.optional { display:none;}
+.optional { display:none; margin: 0.5em 0;}
+
+form.websocket { text-align:center; }
+form.websocket input.name { font-size:1.5em; }
+form.websocket label { color: #AAA;}
+form.websocket label.name {
+  display:block;
+  color: #AAA;
+  font-size: 20px;
+  margin-top: 0.5em;
+}
+form.websocket a.toggle {
+  display:block;
+  color: #999;
+  font-size: 12px;
+  margin: 0.5em 0;
+}
+form.websocket.connected label.name { display:none; }

@@ -44,4 +44,16 @@ describe("Sudokoup.Messager", function() {
     });
   });
   
+  describe("show", function() {
+    it("should be hidden when created", function() {
+      var messager = new Sudokoup.Messager('#sudokoup');
+      var msgDiv = messager.$msg;
+      expect(msgDiv).toHaveLength(1);
+      expect(msgDiv).not.toBeVisible();
+    });
+    it("should show msg div", function() {
+      
+    });
+  });
+  
 });

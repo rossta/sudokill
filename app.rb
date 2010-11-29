@@ -17,7 +17,7 @@ configure :development do |c|
   puts "Go to http://localhost:#{c.port}/sudokoup"
 end
 
-get "/sudokoup" do
+get  %r{/sudokoup|/} do
   return File.open("public/index.html")
 end
 

@@ -2,6 +2,12 @@ beforeEach(function() {
   this.addMatchers({
     toHaveSelector: function(selector) {
       return this.actual.find(selector).length > 0;
+    },
+    toHaveLength: function(length) {
+      return this.actual.length == length;
+    },
+    toBeVisible: function() {
+      return this.actual.is(":visible");
     }
   });
 });

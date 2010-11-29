@@ -1,13 +1,17 @@
 Sudokoup = (function() {
 
   var instanceMethods = {
-    constructor: function(selector) {
+    constructor: function(selector, opts) {
       var self = this;
       self.selector = "#" + selector;
       self.$sudokoup  = $(self.selector);
       $("<div id='board' />").appendTo(self.selector);
+debugger
+      opts = opts || {};
 
-      self.client   = new WebSocketClient(this);
+      self.mode     = opts['mode'] || 'normal';
+
+      self.client   = new WebSocketClient(this, self.mode);
       self.board    = new GameBoard('board');
       self.score    = new ScoreTable();
       self.messager = new Messager(self.selector);
@@ -23,11 +27,11 @@ Sudokoup = (function() {
       return self;
     },
 
-    show: function() {
+    show: function(mode) {
       var self = this;
+      mode = mode || 'show';
       self.board.build();
-      self.messager.show();
-      self.client.shrink();
+      if (!(self.mode == 'simple')) self.messager.show();
 
       $(".title").hide();
       $(".logo").show();
@@ -87,12 +91,17 @@ Sudokoup = (function() {
   },
 
   classMethods = {
-    play : function(selector) {
-      this.game = new Sudokoup(selector);
+    play : function(selector, opts) {
+      this.game = new Sudokoup(selector, opts);
       return this.game;
     },
     setup: function(selector) {
-      return this.play(selector).show();
+      this.play(selector);
+      return this.game.show();
+    },
+    simple: function(selector) {
+      this.play(selector, { mode: 'simple'});
+      return this.game.show();
     }
   };
 
@@ -278,14 +287,17 @@ Sudokoup = (function() {
     show: function() {
       return this.$msg.show();
     }
+
   });
 
   var WebSocketClient = Base.extend({
-    constructor: function(game) {
+    constructor: function(game, mode) {
       var self = this;
       self.game = game;
-      self.$connectForm = $("<form></form>").addClass("websocket welcome");
+      self.$connectForm = $("<form></form>");
       $(game.selector).append(self.$connectForm);
+      mode = mode || 'normal';
+      self.$connectForm.addClass("websocket welcome").addClass(mode);
 
       self.$connectForm.append("<div class='required'></div>");
       var $name = self.$connectForm.find("div.required");
@@ -329,10 +341,7 @@ Sudokoup = (function() {
           $(this).parents("form").find(".optional").toggle();
           return false;
         });
-
-    },
-    shrink: function() {
-
+      
     },
     connect: function(name, host, port) {
       var self = this,

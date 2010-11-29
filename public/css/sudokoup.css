@@ -14,7 +14,7 @@ input {font-family: Georgia, Times, serif;}
 .cell   { display:table-cell; vertical-align:middle;}
 #board {
   float:left;
-  margin-right:10px;
+  margin:0 10px 10px;
 }
 #msg {
   width: 400px;
@@ -51,3 +51,5 @@ form.websocket a.toggle {
   margin: 0.5em 0;
 }
 form.websocket.connected label.name { display:none; }
+form.websocket.simple label.name,
+form.websocket.simple input.name { display: none;}

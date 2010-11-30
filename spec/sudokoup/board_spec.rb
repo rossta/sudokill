@@ -3,7 +3,8 @@ require 'spec_helper'
 describe Sudokoup::Board do
 
   before(:each) do
-  @config = <<-TXT
+    @pipe = "|"
+    @rows = <<-TXT
 7 0 5 0 0 0 2 9 4
 0 0 1 2 0 6 0 0 0
 0 0 0 0 0 0 0 0 7
@@ -18,10 +19,10 @@ TXT
 
   describe "build_from_string" do
 
-    it "should load CONFIG_1 config" do
+    it "should load CONFIG_1 rows" do
       board = Sudokoup::Board.new
-      board.build_from_string(@config)
-      values = @config.split("\n").map(&:split)
+      board.build_from_string(@rows)
+      values = @rows.split("\n").map(&:split)
       values.each_with_index do |row, i|
         row.each_with_index do |value, j|
           board[i][j].should == value.to_i
@@ -35,7 +36,7 @@ TXT
   describe "formatting" do
     before(:each) do
       @board = Sudokoup::Board.new
-      @board.build_from_string(@config)
+      @board.build_from_string(@rows)
     end
     describe "to_json" do
       it "should return stringified json version of board" do
@@ -48,13 +49,15 @@ JSON
 
     describe "to_msg" do
       it "should return space delimited values, pipe joined rows" do
+        
         msg = <<-MSG
-7 0 5 0 0 0 2 9 4 | 0 0 1 2 0 6 0 0 0 | 0 0 0 0 0 0 0 0 7 | 9 0 4 5 0 0 0 2 0 | 0 0 7 3 6 2 1 0 0 | 0 2 0 0 0 1 7 0 8 | 1 0 0 0 9 0 0 0 0 | 0 0 0 7 0 5 9 0 0 | 5 3 9 0 0 0 8 0 2
+7 0 5 0 0 0 2 9 4|0 0 1 2 0 6 0 0 0|0 0 0 0 0 0 0 0 7|9 0 4 5 0 0 0 2 0|0 0 7 3 6 2 1 0 0|0 2 0 0 0 1 7 0 8|1 0 0 0 9 0 0 0 0|0 0 0 7 0 5 9 0 0|5 3 9 0 0 0 8 0 2
 MSG
         @board.to_msg.should == msg.chomp
       end
       it "should be parseable with split" do
-        @board.to_msg.split(" | ").map { |row| row.split(" ") }
+        rows = @board.to_msg.split(@pipe).map { |row| row.split(" ").map(&:to_i) }
+        rows.first.should == [7, 0, 5, 0, 0, 0, 2, 9, 4]
       end
     end
   end
@@ -68,10 +71,10 @@ MSG
       it "should return true" do
         @board.add_move(1, 1, 9).should be_true
       end
-      it "should add to config" do
-        @board.config[1][1].should be_zero
+      it "should add to rows" do
+        @board.rows[1][1].should be_zero
         @board.add_move(1, 1, 9).should be_true
-        @board.config[1][1].should == 9
+        @board.rows[1][1].should == 9
       end
       it "should not report an error" do
         @board.add_move(1, 1, 9)
@@ -82,13 +85,13 @@ MSG
       it "should return false" do
         @board.add_move(0, 0, 9).should be_false
       end
-      it "should not add to config if existing value" do
-        @board.config[0][0].should == 7
+      it "should not add to rows if existing value" do
+        @board.rows[0][0].should == 7
         @board.add_move(0, 0, 9).should be_false
-        @board.config[0][0].should == 7
+        @board.rows[0][0].should == 7
       end
       it "should report error" do
-        @board.config[0][0].should == 7
+        @board.rows[0][0].should == 7
         @board.add_move(0, 0, 9).should be_false
         @board.error.should == "Space occupied error: 0 0 is occupied"
       end
@@ -213,7 +216,7 @@ MSG
     end
     describe "valid value" do
       it "should return true if no previous value" do
-        @board.config[1][1].should be_zero
+        @board.rows[1][1].should be_zero
         @board.available? 1, 1, 9
       end
     end

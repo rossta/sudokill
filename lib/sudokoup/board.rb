@@ -1,7 +1,7 @@
 module Sudokoup
 
   class Board
-    attr_reader :config
+    attr_reader :rows
     attr_accessor :error
 
     def initialize
@@ -9,22 +9,22 @@ module Sudokoup
     end
 
     def build_from_string(string = CONFIG_1)
-      @config = string.split("\n").map(&:split).map { |row| row.map!(&:to_i) }
-      @config
+      @rows = string.split("\n").map(&:split).map { |row| row.map!(&:to_i) }
+      @rows
     end
     alias_method :build, :build_from_string
 
     def [](i)
-      @config[i]
+      @rows[i]
     end
 
     def to_json
-      rows = @config.map { |row| "[#{row.join(", ")}]" }.join(", ")
+      rows = @rows.map { |row| "[#{row.join(", ")}]" }.join(", ")
       "[#{rows}]"
     end
 
     def to_msg
-      @config.map { |row| row.join(" ") }.join(" | ")
+      @rows.map { |row| row.join(" ") }.join(PIPE)
     end
 
     def add_move(row, col, val)
@@ -59,7 +59,7 @@ module Sudokoup
         @violated = true
         return false
       end
-      @config[row][col] = val
+      @rows[row][col] = val
       @moves << Move.new(row, col, val)
       @error = nil
       true
@@ -70,11 +70,11 @@ module Sudokoup
     end
 
     def available?(row, col, val)
-      @config[row][col].zero?
+      @rows[row][col].zero?
     end
 
     def valid_space?(row, col)
-      @config[row] && @config[row][col]
+      @rows[row] && @rows[row][col]
     end
 
     def valid_value?(val)
@@ -87,11 +87,11 @@ module Sudokoup
     end
 
     def row_violation?(row, val)
-      @config[row].any? { |v| v == val }
+      @rows[row].any? { |v| v == val }
     end
 
     def col_violation?(col, val)
-      @config.any? { |r| r[col] == val }
+      @rows.any? { |r| r[col] == val }
     end
 
     def section_violation?(row, col, val)
@@ -100,7 +100,7 @@ module Sudokoup
       cols = sections[(col / 3)].to_a
       rows.any? do |r|
         cols.any? do |c|
-          @config[r][c] == val
+          @rows[r][c] == val
         end
       end
     end

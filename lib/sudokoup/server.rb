@@ -1,8 +1,7 @@
 module Sudokoup
-  PIPE = " | "
-  BLANK_MOVE = " - "
+  PIPE = "|"
   SUDOKOUP = 'Sudokoup'
-  
+
   class Server
 
     def self.start(opts = {})
@@ -76,7 +75,7 @@ module Sudokoup
       @queue.map(&:close)
       EventMachine.stop
     end
-    
+
     def players
       @game.players
     end
@@ -89,18 +88,10 @@ module Sudokoup
           @game.play! do |player|
             player.send start_message(player)
           end
-          request_next_player_move(BLANK_MOVE)
+          request_next_player_move
         else
           broadcast @game.status, SUDOKOUP
         end
-      }
-      defer
-    end
-    
-    def next_move
-      defer = EM::DefaultDeferrable.new
-      defer.callback { |move|
-        request_next_player_move(move)
       }
       defer
     end
@@ -118,15 +109,14 @@ module Sudokoup
         when :ok
           broadcast move_json(move, status.to_s)
           broadcast msg, SUDOKOUP
-          request_next_player_move(move)
+          send_players(move)
+          request_next_player_move
         when :reject
           player.send reject_message(msg)
           broadcast msg, SUDOKOUP
         when :violation
           broadcast move_json(move, status.to_s)
-          @game.players.each { |p|
-            p.send game_over_message(msg)
-          }
+          @game.send_players game_over_message(msg)
           @game = Game.new
           while @game.available? && @queue.any?
             join_game @queue.shift
@@ -150,9 +140,13 @@ module Sudokoup
       player.send("WAIT")
     end
 
-    def request_next_player_move(move)
+    def request_next_player_move
       @game.next_player!
-      @game.current_player.send add_message(move)
+      @game.current_player.send add_message
+    end
+
+    def send_players(msg)
+      @game.players.each { |p| p.send(msg) }
     end
 
     def board_json
@@ -164,7 +158,7 @@ module Sudokoup
     end
 
     def start_message(player)
-      ["START", player.number, @game.size].join(PIPE)
+      ["START", player.number, @game.size, @game.board.to_msg].join(PIPE)
     end
 
     def reject_message(reason)
@@ -175,8 +169,8 @@ module Sudokoup
       ["GAME OVER", reason].join(PIPE)
     end
 
-    def add_message(move)
-      ["ADD", move, @game.board.to_msg].join(PIPE)
+    def add_message
+      ["ADD", @game.board.to_msg].join(PIPE)
     end
   end
 end

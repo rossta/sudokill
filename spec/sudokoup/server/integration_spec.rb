@@ -2,6 +2,9 @@ require 'spec_helper'
 require 'json'
 
 describe Sudokoup::Server do
+  before(:each) do
+    @pipe = "|"
+  end
   describe "connection on open join game" do
     it "should add players to game if available and respond READY" do
       EM.run {
@@ -89,16 +92,22 @@ describe Sudokoup::Server do
           server.play_game.succeed
         }
         socket_1.onmessage = lambda { |msg|
-          first = msg.split("\r\n").first.split(" | ")
+          first = msg.split("\r\n").first.split(@pipe)
           first.shift.should == "START"
           first.shift.should == "1"
           first.shift.should == "2"
+          9.times do
+            first.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
+          end
         }
         socket_2.onmessage = lambda { |msg|
-          first = msg.chomp.split(" | ")
+          first = msg.chomp.split(@pipe)
           first.shift.should == "START"
           first.shift.should == "2"
           first.shift.should == "2"
+          9.times do
+            first.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
+          end
           EM.stop
         }
       }
@@ -115,9 +124,8 @@ describe Sudokoup::Server do
           server.play_game.succeed
         }
         socket_1.onmessage = lambda { |msg|
-          message = msg.split("\r\n")[1].split(" | ")
+          message = msg.split("\r\n")[1].split(@pipe)
           message.shift.should == "ADD"
-          message.shift.should == " - "
           9.times do
             message.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
           end
@@ -142,12 +150,13 @@ describe Sudokoup::Server do
             server.request_add_move.succeed(server.game.players.first, "0 1 6")
           }
           socket_2.onmessage = lambda { |msg|
-            second  = msg.split("\r\n")[1]
-            message = second.chomp.split(" | ")
-            message.shift.should == "ADD"
-            message.shift.should == "0 1 6"
+            # first: START..., second: 0 1 6 (move), third: ADD...
+            first, second, third  = msg.split("\r\n")
+            second.chomp.should == "0 1 6"
+            add_msg = third.chomp.split(@pipe)
+            add_msg.shift.should == "ADD"
             9.times do
-              message.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
+              add_msg.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
             end
             EM.stop
           }

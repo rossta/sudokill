@@ -1,4 +1,5 @@
 PLAYER
+broadcast last move separately
 allow free move when row/col full
 better error message for illegal moves
 declare winner,loser, num moves
@@ -12,6 +13,7 @@ enter game queue as human
 accept/send input for human player
 
 VIEW
+trigger play from view
 win logic
 timers
 chrome
@@ -20,6 +22,7 @@ fav.ico
 display game queue
 display player times
 connected feedback
+display game over state
 
 BUGS
 FF connect form submit w/o console no worky

@@ -26,6 +26,14 @@ describe("Sudokoup", function() {
       sudokoup.connect("Rossta", "localhost", "8080");
       expect(sudokoup.client.connect).toHaveBeenCalledWith("Rossta", "localhost", "8080");
     });
+    it("should update status: connecting", function() {
+      var sudokoup = Sudokoup.setup('sudokoup');
+      var $status = $("#status");
+      spyOn(sudokoup.client, "connect");
+      sudokoup.connect();
+      expect($status.text()).toEqual("Connecting");
+      expect($status).toBeVisible();
+    });
   });
   describe("send", function() {
     it("should call client send", function() {
@@ -86,11 +94,27 @@ describe("Sudokoup", function() {
         });
       });
       describe("connected", function() {
-        it("should build", function() {
+        it("should show game", function() {
           var sudokoup = Sudokoup.setup('sudokoup');
           spyOn(sudokoup, "show");
           $("#sudokoup").trigger("connected");
           expect(sudokoup.show).toHaveBeenCalled();
+        });
+        it("should update status: connected", function() {
+          var sudokoup = Sudokoup.setup('sudokoup');
+          var status;
+          $("#sudokoup").trigger("connected");
+          status = $("#status").text();
+          expect(status).toEqual("Connected");
+        });
+      });
+      describe("disconnected", function() {
+        it("should update status: not connected", function() {
+          var sudokoup = Sudokoup.setup('sudokoup');
+          var status;
+          $("#sudokoup").trigger("disconnected");
+          status = $("#status").text();
+          expect(status).toEqual("Not connected");
         });
       });
     });

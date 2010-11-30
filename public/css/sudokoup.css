@@ -12,9 +12,19 @@ input {font-family: Georgia, Times, serif;}
 .table { display:table; border-collapse:collapse;}
 .row { display:table-row;}
 .cell   { display:table-cell; vertical-align:middle;}
+.optional { display:none; margin: 0.5em 0;}
 #board {
   float:left;
   margin:0 10px 10px;
+}
+#board .cell { width: 50px; height:50px; border:1px solid #666;}
+#status {
+  background: #F60;
+  display: block;
+  left: 45%;
+  padding: 0.25em 0.5em;
+  position: absolute;
+  top: 0px;
 }
 #msg {
   width: 400px;
@@ -32,8 +42,6 @@ input {font-family: Georgia, Times, serif;}
 #msg p { margin: 0 0 1em;}
 #msg input { border:1px solid #999; padding:5px;width:80%;}
 #pane { overflow:auto; height: 12em; }
-#board .cell { width: 50px; height:50px; border:1px solid #666;}
-.optional { display:none; margin: 0.5em 0;}
 
 form.websocket { text-align:center; }
 form.websocket input.name { font-size:1.5em; }

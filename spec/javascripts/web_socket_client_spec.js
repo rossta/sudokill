@@ -1,11 +1,14 @@
 describe("WebSocketClient", function() {
   var game = {
-    selector: '#sudokoup'
+    selector: '#sudokoup',
+    log: function() {},
+    print: function() {},
+    dispatch: function() {}
   },
   createClient = function() {
     return new Sudokoup.WebSocketClient(game);
   };
-  
+
   // stub:
   //   log: function(){}
   //   print: function(){}
@@ -44,9 +47,9 @@ describe("WebSocketClient", function() {
       expect($form).toHaveSelector('label.port');
     });
   });
-  
+
   describe("events", function() {
-    describe("submit form", function() {
+    describe("submit", function() {
       it("should call connect", function() {
         var client = createClient();
         var $form = $('form.websocket');
@@ -73,17 +76,99 @@ describe("WebSocketClient", function() {
         expect($form).not.toHaveClass("welcome");
       });
     });
+    describe("disconnected", function() {
+      it("should change submit value", function() {
+        var client = createClient();
+        var $form = $('form.websocket');
+        var $button = $form.find('input.submit');
+        $form.trigger("connected");
+        $form.trigger("disconnected");
+        expect($button.val()).toEqual("Connect");
+      });
+      it("should update form classes", function() {
+        var client = createClient();
+        var $form = $('form.websocket');
+        $form.trigger("connected");
+        $form.trigger("disconnected");
+        expect($form).not.toHaveClass("connected");
+        expect($form).toHaveClass("welcome");
+      });
+    });
   });
 
   describe("connect", function() {
-
+    beforeEach(function() {
+      spyOn(game, "log");
+    });
+    it("should create a new WebSocket with url to given host, port", function() {
+      var client = createClient();
+      var websocket = client.connect("Rossta", "localhost", "8080");
+      expect(websocket).toEqual(jasmine.any(WebSocket));
+      expect(websocket.URL).toEqual("ws://localhost:8080/");
+    });
+    describe("ws.onmessage", function() {
+      it("should forward event data to game dispatch", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        spyOn(client.game, "dispatch");
+        websocket.onmessage({data:"foobar"});
+        expect(client.game.dispatch).toHaveBeenCalledWith("foobar");
+      });
+    });
+    describe("ws.onopen", function() {
+      it("should send NEW CONNECTION message to websocket", function() {
+        var client = createClient();
+        var websocket = client.connect("Rossta");
+        spyOn(websocket, "send");
+        websocket.onopen();
+        expect(websocket.send).toHaveBeenCalledWith("NEW CONNECTION|Rossta\r\n");
+      });
+      it("should trigger 'connected' event on form", function() {
+        var client = createClient();
+        var websocket = client.connect("Rossta");
+        var callback = jasmine.createSpy("connected callback");
+        spyOn(websocket, "send");
+        client.$connectForm.bind("connected", callback);
+        websocket.onopen();
+        expect(callback).toHaveBeenCalled();
+      });
+    });
+    describe("ws.onclose", function() {
+      it("should say goodbye", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        spyOn(client.game, "print");
+        websocket.onclose();
+        expect(client.game.print).toHaveBeenCalledWith("Bye!");
+      });
+      it("should trigger 'disconnected' event on form", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var callback = jasmine.createSpy("disconnected callback");
+        client.$connectForm.bind("disconnected", callback);
+        websocket.onclose();
+        expect(callback).toHaveBeenCalled();
+      });
+    });
   });
 
   describe("close", function() {
-
+    it("should close websocket", function() {
+      var client = createClient();
+      var websocket = client.connect();
+      spyOn(websocket, "close");
+      client.close();
+      expect(websocket.close).toHaveBeenCalled();
+    });
   });
 
   describe("send", function() {
-
+    it("should send formatted message to websocket", function() {
+      var client = createClient();
+      var websocket = client.connect();
+      spyOn(websocket, "send");
+      client.send("foobar");
+      expect(websocket.send).toHaveBeenCalledWith("foobar\r\n");
+    });
   });
 });

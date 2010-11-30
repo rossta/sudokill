@@ -5,15 +5,19 @@ Sudokoup = (function() {
       var self = this;
       self.selector = "#" + selector;
       self.$sudokoup  = $(self.selector);
+
       $("<div id='board' />").appendTo(self.selector);
+
       opts = opts || {};
-
       self.mode     = opts['mode'] || 'normal';
-
       self.client   = new WebSocketClient(this, self.mode);
       self.board    = new GameBoard('board');
       self.score    = new ScoreTable();
       self.messager = new Messager(self.selector);
+
+      $("<div id='status' />").appendTo(self.selector);
+      self.$status = self.$sudokoup.find("#status");
+      self.$status.hide();
 
       // listen for events
       self.$sudokoup
@@ -21,7 +25,11 @@ Sudokoup = (function() {
           self.send(text);
         })
         .bind("connected", function() {
+          self.status("Connected");
           self.show();
+        })
+        .bind("disconnected", function() {
+          self.status("Not connected");
         });
       return self;
     },
@@ -40,7 +48,9 @@ Sudokoup = (function() {
 
     // Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
     connect: function(name, host, port) {
-      this.client.connect(name, host, port);
+      var self = this;
+      self.status("Connecting");
+      self.client.connect(name, host, port);
     },
 
     send: function(msg) {
@@ -48,9 +58,10 @@ Sudokoup = (function() {
     },
 
     update: function(i, j, value) {
-      this.log("UPDATE", i, j, value);
-      this.board.update(i, j, value);
-      return this;
+      var self = this;
+      self.log("UPDATE", i, j, value);
+      self.board.update(i, j, value);
+      return self;
     },
 
     create: function(values) {
@@ -64,6 +75,15 @@ Sudokoup = (function() {
 
     print: function(message) {
       this.messager.print(message);
+    },
+
+    status: function(msg) {
+      var self = this;
+      clearTimeout(self.statusTimeout);
+      self.$status.text(msg).show();
+      self.statusTimeout = setTimeout(function() {
+        self.$status.fadeOut(1000);
+      }, 2500);
     },
 
     dispatch: function(message) {
@@ -102,9 +122,9 @@ Sudokoup = (function() {
       this.play(selector, { mode: 'simple'});
       return this.game.show();
     }
-  };
+  },
 
-  var GameBoard = Base.extend({
+  GameBoard = Base.extend({
     constructor: function(selector) {
       this.hilite = "#333333";
       this.none   = "none";
@@ -224,15 +244,15 @@ Sudokoup = (function() {
         "stroke-width": 2
       });
     }
-  },{});
+  },{}),
 
-  var ScoreTable = Base.extend({
+  ScoreTable = Base.extend({
     constructor: function() {
       this.numbers = new MultiArray(9, 9);
     }
-  });
+  }),
 
-  var MultiArray = function(rows, cols) {
+  MultiArray = function(rows, cols) {
     var i;
     var j;
        var a = new Array(rows);
@@ -245,9 +265,9 @@ Sudokoup = (function() {
            }
        }
        return(a);
-  };
+  },
 
-  var Messager = Base.extend({
+  Messager = Base.extend({
     constructor: function(selector) {
       var self = this;
       self.$selector  = $(selector);
@@ -293,9 +313,9 @@ Sudokoup = (function() {
       return this.$msg.show();
     }
 
-  });
+  }),
 
-  var WebSocketClient = Base.extend({
+  WebSocketClient = Base.extend({
     constructor: function(game, mode) {
       var self = this;
       self.game = game;
@@ -334,9 +354,12 @@ Sudokoup = (function() {
           $(this).find("input.submit").attr("value", "Disconnect");
           self.$connectForm.removeClass("welcome").addClass("connected");
         }).
+        bind("disconnected", function() {
+          $(this).find("input.submit").attr("value", "Connect");
+          self.$connectForm.removeClass("connected").addClass("welcome");
+        }).
         delegate("input.submit[value=Disconnect]", "click", function(){
           self.close();
-          $(this).attr("value", "Connect");
           return false;
         }).
         delegate("a.toggle", "click", function() {
@@ -346,7 +369,7 @@ Sudokoup = (function() {
           $(this).parents("form").find(".optional").toggle();
           return false;
         });
-      
+
     },
     connect: function(name, host, port) {
       var self = this,
@@ -356,7 +379,10 @@ Sudokoup = (function() {
       port  = port || '8080',
       url   = "ws://" + host + ":" + port + "/",
       ws = new WebSocket(url);
+
       self.ws = ws;
+      self.name = name;
+
       game.log("ws:", "connecting to " + url);
       ws.onmessage = function(e) {
         var message = e.data.trim();
@@ -366,26 +392,31 @@ Sudokoup = (function() {
       ws.onclose = function() {
         game.log("ws:", "closed connection.");
         game.print("Bye!");
+        self.$connectForm.trigger("disconnected");
       };
       ws.onopen = function() {
         game.log("ws:", "connected!");
+        self.send(["NEW CONNECTION", name].join(PIPE));
         self.$connectForm.trigger("connected");
-        ws.send(["NEW CONNECTION", name].join(" | ") + "\r\n");
       };
+      return ws;
     },
     close: function() {
-      this.ws.close();
+      var self = this;
+      self.ws.close();
     },
     send: function(msg) {
-      this.ws.send(msg + "\r\n");
+      this.ws.send(msg + EOL);
     }
-  });
+  }),
 
-  var userAgentName = function() {
+  userAgentName = function() {
     var name = "Unknown Agent";
     if (navigator.userAgent) name = navigator.userAgent.slice(0, 30);
     return name;
-  };
+  },
+  PIPE = "|",
+  EOL = "\r\n";
 
   classMethods.GameBoard = GameBoard;
   classMethods.ScoreTable = ScoreTable;

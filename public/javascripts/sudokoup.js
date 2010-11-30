@@ -6,7 +6,6 @@ Sudokoup = (function() {
       self.selector = "#" + selector;
       self.$sudokoup  = $(self.selector);
       $("<div id='board' />").appendTo(self.selector);
-debugger
       opts = opts || {};
 
       self.mode     = opts['mode'] || 'normal';
@@ -107,29 +106,35 @@ debugger
 
   var GameBoard = Base.extend({
     constructor: function(selector) {
-      this.hiliteColor = "#333333";
+      this.hilite = "#333333";
+      this.none   = "none";
       this.selector = selector;
       this.dim            = 50;
       this.numberSquares  = new MultiArray(9, 9);
       this.backgroundSquares = new MultiArray(9, 9);
     },
     update: function(i, j, number){
-      var rtext = this.numberSquares[i][j],
-      rsquare = this.backgroundSquares[i][j];
-      _(this.backgroundSquares).each(function(row) {
+      var self = this,
+          rtext = self.numberSquares[i][j],
+          rsquare = self.backgroundSquares[i][j],
+          hilite = self.hilite,
+          none = self.none;
+      _(self.backgroundSquares).each(function(row, k) {
         _(row).each(function(sq){
-          sq.attr({fill:"none"});
+          if (i===k) {
+            sq.attr({fill:hilite});
+          } else {
+            sq.attr({fill:none});
+          }
         });
+        row[j].attr({fill:hilite});
       });
-      _(this.backgroundSquares[i]).each(function(sq) {
-        sq.attr({fill:"#666"});
-      });
-      _(this.backgroundSquares).each(function(row) {
-        row[j].attr({fill:"#666"});
+      _(self.backgroundSquares[i]).each(function(sq) {
+        sq.attr({fill:hilite});
       });
       rsquare.animate({fill:Raphael.getColor()},300, function() {
         rtext.attr({text: number});
-        rsquare.animate({fill:"none"}, 300);
+        rsquare.animate({fill:none}, 300);
       });
       return rtext;
     },

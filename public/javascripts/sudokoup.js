@@ -49,7 +49,6 @@ Sudokoup = (function() {
     // Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
     connect: function(name, host, port) {
       var self = this;
-      self.status("Connecting");
       self.client.connect(name, host, port);
     },
 
@@ -79,7 +78,7 @@ Sudokoup = (function() {
 
     status: function(msg) {
       var self = this;
-      clearTimeout(self.statusTimeout);
+      if (self.statusTimeout) clearTimeout(self.statusTimeout);
       self.$status.text(msg).show();
       self.statusTimeout = setTimeout(function() {
         self.$status.fadeOut(1000);
@@ -359,7 +358,7 @@ Sudokoup = (function() {
               host = $this.find('input[name=host]').val(),
               port = $this.find('input[name=port]').val(),
               name = $this.find('input[name=name]').val();
-
+          self.game.status("Connecting");
           self.connect(name, host, port);
           return false;
         }).

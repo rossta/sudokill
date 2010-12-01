@@ -8,7 +8,7 @@
   if (window.WebSocket) return;
 
   var console = window.console;
-  // if (!console) console = {log: function(){ }, error: function(){ }};
+  if (!console) console = {log: function(){ }, error: function(){ }};
 
   function hasFlash() {
     if ('navigator' in window && 'plugins' in navigator && navigator.plugins['Shockwave Flash']) {

@@ -1,12 +1,10 @@
 PLAYER
-broadcast last move separately
 allow free move when row/col full
 better error message for illegal moves
 declare winner,loser, num moves
 start new game with players from queue
 EM.run server specs
 timer
-kill connections when server shuts down
 
 HUMAN PLAYER
 enter game queue as human

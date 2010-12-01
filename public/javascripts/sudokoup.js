@@ -87,23 +87,24 @@ Sudokoup = (function() {
     },
 
     dispatch: function(message) {
-      var self = this, value;
+      var self = this, value, json;
       try {
-        var json = $.parseJSON(message);
-        switch (json.action) {
-          case "UPDATE":
-            value = json.value;
-            self.update(value[0], value[1], value[2]);
-            break;
-          case "CREATE":
-            self.create(json.values);
-            break;
-          default:
-            self.log("Unrecognized action", json.action, json);
-        }
+        json = $.parseJSON(message);
       } catch (e) {
         self.log("Catch JSON parse error", e.toString());
         self.print(message);
+      }
+      if (!json) return;
+      switch (json.action) {
+        case "UPDATE":
+          value = json.value;
+          self.update(value[0], value[1], value[2]);
+          break;
+        case "CREATE":
+          self.create(json.values);
+          break;
+        default:
+          self.log("Unrecognized action", json.action, json);
       }
       return json;
     }
@@ -160,14 +161,22 @@ Sudokoup = (function() {
     },
     create: function(values) {
       var self = this;
-      $(values).each(function(i, row) {
-        $(row).each(function(j, value) {
+      for(var i=0;i<values.length;i++) {
+        var row = values[i];
+        for(var j=0;j<row.length;j++) {
+          var value = row[j];
+          var square = self.numberSquares[i][j];
           if (value > 0) {
-            self.update(i, j, value);
+            square.attr({text:value});
+            // self.update(i, j, value);
           } else {
-            self.update(i, j, "");
+            square.attr({text:" "});
+            // self.update(i, j, " ");
           }
-        });
+        }
+      }
+      self.squares.animate({fill:Raphael.getColor()}, 300, function() {
+        self.squares.animate({fill:self.none}, 300);
       });
     },
     raphael: function() {
@@ -178,7 +187,8 @@ Sudokoup = (function() {
       }
     },
     build: function() {
-      this.raphael();
+      var self = this;
+      self.raphael();
       var r = this.r,
       groups  = r.set(),
       squares = r.set(),
@@ -243,6 +253,9 @@ Sudokoup = (function() {
         "stroke-opacity": 0.5,
         "stroke-width": 2
       });
+      
+      self.squares  = squares;
+      self.groups   = groups;
     }
   },{}),
 
@@ -385,7 +398,7 @@ Sudokoup = (function() {
 
       game.log("ws:", "connecting to " + url);
       ws.onmessage = function(e) {
-        var message = e.data.trim();
+        var message = e.data.replace(/\r\n$/, "");
         game.dispatch(message);
         game.log("ws:", message, e);
       };

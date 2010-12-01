@@ -27,7 +27,7 @@ module Sudokoup
 
         @channel  = EM::Channel.new
 
-        @server = EventMachine::start_server @host, @port, Player::Socket, :app => self do |player|
+        EventMachine::start_server @host, @port, Player::Socket, :app => self do |player|
           if @game.available?
             join_game player
           else
@@ -65,8 +65,9 @@ module Sudokoup
             }
         end
 
-        log "Listening for clients on #{@host}:#{@port}"
-        log "WebSocket server started on #{@ws_host}:#{@ws_port}"
+        Sudokoup::WebServer.run!
+
+        log_server_started
       end
     end
 
@@ -171,6 +172,19 @@ module Sudokoup
 
     def add_message
       ["ADD", @game.board.to_msg].join(PIPE)
+    end
+
+    protected
+
+    def log_server_started
+      log "Listening for players on #{host_name(@host)}:#{@port}"
+      log "Listening for websockets at ws://#{host_name(@ws_host)}:#{@ws_port}"
+      log "Go to http://#{host_name(Sudokoup::WebServer.bind)}:#{Sudokoup::WebServer.port}/sudokoup"
+      log "Supported browsers: Chrome Safari 3+ Firefox 3+"
+    end
+
+    def host_name(host)
+      host == "0.0.0.0" ? 'localhost' : host
     end
   end
 end

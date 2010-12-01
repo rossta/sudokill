@@ -9,7 +9,7 @@ host = ARGV.shift
 port = ARGV.shift
 view_port = ARGV.shift
 
-client = Sudokoup::Server.start({
+Sudokoup::Server.start({
   :host => host,
   :port => port,
   :view => {

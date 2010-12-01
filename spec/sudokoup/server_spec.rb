@@ -5,18 +5,6 @@ describe Sudokoup::Server do
   before(:each) do
     @pipe = "|"
   end
-  describe "send_players" do
-    it "should send message to all players" do
-      @server = Sudokoup::Server.new
-      player_1 = mock(Sudokoup::Player::Socket, :number => 1)
-      player_2 = mock(Sudokoup::Player::Socket, :number => 2)
-      @server.game.join_game(player_1)
-      @server.game.join_game(player_2)
-      player_1.should_receive(:send).with("foobar")
-      player_2.should_receive(:send).with("foobar")
-      @server.send_players("foobar")
-    end
-  end
   describe "move_json" do
     it "should return action, move, and status as json object" do
       json_s = subject.move_json("1 2 3", :ok)

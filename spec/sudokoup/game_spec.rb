@@ -316,5 +316,18 @@ describe Sudokoup::Game do
         @game.players.select { |p| p.has_turn? }.size.should == 1
       end
     end
+    
+    describe "send_players" do
+      it "should send given message to all players in game" do
+        game = Sudokoup::Game.new
+        player_1 = mock(Sudokoup::Player::Socket, :number => 1, :send => nil)
+        player_2 = mock(Sudokoup::Player::Socket, :number => 2, :send => nil)
+        game.join_game(player_1)
+        game.join_game(player_2)
+        player_1.should_receive(:send).with("foobar")
+        player_2.should_receive(:send).with("foobar")
+        game.send_players("foobar")
+      end
+    end
   end
 end

@@ -5,14 +5,8 @@ $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
 require 'sudokoup'
 
-host = ARGV.shift
-port = ARGV.shift
-view_port = ARGV.shift
+host    = ARGV.shift
+port    = ARGV.shift
+ws_port = ARGV.shift
 
-Sudokoup::Server.start({
-  :host => host,
-  :port => port,
-  :view => {
-    :port => view_port
-  }
-})
+Sudokoup::Server.start(:host => host, :port => port, :ws_port => ws_port)

@@ -37,7 +37,7 @@ describe Sudokoup::Server do
   describe "play_game" do
     it "should broadcast game status if not ready" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :view => { :port => 56789 })
+        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
         EventMachine.add_timer(0.1) {
           http = EventMachine::HttpRequest.new('ws://127.0.0.1:56789/').get :timeout => 0
@@ -52,7 +52,7 @@ describe Sudokoup::Server do
     end
     it "should broadcast game board" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :view => { :port => 56789 })
+        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
 
         # Two players join game
@@ -81,7 +81,7 @@ describe Sudokoup::Server do
     end
     it "should send start message to both players" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :view => { :port => 56789 })
+        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
 
         # Two players join game
@@ -114,7 +114,7 @@ describe Sudokoup::Server do
     end
     it "should send add message to first player" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :view => { :port => 56789 })
+        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
         # Two players join game
         socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
@@ -138,7 +138,7 @@ describe Sudokoup::Server do
     describe "status: ok" do
       it "should add move to board" do
         EM.run {
-          server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :view => { :port => 56789 })
+          server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
           server.start
 
           # Two players join game
@@ -164,7 +164,7 @@ describe Sudokoup::Server do
       end
       it "should broadcast move" do
         EM.run {
-          server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :view => { :port => 56789 })
+          server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
           server.start
 
           # Two players join game

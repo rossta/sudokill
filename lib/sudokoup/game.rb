@@ -94,6 +94,10 @@ module Sudokoup
       player.has_turn!
     end
 
+    def send_players(msg)
+      @players.each { |p| p.send(msg) }
+    end
+
   end
 
 end

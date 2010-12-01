@@ -11,10 +11,10 @@ module Sudokoup
     attr_reader :game, :queue
 
     def initialize(opts = {})
-      @host = opts[:host] || '0.0.0.0'
-      @port = (opts[:port] || 44444).to_i
-      @ws_host = '0.0.0.0'
-      @ws_port = (opts[:view] && (opts[:view][:port]) || 8080).to_i
+      @host     = opts[:host] || '0.0.0.0'
+      @port     = (opts[:port] || 44444).to_i
+      @ws_host  = '0.0.0.0'
+      @ws_port  = (opts[:ws_port] || 8080).to_i
 
       @game     = Game.new
       @queue    = []
@@ -65,8 +65,6 @@ module Sudokoup
             }
         end
 
-        Sudokoup::WebServer.run!
-
         log_server_started
       end
     end
@@ -110,7 +108,7 @@ module Sudokoup
         when :ok
           broadcast move_json(move, status.to_s)
           broadcast msg, SUDOKOUP
-          send_players(move)
+          @game.send_players(move)
           request_next_player_move
         when :reject
           player.send reject_message(msg)
@@ -146,10 +144,6 @@ module Sudokoup
       @game.current_player.send add_message
     end
 
-    def send_players(msg)
-      @game.players.each { |p| p.send(msg) }
-    end
-
     def board_json
       %Q|{"action":"CREATE","values":#{@game.board.to_json}}|
     end
@@ -179,8 +173,6 @@ module Sudokoup
     def log_server_started
       log "Listening for players on #{host_name(@host)}:#{@port}"
       log "Listening for websockets at ws://#{host_name(@ws_host)}:#{@ws_port}"
-      log "Go to http://#{host_name(Sudokoup::WebServer.bind)}:#{Sudokoup::WebServer.port}/sudokoup"
-      log "Supported browsers: Chrome Safari 3+ Firefox 3+"
     end
 
     def host_name(host)

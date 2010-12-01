@@ -9,4 +9,7 @@ host    = ARGV.shift
 port    = ARGV.shift
 ws_port = ARGV.shift
 
+fork do
+  Sudokoup::WebServer.run!
+end
 Sudokoup::Server.start(:host => host, :port => port, :ws_port => ws_port)

@@ -252,7 +252,7 @@ Sudokoup = (function() {
         "stroke-opacity": 0.5,
         "stroke-width": 2
       });
-      
+
       self.squares  = squares;
       self.groups   = groups;
     }
@@ -331,27 +331,10 @@ Sudokoup = (function() {
     constructor: function(game, mode) {
       var self = this;
       self.game = game;
-      self.$connectForm = $("<form></form>");
+      self.$connectForm = buildConnectForm();
       $(game.selector).append(self.$connectForm);
       mode = mode || 'normal';
       self.$connectForm.addClass("websocket welcome").addClass(mode);
-
-      self.$connectForm.append("<div class='required'></div>");
-      var $name = self.$connectForm.find("div.required");
-          $name.append("<input id='s_name' type='text' name='name' class='name' placeholder='Your name please' autofocus='true' />");
-          $name.append("<label for='s_name' class='name'>Your name please</label>");
-
-      var $toggle = $("<a></a>").attr("href", "#").text("Options").addClass("toggle");
-          $name.append($toggle);
-
-      self.$connectForm.append("<div class='optional'></div>");
-      var $opts = self.$connectForm.find("div.optional");
-          $opts.append("<label for='s_host' class='host'>Host</label>");
-          $opts.append("<input id='s_host' type='text' name='host' class='host'/>");
-          $opts.append("<label for='s_port' class='port'>Port</label>");
-          $opts.append("<input id='s_port' type='text' name='port' class='port' />");
-
-      self.$connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
 
       self.$connectForm.submit(function(){
           var $this = $(this),
@@ -428,7 +411,28 @@ Sudokoup = (function() {
     return name;
   },
   PIPE = "|",
-  EOL = "\r\n";
+  EOL = "\r\n",
+
+  buildConnectForm = function() {
+    var $connectForm = $("<form></form>");
+    $connectForm.append("<div class='required'></div>");
+    var $name = $connectForm.find("div.required");
+        $name.append("<input id='s_name' type='text' name='name' class='name' placeholder='Your name please' autofocus='true' />");
+        $name.append("<label for='s_name' class='name'>Your name please</label>");
+
+    var $toggle = $("<a></a>").attr("href", "#").text("Options").addClass("toggle");
+        $name.append($toggle);
+
+    $connectForm.append("<div class='optional'></div>");
+    var $opts = $connectForm.find("div.optional");
+        $opts.append("<label for='s_host' class='host'>Host</label>");
+        $opts.append("<input id='s_host' type='text' name='host' class='host'/>");
+        $opts.append("<label for='s_port' class='port'>Port</label>");
+        $opts.append("<input id='s_port' type='text' name='port' class='port' />");
+
+    $connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
+    return $connectForm;
+  };
 
   classMethods.GameBoard = GameBoard;
   classMethods.ScoreTable = ScoreTable;

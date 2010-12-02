@@ -67,6 +67,10 @@ module Sudocoup
       end
 
       attr_accessor :start_time, :stop_time, :last_lap, :total_time
+      def total_time
+        @total_time ||= 0
+      end
+
       def start_timer!
         @start_time = Clock.time
       end
@@ -74,7 +78,7 @@ module Sudocoup
       def stop_timer!
         @stop_time = Clock.time
         @last_lap  = @stop_time - @start_time
-        @total_time ||= 0
+        total_time
         @total_time += @last_lap
       end
 

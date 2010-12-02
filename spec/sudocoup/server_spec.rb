@@ -24,6 +24,19 @@ describe Sudocoup::Server do
       json["values"].should == [[1,2,3],[4,5,6],[7,8,9]]
     end
   end
+  describe "timer_json" do
+    it "should return TIME message with player ids and times" do
+      @server = Sudocoup::Server.new
+      player_1 = mock(Sudocoup::Player::Socket, :number => 1, :total_time => 14)
+      player_2 = mock(Sudocoup::Player::Socket, :number => 2, :total_time => 25)
+      @server.game.join_game(player_1)
+      @server.game.join_game(player_2)
+      message = @server.timer_json.split(@pipe)
+      message.shift.should == "TIME"
+      message.shift.should == "1,14"
+      message.shift.should == "2,25"
+    end
+  end
   describe "start_message" do
     it "should return START | player number | board json" do
       @server = Sudocoup::Server.new
@@ -65,5 +78,5 @@ describe Sudocoup::Server do
         message.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
       end
     end
-  end 
+  end
 end

@@ -35,9 +35,11 @@ module Sudocoup
           end
         end
 
-        # EventMachine.add_periodic_timer(10) {
-        #   @queue.each { |p| p.send("WAIT") }
-        # }
+        EventMachine.add_periodic_timer(3.0) {
+          if @game.in_progress?
+            broadcast timer_json
+          end
+        }
 
         EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
@@ -149,6 +151,10 @@ module Sudocoup
 
     def move_json(move, status)
       %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"#{status}"}|
+    end
+    
+    def timer_json
+      (["TIME"] + players.map { |p| [p.number, p.total_time].join(",") }).join(PIPE)
     end
 
     def start_message(player)

@@ -7,13 +7,9 @@ require "eventmachine"
 require "addressable/uri"
 require "em-websocket"
 
-%w[ state_machine server board move dispatch logger game web_server ].each do |file|
-  require "sudocoup/#{file}"
-end
+%w[ state_machine server board move dispatch logger game web_server ].each { |file| require "sudocoup/#{file}" }
 
-%w[ socket web_socket ].each do |file|
-  require "sudocoup/player/#{file}"
-end
+%w[ socket web_socket ].each { |file| require "sudocoup/player/#{file}" }
 
 def log(message, name = "Server")
   Sudocoup::Logger.log "%-10s>> #{message}" % name

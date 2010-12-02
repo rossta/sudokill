@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'json'
 
-describe Sudokoup::Server do
+describe Sudocoup::Server do
   before(:each) do
     @pipe = "|"
   end
@@ -16,8 +16,8 @@ describe Sudokoup::Server do
   end
   describe "board_json" do
     it "should return action, move, and status as json object" do
-      board = mock(Sudokoup::Board, :to_json => "[[1,2,3],[4,5,6],[7,8,9]]", :build => nil)
-      Sudokoup::Board.stub!(:new).and_return(board)
+      board = mock(Sudocoup::Board, :to_json => "[[1,2,3],[4,5,6],[7,8,9]]", :build => nil)
+      Sudocoup::Board.stub!(:new).and_return(board)
       json_s = subject.board_json
       json = JSON.parse(json_s)
       json["action"].should == "CREATE"
@@ -26,9 +26,9 @@ describe Sudokoup::Server do
   end
   describe "start_message" do
     it "should return START | player number | board json" do
-      @server = Sudokoup::Server.new
-      player_1 = mock(Sudokoup::Player::Socket, :number => 1)
-      player_2 = mock(Sudokoup::Player::Socket, :number => 2)
+      @server = Sudocoup::Server.new
+      player_1 = mock(Sudocoup::Player::Socket, :number => 1)
+      player_2 = mock(Sudocoup::Player::Socket, :number => 2)
       @server.game.join_game(player_1)
       @server.game.join_game(player_2)
       message = @server.start_message(player_1).split(@pipe)
@@ -54,9 +54,9 @@ describe Sudokoup::Server do
   end
   describe "add_message" do
     it "should send MOVE | previous move | board json" do
-      @server = Sudokoup::Server.new
-      player_1 = mock(Sudokoup::Player::Socket, :number => 1)
-      player_2 = mock(Sudokoup::Player::Socket, :number => 2)
+      @server = Sudocoup::Server.new
+      player_1 = mock(Sudocoup::Player::Socket, :number => 1)
+      player_2 = mock(Sudocoup::Player::Socket, :number => 2)
       @server.game.join_game(player_1)
       @server.game.join_game(player_2)
       message = @server.add_message.split(@pipe)

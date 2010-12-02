@@ -1,6 +1,6 @@
 require 'sinatra/base'
 
-module Sudokoup
+module Sudocoup
   class WebServer < Sinatra::Base
     enable :run
     set :logging, false
@@ -9,7 +9,7 @@ module Sudokoup
     set :public, Proc.new { File.join(root, "public") }
     set :server, %w[thin mongrel webrick]
 
-    get  %r{/sudokoup|/} do
+    get  %r{/sudocoup|/} do
       return File.open("public/index.html")
     end
 

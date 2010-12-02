@@ -1,11 +1,11 @@
 var fixture = function() {
-  return $("<div></div>").attr("id","sudokoup").css({
+  return $("<div></div>").attr("id","sudocoup").css({
     position:"absolute",left:"-3000px",top:"0px"
   }).appendTo("body");
 },
 
 removeFixture = function() {
-  return $("#sudokoup").remove();
+  return $("#sudocoup").remove();
 };
 
 beforeEach(function() {

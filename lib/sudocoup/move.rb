@@ -1,4 +1,4 @@
-module Sudokoup
+module Sudocoup
   class Move
     attr_reader :row, :col, :val
     def initialize(row, col, val)

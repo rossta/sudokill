@@ -8,18 +8,18 @@ require "addressable/uri"
 require "em-websocket"
 
 %w[ state_machine server board move dispatch logger game web_server ].each do |file|
-  require "sudokoup/#{file}"
+  require "sudocoup/#{file}"
 end
 
 %w[ socket web_socket ].each do |file|
-  require "sudokoup/player/#{file}"
+  require "sudocoup/player/#{file}"
 end
 
 def log(message, name = "Server")
-  Sudokoup::Logger.log "%-10s>> #{message}" % name
+  Sudocoup::Logger.log "%-10s>> #{message}" % name
 end
 
-module Sudokoup
+module Sudocoup
 CONFIG_1 = <<-TXT
 7 0 5 0 0 0 2 9 4
 0 0 1 2 0 6 0 0 0

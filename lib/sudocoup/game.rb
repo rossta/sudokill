@@ -1,6 +1,6 @@
-module Sudokoup
+module Sudocoup
   class Game
-    include Sudokoup::StateMachine
+    include Sudocoup::StateMachine
     has_states :waiting, :ready, :in_progress, :over
 
     attr_accessor :board, :state, :moves, :size

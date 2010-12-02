@@ -1,4 +1,4 @@
-# Sudokoup #
+# Sudocoup #
 
 Competitive Sudoku backed by EventMachine and HTML5 Websockets
 
@@ -7,7 +7,7 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 Install
 
 	# cd ~/your/projects/
-	$ git clone git://github.com/rosskaff/sudokoup.git --recursive
+	$ git clone git://github.com/rosskaff/sudocoup.git --recursive
 
 	or
 

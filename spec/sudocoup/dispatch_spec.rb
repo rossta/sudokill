@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Sudokoup::Dispatch do
+describe Sudocoup::Dispatch do
   describe "call" do
     before(:each) do
-      @dispatch = Sudokoup::Dispatch.new
+      @dispatch = Sudocoup::Dispatch.new
     end
     it "should set data as name if name is nil" do
       @dispatch.call("Rossta")

@@ -1,4 +1,4 @@
-module Sudokoup
+module Sudocoup
   class Dispatch
     attr_accessor :app, :name
 

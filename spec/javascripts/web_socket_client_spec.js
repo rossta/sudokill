@@ -1,12 +1,13 @@
 describe("WebSocketClient", function() {
   var game = {
-    selector: '#sudokoup',
+    selector: '#sudocoup',
     log: function() {},
     print: function() {},
-    dispatch: function() {}
+    dispatch: function() {},
+    status: function() {}
   },
   createClient = function() {
-    return new Sudokoup.WebSocketClient(game);
+    return new Sudocoup.WebSocketClient(game);
   };
 
   // stub:
@@ -16,27 +17,27 @@ describe("WebSocketClient", function() {
 
   describe("constructor", function() {
     it("should append the jquery form: $connectForm", function() {
-      var client = new Sudokoup.WebSocketClient(game);
+      var client = new Sudocoup.WebSocketClient(game);
       expect(client.$connectForm).toEqual(jasmine.any($));
       expect(client.$connectForm).toHaveClass("websocket");
       expect(client.$connectForm).toHaveClass("welcome");
     });
     it("should add mode class to form", function() {
-      var client1 = new Sudokoup.WebSocketClient(game);
+      var client1 = new Sudocoup.WebSocketClient(game);
       expect(client1.$connectForm).toHaveClass("normal");
       expect(client1.$connectForm).not.toHaveClass("simple");
 
-      var client2 = new Sudokoup.WebSocketClient(game, "simple");
+      var client2 = new Sudocoup.WebSocketClient(game, "simple");
       expect(client2.$connectForm).toHaveClass("simple");
       expect(client2.$connectForm).not.toHaveClass("normal");
     });
     it("should append form to game selector", function() {
-      var client = new Sudokoup.WebSocketClient(game);
+      var client = new Sudocoup.WebSocketClient(game);
       var $game = $(game.selector);
       expect($game).toHaveSelector('form.websocket');
     });
     it("should inputs and labels to form", function() {
-      var client = new Sudokoup.WebSocketClient(game);
+      var client = new Sudocoup.WebSocketClient(game);
       var $form = $('form.websocket');
       expect($form).toHaveSelector('input[name=name]');
       expect($form).toHaveSelector('input[name=host]');
@@ -59,6 +60,13 @@ describe("WebSocketClient", function() {
         $("input[name=port]").val("8080");
         $form.submit();
         expect(client.connect).toHaveBeenCalledWith("Rossta", "localhost", "8080");
+      });
+      it("should update game status: connecting", function() {
+        var client = createClient();
+        var $form = $('form.websocket');
+        spyOn(client.game, "status");
+        $form.submit();
+        expect(client.game.status).toHaveBeenCalledWith("Connecting");
       });
     });
     describe("connected", function() {

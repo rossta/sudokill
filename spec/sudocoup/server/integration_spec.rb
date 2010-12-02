@@ -1,14 +1,14 @@
 require 'spec_helper'
 require 'json'
 
-describe Sudokoup::Server do
+describe Sudocoup::Server do
   before(:each) do
     @pipe = "|"
   end
   describe "connection on open join game" do
     it "should add players to game if available and respond READY" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345)
+        server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345)
         server.start
         socket = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket.onopen = lambda {
@@ -20,7 +20,7 @@ describe Sudokoup::Server do
     end
     it "should add players to queue if game full and respond WAIT" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345)
+        server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345)
         server.start
         socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
@@ -37,14 +37,14 @@ describe Sudokoup::Server do
   describe "play_game" do
     it "should broadcast game status if not ready" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
+        server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
         EventMachine.add_timer(0.1) {
           http = EventMachine::HttpRequest.new('ws://127.0.0.1:56789/').get :timeout => 0
           http.callback { server.play_game.succeed }
 
           http.stream { |msg|
-            msg.should == "Sudokoup: Game waiting for more players"
+            msg.should == "Sudocoup: Game waiting for more players"
             EventMachine.stop
           }
         }
@@ -52,7 +52,7 @@ describe Sudokoup::Server do
     end
     it "should broadcast game board" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
+        server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
 
         # Two players join game
@@ -81,7 +81,7 @@ describe Sudokoup::Server do
     end
     it "should send start message to both players" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
+        server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
 
         # Two players join game
@@ -114,7 +114,7 @@ describe Sudokoup::Server do
     end
     it "should send add message to first player" do
       EM.run {
-        server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
+        server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
         # Two players join game
         socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
@@ -138,7 +138,7 @@ describe Sudokoup::Server do
     describe "status: ok" do
       it "should add move to board" do
         EM.run {
-          server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
+          server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
           server.start
 
           # Two players join game
@@ -164,7 +164,7 @@ describe Sudokoup::Server do
       end
       it "should broadcast move" do
         EM.run {
-          server = Sudokoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
+          server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
           server.start
 
           # Two players join game

@@ -1,24 +1,24 @@
 require 'spec_helper'
 
-describe Sudokoup::Game do
+describe Sudocoup::Game do
   before(:each) do
-    @game = Sudokoup::Game.new
+    @game = Sudocoup::Game.new
   end
   describe "initialize" do
     it "should build a board" do
-      board = mock(Sudokoup::Board)
-      Sudokoup::Board.should_receive(:new).and_return(board)
+      board = mock(Sudocoup::Board)
+      Sudocoup::Board.should_receive(:new).and_return(board)
       board.should_receive(:build)
-      game = Sudokoup::Game.new
+      game = Sudocoup::Game.new
       game.board.should == board
     end
   end
 
   describe "reset" do
     it "should rebuild board" do
-      game = Sudokoup::Game.new
-      board = mock(Sudokoup::Board)
-      Sudokoup::Board.should_receive(:new).and_return(board)
+      game = Sudocoup::Game.new
+      board = mock(Sudocoup::Board)
+      Sudocoup::Board.should_receive(:new).and_return(board)
       board.should_receive(:build)
       game.reset
       game.board.should == board
@@ -30,9 +30,9 @@ describe Sudokoup::Game do
       lambda { subject.play! }.should raise_error
     end
     before(:each) do
-      @game = Sudokoup::Game.new
-      @player_1 = mock(Sudokoup::Player::Socket, :enter_game => nil)
-      @player_2 = mock(Sudokoup::Player::Socket, :enter_game => nil)
+      @game = Sudocoup::Game.new
+      @player_1 = mock(Sudocoup::Player::Socket, :enter_game => nil)
+      @player_2 = mock(Sudocoup::Player::Socket, :enter_game => nil)
       @game.join_game @player_1
       @game.join_game @player_2
     end
@@ -49,9 +49,9 @@ describe Sudokoup::Game do
 
   describe "add_player_move" do
     before(:each) do
-      @player_1 = mock(Sudokoup::Player::Socket, :name => "Player 1", :stop_timer! => nil)
-      @player_2 = mock(Sudokoup::Player::Socket, :name => "Player 2", :stop_timer! => nil)
-      @board = mock(Sudokoup::Board, :add_move => true, :violated? => false)
+      @player_1 = mock(Sudocoup::Player::Socket, :name => "Player 1", :stop_timer! => nil)
+      @player_2 = mock(Sudocoup::Player::Socket, :name => "Player 2", :stop_timer! => nil)
+      @board = mock(Sudocoup::Board, :add_move => true, :violated? => false)
       @game.board = @board
       @game.players << @player_1
       @game.players << @player_2
@@ -61,7 +61,7 @@ describe Sudokoup::Game do
       @game.add_player_move(@player_1, "1 2 3")
     end
     it "should verify player is in game" do
-      @non_player = mock(Sudokoup::Player::Socket, :name => "Party crasher")
+      @non_player = mock(Sudocoup::Player::Socket, :name => "Party crasher")
       @non_player.should_not_receive(:has_turn?)
       @board.should_not_receive(:add_move)
       @game.add_player_move(@non_player, "1 2 3").should == [:reject, "Not in the game, Party crasher"]
@@ -114,7 +114,7 @@ describe Sudokoup::Game do
 
   describe "add_move" do
     before(:each) do
-      @board = mock(Sudokoup::Board, :add_move => true)
+      @board = mock(Sudocoup::Board, :add_move => true)
       @game.board = @board
     end
     describe "legal_move" do
@@ -265,8 +265,8 @@ describe Sudokoup::Game do
 
   describe "players" do
     before(:each) do
-      @player_1 = Sudokoup::Player::Socket.new({})
-      @player_2 = Sudokoup::Player::Socket.new({})
+      @player_1 = Sudocoup::Player::Socket.new({})
+      @player_2 = Sudocoup::Player::Socket.new({})
       @player_1.stub!(:send_data)
       @player_2.stub!(:send_data)
       @game.join_game @player_1
@@ -325,9 +325,9 @@ describe Sudokoup::Game do
 
     describe "send_players" do
       it "should send given message to all players in game" do
-        game = Sudokoup::Game.new
-        player_1 = mock(Sudokoup::Player::Socket, :number => 1, :send => nil)
-        player_2 = mock(Sudokoup::Player::Socket, :number => 2, :send => nil)
+        game = Sudocoup::Game.new
+        player_1 = mock(Sudocoup::Player::Socket, :number => 1, :send => nil)
+        player_2 = mock(Sudocoup::Player::Socket, :number => 2, :send => nil)
         game.join_game(player_1)
         game.join_game(player_2)
         player_1.should_receive(:send).with("foobar")

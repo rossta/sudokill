@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../lib/sudokoup'
-Sudokoup::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
+require File.dirname(__FILE__) + '/../lib/sudocoup'
+Sudocoup::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
 
 require 'pp'
 require 'em-http'

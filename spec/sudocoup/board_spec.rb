@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sudokoup::Board do
+describe Sudocoup::Board do
 
   before(:each) do
     @pipe = "|"
@@ -20,7 +20,7 @@ TXT
   describe "build_from_string" do
 
     it "should load CONFIG_1 rows" do
-      board = Sudokoup::Board.new
+      board = Sudocoup::Board.new
       board.build_from_string(@rows)
       values = @rows.split("\n").map(&:split)
       values.each_with_index do |row, i|
@@ -35,7 +35,7 @@ TXT
 
   describe "formatting" do
     before(:each) do
-      @board = Sudokoup::Board.new
+      @board = Sudocoup::Board.new
       @board.build_from_string(@rows)
     end
     describe "to_json" do
@@ -64,7 +64,7 @@ MSG
 
   describe "add_move" do
     before(:each) do
-      @board = Sudokoup::Board.new
+      @board = Sudocoup::Board.new
       @board.build
     end
     describe "first move, space unoccupied" do
@@ -211,7 +211,7 @@ MSG
 
   describe "available?" do
     before(:each) do
-      @board = Sudokoup::Board.new
+      @board = Sudocoup::Board.new
       @board.build
     end
     describe "valid value" do

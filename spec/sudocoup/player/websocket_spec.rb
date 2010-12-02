@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'json'
 
-describe Sudokoup::Player::WebSocket do
+describe Sudocoup::Player::WebSocket do
   # before(:each) do
   #   @request = {
   #     :port => 80,
@@ -35,14 +35,14 @@ describe Sudokoup::Player::WebSocket do
   # 
   #   describe "NEW CONNECTION" do
   #     it "should send data: board json" do
-  #       board = stub(Sudokoup::Board, :to_json => '[[1, 2, 3],[4, 5, 6],[7, 8, 9]]')
+  #       board = stub(Sudocoup::Board, :to_json => '[[1, 2, 3],[4, 5, 6],[7, 8, 9]]')
   #       data = %Q|{"action":"CREATE","values":#{board.to_json}}|
   # 
   #       EM.run do
   #         EM.add_timer(0.1) do
   # 
-  #           EventMachine::start_server '0.0.0.0', 12345, Sudokoup::Player::WebSocket, {} do |ws|
-  #             ws.app = stub(Sudokoup::Server, :board => board)
+  #           EventMachine::start_server '0.0.0.0', 12345, Sudocoup::Player::WebSocket, {} do |ws|
+  #             ws.app = stub(Sudocoup::Server, :board => board)
   #           end
   # 
   #           # Create a fake client which sends draft 76 handshake
@@ -65,14 +65,14 @@ describe Sudokoup::Player::WebSocket do
   # 
   #   describe "UPDATE" do
   #     it "should send data: current json" do
-  #       move = stub(Sudokoup::Move, :to_json => '[1, 2, 3]')
+  #       move = stub(Sudocoup::Move, :to_json => '[1, 2, 3]')
   #       data = %Q|{"action":"UPDATE","value":#{move.to_json}}|
   # 
   #       EM.run do
   #         EM.add_timer(0.1) do
   # 
-  #           EventMachine::start_server '0.0.0.0', 12345, Sudokoup::Player::WebSocket, {} do |ws|
-  #             ws.app = stub(Sudokoup::Server, :current_move => move)
+  #           EventMachine::start_server '0.0.0.0', 12345, Sudocoup::Player::WebSocket, {} do |ws|
+  #             ws.app = stub(Sudocoup::Server, :current_move => move)
   #           end
   # 
   #           connection = EM.connect('0.0.0.0', 12345, FakeWebSocketClient)

@@ -3,13 +3,13 @@
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
-require 'sudokoup'
+require 'sudocoup'
 
 host    = ARGV.shift
 port    = ARGV.shift
 ws_port = ARGV.shift
 
 fork do
-  Sudokoup::WebServer.run!
+  Sudocoup::WebServer.run!
 end
-Sudokoup::Server.start(:host => host, :port => port, :ws_port => ws_port)
+Sudocoup::Server.start(:host => host, :port => port, :ws_port => ws_port)

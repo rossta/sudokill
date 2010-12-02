@@ -1,7 +1,7 @@
 require "rubygems"
 require "rake"
 
-namespace :sudokoup do
+namespace :sudocoup do
   namespace :watch do
     task :default do
       system "ruby app.rb"
@@ -11,7 +11,7 @@ namespace :sudokoup do
       system "ruby app.rb -e production -p 45678"
     end
   end
-  task :watch => "sudokoup:watch:default"
+  task :watch => "sudocoup:watch:default"
 end
 
 begin

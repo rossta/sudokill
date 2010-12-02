@@ -1,4 +1,4 @@
-module Sudokoup
+module Sudocoup
   class Clock
     def self.time
       Time.now.to_i
@@ -7,7 +7,7 @@ module Sudokoup
 
   module Player
     class Socket < EventMachine::Connection
-      include Sudokoup::StateMachine
+      include Sudocoup::StateMachine
       has_states :waiting, :playing, :has_turn
 
       attr_accessor :dispatch, :number

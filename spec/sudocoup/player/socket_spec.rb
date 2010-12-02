@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Sudokoup::Player::Socket do
+describe Sudocoup::Player::Socket do
   before(:each) do
-    @player = Sudokoup::Player::Socket.new({})
+    @player = Sudocoup::Player::Socket.new({})
   end
 
   describe "enter_game" do
@@ -20,7 +20,7 @@ describe Sudokoup::Player::Socket do
   describe "timer" do
     describe "start_timer!" do
       it "should set start time to current time if not set" do
-        Sudokoup::Clock.stub!(:time).and_return(1291259945)
+        Sudocoup::Clock.stub!(:time).and_return(1291259945)
         @player.start_timer!
         @player.start_time.should == 1291259945
       end
@@ -28,7 +28,7 @@ describe Sudokoup::Player::Socket do
 
     describe "stop_timer!" do
       before(:each) do
-        Sudokoup::Clock.stub!(:time).and_return(1291259945)
+        Sudocoup::Clock.stub!(:time).and_return(1291259945)
         @player.start_timer!
       end
       it "should set stop time to current time" do
@@ -37,23 +37,23 @@ describe Sudokoup::Player::Socket do
       end
 
       it "should set last lap time" do
-        Sudokoup::Clock.stub!(:time).and_return(1291259945)
+        Sudocoup::Clock.stub!(:time).and_return(1291259945)
         @player.start_timer!
-        Sudokoup::Clock.stub!(:time).and_return(1291259955)
+        Sudocoup::Clock.stub!(:time).and_return(1291259955)
         @player.stop_timer!
         @player.last_lap.should == 10
       end
       
       it "should add to total time" do
-        Sudokoup::Clock.stub!(:time).and_return(1291259945)
+        Sudocoup::Clock.stub!(:time).and_return(1291259945)
         @player.start_timer!
-        Sudokoup::Clock.stub!(:time).and_return(1291259955)
+        Sudocoup::Clock.stub!(:time).and_return(1291259955)
         @player.stop_timer!
         @player.total_time.should == 10
 
-        Sudokoup::Clock.stub!(:time).and_return(1291259965)
+        Sudocoup::Clock.stub!(:time).and_return(1291259965)
         @player.start_timer!
-        Sudokoup::Clock.stub!(:time).and_return(1291259985)
+        Sudocoup::Clock.stub!(:time).and_return(1291259985)
         @player.stop_timer!
         @player.total_time.should == 30
       end

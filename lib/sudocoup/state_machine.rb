@@ -1,4 +1,4 @@
-module Sudokoup
+module Sudocoup
   module StateMachine
     def self.included(receiver)
       receiver.extend         ClassMethods

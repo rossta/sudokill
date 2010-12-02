@@ -1,6 +1,6 @@
-module Sudokoup
+module Sudocoup
   PIPE = "|"
-  SUDOKOUP = 'Sudokoup'
+  SUDOKOUP = 'Sudocoup'
 
   class Server
 

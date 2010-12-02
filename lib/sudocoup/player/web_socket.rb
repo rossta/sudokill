@@ -1,4 +1,4 @@
-module Sudokoup
+module Sudocoup
 
   module Player
     class WebSocket < EventMachine::WebSocket::Connection
@@ -37,7 +37,7 @@ module Sudokoup
       protected
 
       def ensure_app
-        raise "Instance of Sudokoup::Server not defined" unless @app
+        raise "Instance of Sudocoup::Server not defined" unless @app
       end
 
     end

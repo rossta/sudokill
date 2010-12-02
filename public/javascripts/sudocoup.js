@@ -1,10 +1,10 @@
-Sudokoup = (function() {
+Sudocoup = (function() {
 
   var instanceMethods = {
     constructor: function(selector, opts) {
       var self = this;
       self.selector = "#" + selector;
-      self.$sudokoup  = $(self.selector);
+      self.$sudocoup  = $(self.selector);
 
       $("<div id='board' />").appendTo(self.selector);
 
@@ -16,11 +16,11 @@ Sudokoup = (function() {
       self.messager = new Messager(self.selector);
 
       $("<div id='status' />").appendTo(self.selector);
-      self.$status = self.$sudokoup.find("#status");
+      self.$status = self.$sudocoup.find("#status");
       self.$status.hide();
 
       // listen for events
-      self.$sudokoup
+      self.$sudocoup
         .bind("send_message", function(e, text) {
           self.send(text);
         })
@@ -46,7 +46,7 @@ Sudokoup = (function() {
       return self;
     },
 
-    // Example Sudokoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
+    // Example Sudocoup.game.connect("ws://linserv1.cims.nyu.edu:25252")
     connect: function(name, host, port) {
       var self = this;
       self.client.connect(name, host, port);
@@ -111,7 +111,7 @@ Sudokoup = (function() {
 
   classMethods = {
     play : function(selector, opts) {
-      this.game = new Sudokoup(selector, opts);
+      this.game = new Sudocoup(selector, opts);
       return this.game;
     },
     setup: function(selector) {

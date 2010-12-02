@@ -1,4 +1,4 @@
-module Sudokoup
+module Sudocoup
 
   class Board
     attr_reader :rows

@@ -25,20 +25,20 @@ Run sample clients and forward messages to server via STDIN:
 
 Join the audience to see the game in action:
 
-	$ ruby app.rb
+	$ ./script/web
 
-	// Go to http://localhost:45678/
+	// Visit http://localhost:45678/
 
 Server and player scripts accept optional command line parameters
 
-	$ ./script/server [HOST] [PORT] [VIEW_PORT]
+	$ ./script/server [HOST] [PORT] [WEBSOCKET_PORT]
 
 	$ ./script/play NAME [HOST] [PORT]
 
-	$ ruby app.rb [-p HOST] [-o PORT]
+	$ ./script/web [HOST] [PORT]
 
-	HOST:PORT 		 - socket for player clients
-	HOST:VIEW_PORT - socket for websocket clients
+	HOST:PORT						- socket for player clients
+	HOST:WEBSOCKET_PORT - socket for websocket clients
 
 ## Server Protocol ##
 

@@ -1,0 +1,11 @@
+#! /usr/bin/env ruby
+
+lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
+$LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
+
+require 'sudocoup'
+
+host    = ARGV.shift || '0.0.0.0'
+port    = ARGV.shift || 45678
+
+Sudocoup::WebServer.run!(:bind => host, :port => port)

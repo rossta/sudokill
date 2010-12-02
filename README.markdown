@@ -44,26 +44,26 @@ Server and player scripts accept optional command line parameters
 
 **READY**
 
-Ready message from the server indicates the connection was accepted and player has entered the game.
+Connection to server was accepted, player has entered the game
 
 **WAIT**
 
-Wait message indicates the connection was accepted but the player is in the queue waiting to enter the game.
+Connection was accepted, but player is in the queue waiting to enter the game
 
 **START**
 
-Start message indicates game has begun: START, your player number, player total, row 0 (top), row 1, row 2, ..., row 8 (bottom)
+Game has begun; Board rows listed in order: row 0 (top), row 1, row 2, ..., row 8 (bottom)
 
 Examples:
 
 	START|1|2|0 0 0 1 3 4 0 8 9|3 0 0 0 0 5 0 0 0| ... |0 2 0 0 1 0 0 6 0
 	// Game is starting, you're Player 1 of 2 players, then board rows 0 - 8
 
-	START|2|2
+	START|2|2|0 0 0 1 3 4 0 8 9|3 0 0 0 0 5 0 0 0| ... |0 2 0 0 1 0 0 6 0
 	// Game is starting, you're Player 2 of 2 players, then board rows 0 - 8
 
-**<ROW> <COL> <VAL> <PLAYER ID>**
-The server will broadcast each successful move to all players in the form ROW COL VAL PLAYER_ID.
+**ROW COL VAL PLAYER-ID**
+A successful move was made
 
 Example:
 
@@ -72,16 +72,16 @@ Example:
 
 **ADD**
 
-Add message indicates it is your turn: ADD, row 0 (top), row 1, row 2, ..., row 8 (bottom).
+It's your turn
 
 Example:
 
 	ADD|0 0 0 1 3 4 0 8 9|3 0 0 0 0 5 0 0 0| ... |0 2 0 0 1 0 0 6 0
 	//Your move and current board rows 0 - 8
 	
-**REJECT**
+**REJECT|REASON**
 
-Error when placing number because of provided reason. Play another move.
+Your move was not accepted.
 
 Reasons:
 
@@ -97,11 +97,11 @@ Reasons:
 
 **NAME**
 
-Send name to server immediately when connecting.
+Send your name immediately on connect
 
-**<ROW> <COL> <VAL>**
+**ROW COL VAL**
 
-Respond to an ADD message from the server with value VAL in row ROW, column COL.
+Send your move after receiving ADD
 
 Examples:
 

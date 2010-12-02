@@ -49,8 +49,8 @@ describe Sudokoup::Game do
 
   describe "add_player_move" do
     before(:each) do
-      @player_1 = mock(Sudokoup::Player::Socket, :name => "Player 1")
-      @player_2 = mock(Sudokoup::Player::Socket, :name => "Player 2")
+      @player_1 = mock(Sudokoup::Player::Socket, :name => "Player 1", :stop_timer! => nil)
+      @player_2 = mock(Sudokoup::Player::Socket, :name => "Player 2", :stop_timer! => nil)
       @board = mock(Sudokoup::Board, :add_move => true, :violated? => false)
       @game.board = @board
       @game.players << @player_1
@@ -72,6 +72,10 @@ describe Sudokoup::Game do
       end
       it "should add_move to board if available?" do
         @board.should_receive(:add_move).with(1, 2, 3).and_return(true)
+        @game.add_player_move(@player_1, "1 2 3")
+      end
+      it "should stop player timer" do
+        @player_1.should_receive(:stop_timer!)
         @game.add_player_move(@player_1, "1 2 3")
       end
       it "should return success message if move successful" do
@@ -263,6 +267,8 @@ describe Sudokoup::Game do
     before(:each) do
       @player_1 = Sudokoup::Player::Socket.new({})
       @player_2 = Sudokoup::Player::Socket.new({})
+      @player_1.stub!(:send_data)
+      @player_2.stub!(:send_data)
       @game.join_game @player_1
       @game.join_game @player_2
     end
@@ -316,7 +322,7 @@ describe Sudokoup::Game do
         @game.players.select { |p| p.has_turn? }.size.should == 1
       end
     end
-    
+
     describe "send_players" do
       it "should send given message to all players in game" do
         game = Sudokoup::Game.new
@@ -327,6 +333,24 @@ describe Sudokoup::Game do
         player_1.should_receive(:send).with("foobar")
         player_2.should_receive(:send).with("foobar")
         game.send_players("foobar")
+      end
+    end
+
+    describe "request_next_move" do
+      before(:each) do
+        @player_1.has_turn!
+      end
+      it "should set next player as current player" do
+        @game.request_next_move("ADD|1 2 3 4 5 6 7 8 9")
+        @game.current_player.should == @player_2
+      end
+      it "should send given message to next player" do
+        @player_2.should_receive(:send_data).with("ADD|1 2 3 4 5 6 7 8 9\r\n")
+        @game.request_next_move("ADD|1 2 3 4 5 6 7 8 9")
+      end
+      it "should start player_2 timer" do
+        @player_2.should_receive(:start_timer!)
+        @game.request_next_move("ADD|1 2 3 4 5 6 7 8 9")
       end
     end
   end

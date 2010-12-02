@@ -140,8 +140,7 @@ module Sudokoup
     end
 
     def request_next_player_move
-      @game.next_player!
-      @game.current_player.send add_message
+      @game.request_next_move add_message
     end
 
     def board_json

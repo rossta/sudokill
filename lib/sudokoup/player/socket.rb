@@ -1,4 +1,10 @@
 module Sudokoup
+  class Clock
+    def self.time
+      Time.now.to_i
+    end
+  end
+
   module Player
     class Socket < EventMachine::Connection
       include Sudokoup::StateMachine
@@ -58,6 +64,18 @@ module Sudokoup
       def enter_game(number)
         @number = number
         playing!
+      end
+
+      attr_accessor :start_time, :stop_time, :last_lap, :total_time
+      def start_timer!
+        @start_time = Clock.time
+      end
+
+      def stop_timer!
+        @stop_time = Clock.time
+        @last_lap  = @stop_time - @start_time
+        @total_time ||= 0
+        @total_time += @last_lap
       end
 
       protected

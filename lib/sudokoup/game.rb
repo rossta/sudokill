@@ -58,6 +58,7 @@ module Sudokoup
       return [:reject, "Wait your turn, #{player.name}"] unless player.has_turn?
 
       if @board.add_move *move.split.map(&:to_i)
+        player.stop_timer!
         [:ok, "#{player.name} played: #{move}"]
       elsif @board.violated?
         [:violation, "#{player.name} played: #{move} and violated the constraints!"]
@@ -96,6 +97,12 @@ module Sudokoup
 
     def send_players(msg)
       @players.each { |p| p.send(msg) }
+    end
+
+    def request_next_move(msg)
+      next_player!
+      current_player.send msg
+      current_player.start_timer!
     end
 
   end

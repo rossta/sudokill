@@ -4,6 +4,7 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 
 ## Try it out ##
 
+
 Install
 
 	# cd ~/your/projects/
@@ -37,18 +38,19 @@ Server and player scripts accept optional command line parameters
 
 	$ ./script/web [HOST] [PORT]
 
-	HOST:PORT						- socket for player clients
-	HOST:WEBSOCKET_PORT - socket for websocket clients
 
 ## Server Protocol ##
+
 
 **READY**
 
 Connection to server was accepted, player has entered the game
 
+
 **WAIT**
 
 Connection was accepted, but player is in the queue waiting to enter the game
+
 
 **START**
 
@@ -62,13 +64,16 @@ Examples:
 	START|2|2|0 0 0 1 3 4 0 8 9|3 0 0 0 0 5 0 0 0| ... |0 2 0 0 1 0 0 6 0
 	// Game is starting, you're Player 2 of 2 players, then board rows 0 - 8
 
+
 **ROW COL VAL PLAYER-ID**
+
 A successful move was made
 
 Example:
 
 	0 1 8 2
 	// indicates player 2 added the value 8 at row 0, col 1
+
 
 **ADD**
 
@@ -79,6 +84,7 @@ Example:
 	ADD|0 0 0 1 3 4 0 8 9|3 0 0 0 0 5 0 0 0| ... |0 2 0 0 1 0 0 6 0
 	//Your move and current board rows 0 - 8
 	
+
 **REJECT|REASON**
 
 Your move was not accepted.
@@ -89,15 +95,20 @@ Reasons:
 	ROW
 	COLUMN
 
+
 **WIN**
+
 
 **LOSE**
 
+
 ## Player Protocol ##
+
 
 **NAME**
 
 Send your name immediately on connect
+
 
 **ROW COL VAL**
 

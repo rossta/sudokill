@@ -86,7 +86,7 @@ Sudocoup = (function() {
 
     dispatch: function(message) {
       var self = this, value, json;
-      if (message.match(/UPDATE|CREATE/)) {
+      if (message.match(/UPDATE|CREATE|SCORE/)) {
         try {
           json = $.parseJSON(message);
         } catch (e) {
@@ -100,6 +100,9 @@ Sudocoup = (function() {
             break;
           case "CREATE":
             self.create(json.values);
+            break;
+          case "SCORE":
+            self.score.update(json.players);
             break;
           default:
             self.log("Unrecognized action", json.action, json);
@@ -279,6 +282,11 @@ Sudocoup = (function() {
       }
       return r;
     },
+    
+    update: function(players) {
+      // update score board using player json
+    },
+    
     build: function() {
       var self = this;
       self.$selector.empty();

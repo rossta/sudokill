@@ -4,7 +4,7 @@ describe("Sudocoup", function() {
     it("should have a board, score table, messager, websocket client", function() {
       var sudocoup = new Sudocoup("sudocoup").show();
       expect(sudocoup.board).toEqual(jasmine.any(Sudocoup.GameBoard));
-      expect(sudocoup.score).toEqual(jasmine.any(Sudocoup.ScoreTable));
+      expect(sudocoup.score).toEqual(jasmine.any(Sudocoup.ScoreBoard));
       expect(sudocoup.messager).toEqual(jasmine.any(Sudocoup.Messager));
       expect(sudocoup.client).toEqual(jasmine.any(Sudocoup.WebSocketClient));
     });
@@ -13,10 +13,10 @@ describe("Sudocoup", function() {
       new Sudocoup('sudocoup').show();
       expect(Sudocoup.GameBoard.prototype.build).toHaveBeenCalled();
     });
-    it("should append div#board to selector", function(){
+    it("should append div#game_board to selector", function(){
       var sudocoup = new Sudocoup('sudocoup').show(),
       $sudocoup = $("#sudocoup");
-      expect($sudocoup).toHaveSelector("#board");
+      expect($sudocoup).toHaveSelector("#game_board");
     });
   });
   describe("connect", function(){
@@ -74,6 +74,49 @@ describe("Sudocoup", function() {
         spyOn(sudocoup.board, "create");
         sudocoup.dispatch(json);
         expect(sudocoup.board.create).toHaveBeenCalledWith([1, 2, 3]);
+      });
+    });
+    describe("{ action: SCORE }", function() {
+      it("should update score board with player json", function() {
+        var json = "";
+        json += "{";
+        json += "\"action\":\"SCORE\",";
+        json +=   "\"players\": [";
+        json +=     "{";
+        json +=       "\"number\": 1,";
+        json +=       "\"current_time\": 14,";
+        json +=       "\"max_time\": 120,";
+        json +=       "\"name\": \"Player 1\",";
+        json +=       "\"moves\": 3";
+        json +=     "},";
+        json +=     "{";
+        json +=       "\"number\": 2,";
+        json +=       "\"current_time\": 25,";
+        json +=       "\"max_time\": 120,";
+        json +=       "\"name\": \"Player 2\",";
+        json +=       "\"moves\": 2";
+        json +=     "}";
+        json +=   "]";
+        json += "}";
+        var sudocoup = Sudocoup.setup('sudocoup');
+        spyOn(sudocoup.score, "update");
+        sudocoup.dispatch(json);
+        expect(sudocoup.score.update).toHaveBeenCalledWith([
+          {
+            "number": 1,
+            "current_time": 14,
+            "max_time": 120,
+            "name": "Player 1",
+            "moves": 3
+          },
+          {
+            "number": 2,
+            "current_time": 25,
+            "max_time": 120,
+            "name": "Player 2",
+            "moves": 2
+          }
+        ]);
       });
     });
     describe("events", function() {

@@ -27,8 +27,8 @@ describe Sudocoup::Server do
   describe "timer_json" do
     it "should return TIME message with player ids and times" do
       @server = Sudocoup::Server.new
-      player_1 = mock(Sudocoup::Player::Socket, :number => 1, :total_time => 14)
-      player_2 = mock(Sudocoup::Player::Socket, :number => 2, :total_time => 25)
+      player_1 = mock(Sudocoup::Player::Socket, :number => 1, :current_time => 14)
+      player_2 = mock(Sudocoup::Player::Socket, :number => 2, :current_time => 25)
       @server.game.join_game(player_1)
       @server.game.join_game(player_2)
       message = @server.timer_json.split(@pipe)

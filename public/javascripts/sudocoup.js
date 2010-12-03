@@ -6,13 +6,11 @@ Sudocoup = (function() {
       self.selector = "#" + selector;
       self.$sudocoup  = $(self.selector);
 
-      $("<div id='board' />").appendTo(self.selector);
-
       opts = opts || {};
       self.mode     = opts['mode'] || 'normal';
+      self.board    = new GameBoard("game_board", self.selector);
       self.client   = new WebSocketClient(this, self.mode);
-      self.board    = new GameBoard('board');
-      self.score    = new ScoreTable();
+      self.score    = new ScoreBoard("score_board", self.selector);
       self.messager = new Messager(self.selector);
 
       $("<div id='status' />").appendTo(self.selector);
@@ -38,6 +36,7 @@ Sudocoup = (function() {
       var self = this;
       mode = mode || 'show';
       self.board.build();
+      self.score.build();
       if (!(self.mode == 'simple')) self.messager.show();
 
       $(".title").hide();
@@ -87,23 +86,27 @@ Sudocoup = (function() {
 
     dispatch: function(message) {
       var self = this, value, json;
-      try {
-        json = $.parseJSON(message);
-      } catch (e) {
-        self.log("Catch JSON parse error", e.toString());
+      if (message.match(/UPDATE|CREATE/)) {
+        try {
+          json = $.parseJSON(message);
+        } catch (e) {
+          self.log("Catch JSON parse error", e.toString());
+          self.print(message);
+        }
+        switch (json.action) {
+          case "UPDATE":
+            value = json.value;
+            self.update(value[0], value[1], value[2]);
+            break;
+          case "CREATE":
+            self.create(json.values);
+            break;
+          default:
+            self.log("Unrecognized action", json.action, json);
+        }
+      } else {
+        self.log(message);
         self.print(message);
-      }
-      if (!json) return;
-      switch (json.action) {
-        case "UPDATE":
-          value = json.value;
-          self.update(value[0], value[1], value[2]);
-          break;
-        case "CREATE":
-          self.create(json.values);
-          break;
-        default:
-          self.log("Unrecognized action", json.action, json);
       }
       return json;
     }
@@ -125,13 +128,14 @@ Sudocoup = (function() {
   },
 
   GameBoard = Base.extend({
-    constructor: function(selector) {
-      this.hilite = "#333333";
-      this.none   = "none";
-      this.selector = selector;
+    constructor: function(domId, container) {
+      this.hilite         = "#333333";
+      this.none           = "none";
+      this.domId          = domId;
       this.dim            = 50;
       this.numberSquares  = new MultiArray(9, 9);
       this.backgroundSquares = new MultiArray(9, 9);
+      $("<div />").attr("id", domId).appendTo(container);
     },
     update: function(i, j, number){
       var self = this,
@@ -179,25 +183,26 @@ Sudocoup = (function() {
       });
     },
     raphael: function() {
-      if (this.r) {
-        this.r.clear();
+      var self = this;
+      if (self.r) {
+        self.r.clear();
       } else {
-        this.r = Raphael(this.selector, 450, 450);
+        self.r = Raphael(self.domId, 450, 450);
       }
+      return self.r;
     },
     build: function() {
-      var self = this;
-      self.raphael();
-      var r = this.r,
-      groups  = r.set(),
-      squares = r.set(),
-      dim = 50,
-      gDim = 3 * dim,
-      start = 0,
-      strokeColor = 'green',
-      color = "hsb(" + start + ", 1, .5)",
-      bcolor = "hsb(" + start + ", 1, 1)",
-      group, square, text, x, y, cx, cy;
+      var self = this,
+          r   = self.raphael(),
+          groups  = r.set(),
+          squares = r.set(),
+          dim = 50,
+          gDim = 3 * dim,
+          start = 0,
+          strokeColor = 'green',
+          color = "hsb(" + start + ", 1, .5)",
+          bcolor = "hsb(" + start + ", 1, 1)",
+          group, square, text, x, y, cx, cy;
 
       r.rect(0, 0, gDim * 3, gDim * 3).attr({
         stroke: strokeColor,
@@ -258,9 +263,32 @@ Sudocoup = (function() {
     }
   },{}),
 
-  ScoreTable = Base.extend({
-    constructor: function() {
-      this.numbers = new MultiArray(9, 9);
+  ScoreBoard = Base.extend({
+    constructor: function(domId, container) {
+      var self = this;
+      self.domId = domId;
+      $("<div />").attr("id", domId).appendTo(container);
+      self.$selector = $("#" + domId);
+    },
+    raphael: function() {
+      var self = this;
+      if (self.r) {
+        self.r.clear();
+      } else {
+        self.r = Raphael(self.domId, 450, 450);
+      }
+      return r;
+    },
+    build: function() {
+      var self = this;
+      self.$selector.empty();
+      $("<div />").attr('id', 'score').appendTo(self.$selector);
+      $("<div />").attr('id', 'queue').appendTo(self.$selector);
+      var $score = $("#score");
+      var $queue = $("#queue");
+      self.$selector.addClass("table");
+      $score.addClass("cell_top").append($("<div />").addClass("header").text("Now playing"));
+      $queue.addClass("cell_top").append($("<div />").addClass("header").text("On Deck"));
     }
   }),
 
@@ -434,9 +462,9 @@ Sudocoup = (function() {
     return $connectForm;
   };
 
-  classMethods.GameBoard = GameBoard;
-  classMethods.ScoreTable = ScoreTable;
-  classMethods.Messager = Messager;
+  classMethods.GameBoard  = GameBoard;
+  classMethods.ScoreBoard = ScoreBoard;
+  classMethods.Messager   = Messager;
   classMethods.WebSocketClient = WebSocketClient;
 
   return Base.extend(instanceMethods, classMethods);

@@ -154,7 +154,7 @@ module Sudocoup
     end
     
     def timer_json
-      (["TIME"] + players.map { |p| [p.number, p.total_time].join(",") }).join(PIPE)
+      (["TIME"] + players.map { |p| [p.number, p.current_time].join(",") }).join(PIPE)
     end
 
     def start_message(player)

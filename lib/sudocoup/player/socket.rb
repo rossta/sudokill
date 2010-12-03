@@ -70,6 +70,14 @@ module Sudocoup
       def total_time
         @total_time ||= 0
       end
+      
+      def current_time
+        unless @start_time.nil?
+          Clock.time - @start_time + total_time
+        else
+          total_time
+        end
+      end
 
       def start_timer!
         @start_time = Clock.time
@@ -78,6 +86,7 @@ module Sudocoup
       def stop_timer!
         @stop_time = Clock.time
         @last_lap  = @stop_time - @start_time
+        @start_time = nil
         total_time
         @total_time += @last_lap
       end

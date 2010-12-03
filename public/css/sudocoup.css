@@ -12,12 +12,13 @@ input {font-family: Georgia, Times, serif;}
 .table { display:table; border-collapse:collapse;}
 .row { display:table-row;}
 .cell   { display:table-cell; vertical-align:middle;}
+.cell_top { display:table-cell; vertical-align:top;}
 .optional { display:none; margin: 0.5em 0;}
-#board {
+#game_board {
   float:left;
   margin:0 10px 10px;
 }
-#board .cell { width: 50px; height:50px; border:1px solid #666;}
+#game_board .cell { width: 50px; height:50px; border:1px solid #666;}
 #status {
   background: #F60;
   display: block;
@@ -59,3 +60,5 @@ form.websocket a.toggle {
   margin: 0.5em 0;
 }
 form.websocket.connected label.name { display:none; }
+
+/* score board */

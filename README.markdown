@@ -40,7 +40,14 @@ Server and player scripts accept optional command line parameters
 
 
 ## Server Protocol ##
-
+<style type="text/css" media="screen">
+	#sudoku td { width: 25px; height:25px; border:1px solid black;}
+</style>
+<table id="sudoku">
+	<tr>
+		<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+	</tr>
+</tabl>
 
 **READY**
 
@@ -83,7 +90,7 @@ Example:
 
 	ADD|0 0 0 1 3 4 0 8 9|3 0 0 0 0 5 0 0 0| ... |0 2 0 0 1 0 0 6 0
 	//Your move and current board rows 0 - 8
-	
+
 
 **REJECT|REASON**
 
@@ -121,4 +128,3 @@ Examples:
 
 	8 8 1
 	// Places value 1 in row 8, column 8 (bottom right)
-	

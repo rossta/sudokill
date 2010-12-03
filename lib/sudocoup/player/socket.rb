@@ -10,7 +10,7 @@ module Sudocoup
       include Sudocoup::StateMachine
       has_states :waiting, :playing, :has_turn
 
-      attr_accessor :dispatch, :number
+      attr_accessor :dispatch, :number, :name
 
       def initialize(opts = {})
         waiting!
@@ -58,7 +58,7 @@ module Sudocoup
       end
 
       def name
-        @dispatch.name
+        @name ||= @dispatch.name
       end
 
       def enter_game(number)
@@ -66,11 +66,22 @@ module Sudocoup
         playing!
       end
 
+      def to_json
+        attrs = [].tap do |arr|
+          arr << [%Q|"name"|, %Q|"#{name}"|]
+          arr << [%Q|"number"|, number]
+          arr << [%Q|"moves"|, %Q|[#{moves.map(&:to_json).join(',')}]|]
+          arr << [%Q|"current_time"|, current_time]
+          arr << [%Q|"max_time"|, max_time]
+        end
+        %Q|{#{attrs.map { |a| a.join(":") }.join(",") } }|
+      end
+
       attr_accessor :start_time, :stop_time, :last_lap, :total_time
       def total_time
         @total_time ||= 0
       end
-      
+
       def current_time
         unless @start_time.nil?
           Clock.time - @start_time + total_time
@@ -89,6 +100,14 @@ module Sudocoup
         @start_time = nil
         total_time
         @total_time += @last_lap
+      end
+
+      def max_time
+        120 # TODO add as option to app
+      end
+
+      def moves
+        @moves ||= []
       end
 
       protected

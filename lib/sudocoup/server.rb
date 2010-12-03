@@ -28,25 +28,19 @@ module Sudocoup
         @channel  = EM::Channel.new
 
         EventMachine::start_server @host, @port, Player::Socket, :app => self do |player|
-          if @game.available?
-            join_game player
-          else
-            join_queue player
-          end
+          new_player player
         end
 
         EventMachine.add_periodic_timer(3.0) {
           if @game.in_progress?
-            broadcast timer_json
+            broadcast player_json
           end
         }
 
         EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
             ws.onopen    {
-              ws.sid = @channel.subscribe { |msg|
-                ws.send msg
-              }
+              ws.sid = @channel.subscribe { |msg| ws.send msg }
 
               ws.onmessage { |msg|
                 if msg =~ /NEW CONNECTION/
@@ -127,6 +121,14 @@ module Sudocoup
       defer
     end
 
+    def new_player(player)
+      if @game.available?
+        join_game player
+      else
+        join_queue player
+      end
+    end
+
     def join_game(player)
       joined = @game.join_game(player)
       if joined
@@ -152,9 +154,9 @@ module Sudocoup
     def move_json(move, status)
       %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"#{status}"}|
     end
-    
-    def timer_json
-      (["TIME"] + players.map { |p| [p.number, p.current_time].join(",") }).join(PIPE)
+
+    def player_json
+      %Q|{"action":"SCORE","players":[#{players.map(&:to_json).join(",")}]}|
     end
 
     def start_message(player)

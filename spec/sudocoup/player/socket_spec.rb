@@ -79,6 +79,34 @@ describe Sudocoup::Player::Socket do
         @player.current_time.should == 25
       end
     end
+
+  end
+
+  describe "to_json" do
+    before(:each) do
+      @player.number = 1
+      @player.total_time = 14
+      @player.name = "Rossta"
+    end
+    it "should return TIME message with player ids and times" do
+#     {
+#       number: 1,
+#       time: {
+#         current: 14,
+#         max: 120
+#       },
+#       name: 'Player 1',
+#       moves: 3
+#     }
+      json_s = @player.to_json
+
+      json = JSON.parse(json_s)
+      json['number'].should == 1
+      json['name'].should == 'Rossta'
+      json['moves'].should == []
+      json['current_time'].should == 14
+      json['max_time'].should == 120
+    end
   end
 
 end

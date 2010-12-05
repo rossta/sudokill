@@ -5,38 +5,41 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 ## Try it out ##
 
 
-Install
+Install*
 
-	# cd ~/your/projects/
-	$ git clone git://github.com/rosskaff/sudocoup.git --recursive
+	$ git clone git://github.com/rosskaff/sudocoup.git
 
-	or
+	// or get sudocoup source using "Download" project link
+	// *Windows users, see instructions (see below)
 
-	# Get source using "Download" project link, then
-	$ gem install addressable
+Dependencies
+
+	$ gem install eventmachine
 	$ gem install em-websocket
+	$ gem install sinatra
+	$ gem install thin // optional: alternative web server to WEBrick
 
 Start the server
 
-	$ ./script/server
-
-Run sample clients and forward messages to server via STDIN:
-
-	$ ./script/play NAME
+	$ ruby script/server
 
 Join the audience to see the game in action:
 
-	$ ./script/web
+	$ ruby script/web
 
 	// Visit http://localhost:45678/
 
+Run sample clients and forward messages to server via STDIN:
+
+	$ ruby script/play NAME
+
 Server and player scripts accept optional command line parameters
 
-	$ ./script/server [HOST] [PORT] [WEBSOCKET_PORT]
+	$ ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
 
-	$ ./script/play NAME [HOST] [PORT]
+	$ ruby script/web [HOST] [PORT]
 
-	$ ./script/web [HOST] [PORT]
+	$ ruby script/play NAME [HOST] [PORT]
 
 
 ## Server Protocol ##
@@ -121,3 +124,13 @@ Examples:
 
 	8 8 1
 	// Places value 1 in row 8, column 8 (bottom right)
+
+##Windows Installation##
+
+Install Ruby 1.8.7 from [RubyInstaller](http://rubyinstaller.org)
+* Useful [installation info](http://ruby.about.com/od/beginningruby/ss/Installing-A-Ruby-Development-Environment-On-Windows.htm)
+
+	$ gem install eventmachine --platform=mswin32
+	$ gem install em-websocket
+	$ gem install sinatra
+	$ gem install thin --platform=mswin32 // optional: alternative web server to WEBrick

@@ -156,7 +156,7 @@ module Sudocoup
     end
 
     def player_json
-      %Q|{"action":"SCORE","players":[#{players.map(&:to_json).join(",")}]}|
+      %Q|{"action":"SCORE","max_time":#{@game.max_time},"players":[#{players.map(&:to_json).join(",")}]}|
     end
 
     def start_message(player)

@@ -99,9 +99,9 @@ describe("Sudocoup", function() {
         json +=   "]";
         json += "}";
         var sudocoup = Sudocoup.setup('sudocoup');
-        spyOn(sudocoup.score, "update");
+        spyOn(sudocoup.score, "updateScore");
         sudocoup.dispatch(json);
-        expect(sudocoup.score.update).toHaveBeenCalledWith([
+        expect(sudocoup.score.updateScore).toHaveBeenCalledWith([
           {
             "number": 1,
             "current_time": 14,

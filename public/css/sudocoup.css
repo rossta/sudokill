@@ -14,6 +14,7 @@ input {font-family: Georgia, Times, serif;}
 .cell   { display:table-cell; vertical-align:middle;}
 .cell_top { display:table-cell; vertical-align:top;}
 .optional { display:none; margin: 0.5em 0;}
+.hidden { display:none;}
 #game_board {
   float:left;
   margin:0 10px 10px;
@@ -62,3 +63,9 @@ form.websocket a.toggle {
 form.websocket.connected label.name { display:none; }
 
 /* score board */
+#score_board {
+  margin:2em auto;
+}
+#score_board .header { color:#AAA;}
+#score_board #score,
+#score_board #queue { width:125px;}

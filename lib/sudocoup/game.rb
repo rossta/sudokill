@@ -3,11 +3,12 @@ module Sudocoup
     include Sudocoup::StateMachine
     has_states :waiting, :ready, :in_progress, :over
 
-    attr_accessor :board, :state, :moves, :size
+    attr_accessor :board, :state, :moves, :size, :max_time
     attr_reader :players
 
     def initialize(opts = {})
       @size = opts[:size] || 2
+      @max_time = opts[:max_time] || 120
       reset
     end
 

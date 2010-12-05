@@ -91,10 +91,8 @@ describe Sudocoup::Player::Socket do
     it "should return TIME message with player ids and times" do
 #     {
 #       number: 1,
-#       time: {
-#         current: 14,
-#         max: 120
-#       },
+#       current_time: 14,
+#       max_time: 120,
 #       name: 'Player 1',
 #       moves: 3
 #     }

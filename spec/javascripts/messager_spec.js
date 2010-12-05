@@ -43,7 +43,7 @@ describe("Sudocoup.Messager", function() {
       expect(spy).toHaveBeenCalledWith("What a game!");
     });
   });
-  
+
   describe("show", function() {
     it("should be hidden when created", function() {
       var messager = new Sudocoup.Messager('#sudocoup');
@@ -51,9 +51,6 @@ describe("Sudocoup.Messager", function() {
       expect(msgDiv).toHaveLength(1);
       expect(msgDiv).not.toBeVisible();
     });
-    it("should show msg div", function() {
-      
-    });
   });
-  
+
 });

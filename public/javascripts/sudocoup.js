@@ -102,7 +102,7 @@ Sudocoup = (function() {
             self.create(json.values);
             break;
           case "SCORE":
-            self.score.update(json.players);
+            self.score.updateScore(json.players);
             break;
           default:
             self.log("Unrecognized action", json.action, json);
@@ -282,11 +282,21 @@ Sudocoup = (function() {
       }
       return r;
     },
-    
-    update: function(players) {
-      // update score board using player json
+
+    updateScore: function(players) {
+      var self = this, $score = self.$selector.find("#score");
+      $score.find(".player").empty();
+      _(players).each(function(player) {
+        var $player = $("<div />");
+        $("<div />").appendTo($player).addClass("name").text(player["name"]);
+        $("<div />").appendTo($player).addClass("current_time").text("Time: " + player["current_time"]);
+        $("<div />").appendTo($player).addClass("max_time").addClass("hidden").text(player["max_time"]);
+        $("<div />").appendTo($player).addClass("moves").text("Moves: " + player["moves"]);
+        $player.addClass("player").appendTo($score);
+      });
+      return self;
     },
-    
+
     build: function() {
       var self = this;
       self.$selector.empty();
@@ -296,7 +306,8 @@ Sudocoup = (function() {
       var $queue = $("#queue");
       self.$selector.addClass("table");
       $score.addClass("cell_top").append($("<div />").addClass("header").text("Now playing"));
-      $queue.addClass("cell_top").append($("<div />").addClass("header").text("On Deck"));
+      $queue.addClass("cell_top").append($("<div />").addClass("header").text("On deck"));
+      return self;
     }
   }),
 

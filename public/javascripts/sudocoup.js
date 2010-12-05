@@ -13,9 +13,8 @@ Sudocoup = (function() {
       self.score    = new ScoreBoard("score_board", self.selector);
       self.messager = new Messager(self.selector);
 
-      $("<div id='status' />").appendTo(self.selector);
-      self.$status = self.$sudocoup.find("#status");
-      self.$status.hide();
+      self.$status = buildStatus("game_status");
+      self.$sudocoup.append(self.$status);
 
       // listen for events
       self.$sudocoup
@@ -23,11 +22,7 @@ Sudocoup = (function() {
           self.send(text);
         })
         .bind("connected", function() {
-          self.status("Connected");
           self.show();
-        })
-        .bind("disconnected", function() {
-          self.status("Not connected");
         });
       return self;
     },
@@ -76,17 +71,12 @@ Sudocoup = (function() {
     },
 
     status: function(msg) {
-      var self = this;
-      if (self.statusTimeout) clearTimeout(self.statusTimeout);
-      self.$status.text(msg).show();
-      self.statusTimeout = setTimeout(function() {
-        self.$status.fadeOut(1000);
-      }, 2500);
+      this.$status.text(msg).show();
     },
 
     dispatch: function(message) {
       var self = this, value, json;
-      if (message.match(/UPDATE|CREATE|SCORE/)) {
+      if (message.match(/UPDATE|CREATE|SCORE|STATUS/)) {
         try {
           json = $.parseJSON(message);
         } catch (e) {
@@ -103,6 +93,9 @@ Sudocoup = (function() {
             break;
           case "SCORE":
             self.score.updateScore(json.players);
+            break;
+          case "STATUS":
+            self.status(json.message);
             break;
           default:
             self.log("Unrecognized action", json.action, json);
@@ -379,7 +372,10 @@ Sudocoup = (function() {
       var self = this;
       self.game = game;
       self.$connectForm = buildConnectForm();
-      $(game.selector).append(self.$connectForm);
+      self.$status      = buildStatus("websocket_status");
+
+      $(game.selector).append(self.$connectForm).append(self.$status);
+
       mode = mode || 'normal';
       self.$connectForm.addClass("websocket welcome").addClass(mode);
 
@@ -388,17 +384,19 @@ Sudocoup = (function() {
               host = $this.find('input[name=host]').val(),
               port = $this.find('input[name=port]').val(),
               name = $this.find('input[name=name]').val();
-          self.game.status("Connecting");
+          self.status("Connecting");
           self.connect(name, host, port);
           return false;
         }).
         bind("connected", function(){
           $(this).find("input.submit").attr("value", "Disconnect");
           self.$connectForm.removeClass("welcome").addClass("connected");
+          self.status("Connected");
         }).
         bind("disconnected", function() {
           $(this).find("input.submit").attr("value", "Connect");
           self.$connectForm.removeClass("connected").addClass("welcome");
+          self.status("Not connected");
         }).
         delegate("input.submit[value=Disconnect]", "click", function(){
           self.close();
@@ -449,6 +447,14 @@ Sudocoup = (function() {
     },
     send: function(msg) {
       this.ws.send(msg + EOL);
+    },
+    status: function(msg) {
+      var self = this;
+      if (self.statusTimeout) clearTimeout(self.statusTimeout);
+      self.$status.text(msg).show();
+      self.statusTimeout = setTimeout(function() {
+        self.$status.fadeOut(1000);
+      }, 2500);
     }
   }),
 
@@ -479,6 +485,12 @@ Sudocoup = (function() {
 
     $connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
     return $connectForm;
+  },
+
+  buildStatus = function(domId) {
+    var $status = $("<div />");
+    $status.attr("id", domId).hide();
+    return $status;
   };
 
   classMethods.GameBoard  = GameBoard;

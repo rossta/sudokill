@@ -145,6 +145,7 @@ module Sudocoup
 
     def request_next_player_move
       @game.request_next_move add_message
+      broadcast status_json "#{@game.current_player.name}'s turn!"
     end
 
     def board_json
@@ -157,6 +158,10 @@ module Sudocoup
 
     def player_json
       %Q|{"action":"SCORE","max_time":#{@game.max_time},"players":[#{players.map(&:to_json).join(",")}]}|
+    end
+    
+    def status_json(status)
+      %Q|{"action":"STATUS","message":"#{status}"}|
     end
 
     def start_message(player)

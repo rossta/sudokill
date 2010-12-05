@@ -64,9 +64,10 @@ describe("WebSocketClient", function() {
       it("should update game status: connecting", function() {
         var client = createClient();
         var $form = $('form.websocket');
-        spyOn(client.game, "status");
+        var status;
         $form.submit();
-        expect(client.game.status).toHaveBeenCalledWith("Connecting");
+        status = $("#websocket_status").text();
+        expect(status).toEqual("Connecting");
       });
     });
     describe("connected", function() {
@@ -82,6 +83,14 @@ describe("WebSocketClient", function() {
         $form.trigger("connected");
         expect($form).toHaveClass("connected");
         expect($form).not.toHaveClass("welcome");
+      });
+      it("should update status: connected", function() {
+        var client = createClient();
+        var $form = $('form.websocket');
+        var status;
+        $form.trigger("connected");
+        status = $("#websocket_status").text();
+        expect(status).toEqual("Connected");
       });
     });
     describe("disconnected", function() {
@@ -100,6 +109,15 @@ describe("WebSocketClient", function() {
         $form.trigger("disconnected");
         expect($form).not.toHaveClass("connected");
         expect($form).toHaveClass("welcome");
+      });
+      it("should update status: not connected", function() {
+        var client = createClient();
+        var $form = $('form.websocket');
+        var status;
+        $form.trigger("connected");
+        $form.trigger("disconnected");
+        status = $("#websocket_status").text();
+        expect(status).toEqual("Not connected");
       });
     });
   });

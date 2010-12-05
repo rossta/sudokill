@@ -119,6 +119,16 @@ describe("Sudocoup", function() {
         ]);
       });
     });
+    describe("{ action: STATUS }", function() {
+      it("should print message in game status div", function() {
+        var json = "{\"action\":\"STATUS\",\"message\":\"Game is now in progress\"}";
+        var sudocoup = Sudocoup.setup('sudocoup');
+        var status;
+        sudocoup.dispatch(json);
+        status = $("#game_status").text();
+        expect(status).toEqual("Game is now in progress");
+      });
+    });
     describe("events", function() {
       describe("send_message", function() {
         it("should send given text", function() {
@@ -134,22 +144,6 @@ describe("Sudocoup", function() {
           spyOn(sudocoup, "show");
           $("#sudocoup").trigger("connected");
           expect(sudocoup.show).toHaveBeenCalled();
-        });
-        it("should update status: connected", function() {
-          var sudocoup = Sudocoup.setup('sudocoup');
-          var status;
-          $("#sudocoup").trigger("connected");
-          status = $("#status").text();
-          expect(status).toEqual("Connected");
-        });
-      });
-      describe("disconnected", function() {
-        it("should update status: not connected", function() {
-          var sudocoup = Sudocoup.setup('sudocoup');
-          var status;
-          $("#sudocoup").trigger("disconnected");
-          status = $("#status").text();
-          expect(status).toEqual("Not connected");
         });
       });
     });

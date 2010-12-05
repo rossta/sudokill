@@ -4,13 +4,14 @@ better error message for illegal moves
 declare winner,loser, num moves
 start new game with players from queue
 EM.run server specs
-timer
+timer, in progress
 
 HUMAN PLAYER
 enter game queue as human
 accept/send input for human player
 
 VIEW
+indicate player turn
 trigger play from view
 win logic
 timers

@@ -20,7 +20,7 @@ input {font-family: Georgia, Times, serif;}
   margin:0 10px 10px;
 }
 #game_board .cell { width: 50px; height:50px; border:1px solid #666;}
-#status {
+#websocket_status {
   background: #F60;
   display: block;
   left: 45%;

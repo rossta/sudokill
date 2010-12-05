@@ -24,11 +24,19 @@ describe Sudocoup::Server do
       json["values"].should == [[1,2,3],[4,5,6],[7,8,9]]
     end
   end
+  describe "status_json" do
+    it "should return action and given message as json" do
+      json_s = subject.status_json("Game is starting!");
+      json = JSON.parse(json_s)
+      json["action"].should == "STATUS"
+      json["message"].should == "Game is starting!"
+    end
+  end
   describe "player_json" do
     before(:each) do
       @player_1 = mock(Sudocoup::Player::Socket, :number => 1, :current_time => 14, :name => "Player 1", :to_json => %Q|{"number":1}|)
       @player_2 = mock(Sudocoup::Player::Socket, :number => 2, :current_time => 25, :name => "Player 1", :to_json => %Q|{"number":2}|)
-      @game     = mock(Sudocoup::Game, :players => [@player_1, @player_2])
+      @game     = mock(Sudocoup::Game, :players => [@player_1, @player_2], :max_time => 120)
       Sudocoup::Game.stub!(:new).and_return(@game)
       @server   = Sudocoup::Server.new
     end

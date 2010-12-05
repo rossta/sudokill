@@ -59,6 +59,8 @@ describe Sudocoup::Server do
         socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
 
+        processed = false
+
         # Websocket client
         EventMachine.add_timer(0.1) {
           http = EventMachine::HttpRequest.new('ws://127.0.0.1:56789/').get :timeout => 0
@@ -74,6 +76,11 @@ describe Sudocoup::Server do
                 (0..9).should include(val)
               end
             end
+            http.stream { |msg| 
+              json = JSON.parse(msg)
+              json['action'].should == "STATUS"
+              json['message'].should == "Client's turn!"
+            }
             EventMachine.stop
           }
         }

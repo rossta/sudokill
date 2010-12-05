@@ -3,9 +3,13 @@
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
-require 'sudocoup'
+require "rubygems"
+require 'sudocoup/web_server'
 
 host    = ARGV.shift || '0.0.0.0'
 port    = ARGV.shift || 45678
 
-Sudocoup::WebServer.run!(:bind => host, :port => port)
+Sudocoup::WebServer.run!(:bind => host, :port => port) do
+  system "open http://#{host}:#{port}"
+end
+

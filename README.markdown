@@ -40,14 +40,7 @@ Server and player scripts accept optional command line parameters
 
 
 ## Server Protocol ##
-<style type="text/css" media="screen">
-	#sudoku td { width: 25px; height:25px; border:1px solid black;}
-</style>
-<table id="sudoku">
-	<tr>
-		<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-	</tr>
-</tabl>
+
 
 **READY**
 

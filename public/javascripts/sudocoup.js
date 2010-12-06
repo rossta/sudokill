@@ -17,6 +17,7 @@ Sudocoup = (function() {
 
       self.$gameLog = buildContainer("game_log");
       self.$sudocoup.append(self.$gameLog);
+
       self.score    = new ScoreBoard("score_board", "#game_log");
       self.messager = new Messager("#game_log");
 
@@ -286,26 +287,30 @@ Sudocoup = (function() {
       $("<div />").attr("id", domId).appendTo(container);
       self.$selector = $("#" + domId);
     },
-    raphael: function() {
-      var self = this;
-      if (self.r) {
-        self.r.clear();
-      } else {
-        self.r = Raphael(self.domId, 450, 450);
-      }
-      return r;
-    },
 
     updateScore: function(players) {
       var self = this, $score = self.$selector.find("#score");
+      if (!$score.find(".player").length) {
+        _(players).each(function(p, i) { $("<div />").addClass("player player_" + (i + 1)).appendTo($score); });
+      }
       $score.find(".player").empty();
-      _(players).each(function(player) {
-        var $player = $("<div />");
+      _(players).each(function(player, i) {
+        var selector = "player_" + (i + 1),
+            $player = $score.find("." + selector);
+        if (!$player) {
+          $player = $("<div />");
+          $player.addClass("player").addClass(selector).appendTo($score);
+        }
+
         $("<div />").appendTo($player).addClass("name").text(player["name"]);
         $("<div />").appendTo($player).addClass("current_time").text("Time: " + player["current_time"]);
         $("<div />").appendTo($player).addClass("max_time").addClass("hidden").text(player["max_time"]);
         $("<div />").appendTo($player).addClass("moves").text("Moves: " + player["moves"]);
-        $player.addClass("player").appendTo($score);
+        if (player["has_turn"]) {
+          $player.addClass("has_turn");
+        } else {
+          $player.removeClass("has_turn");
+        }
       });
       return self;
     },
@@ -348,8 +353,7 @@ Sudocoup = (function() {
       self.$form      = $("<form></form>");
       self.$input     = $("<input type='text' name='message' placeholder='Say anything...' />");
 
-      self.$msg.attr("id", "msg").appendTo(selector);
-      self.$msg.hide();
+      self.$msg.hide().attr("id", "msg").appendTo(selector);
       self.$pane.addClass("pane").appendTo(self.$msg);
 
       self.$form.appendTo(self.$msg);

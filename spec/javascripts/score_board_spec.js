@@ -48,14 +48,16 @@ describe("ScoreBoard", function() {
           current_time: 14,
           max_time: 120,
           name: 'Player 1',
-          moves: 3
+          moves: 3,
+          has_turn: false
         },
         {
           number: 2,
           current_time: 8,
           max_time: 120,
           name: 'Player 2',
-          moves: 2
+          moves: 2,
+          has_turn: true
         }
       ];
       var $player1, $player2;
@@ -70,11 +72,14 @@ describe("ScoreBoard", function() {
       expect($player1.find(".current_time").text()).toEqual("Time: 14");
       expect($player1.find(".max_time").text()).toEqual("120");
       expect($player1.find(".moves").text()).toEqual("Moves: 3");
+      expect($player1.hasClass("has_turn")).toBeFalsy();
+      // expect($player1.css("background-color")).toEqual("");
       
       expect($player2.find(".name").text()).toEqual("Player 2");
       expect($player2.find(".current_time").text()).toEqual("Time: 8");
       expect($player2.find(".max_time").text()).toEqual("120");
-      expect($player2.find(".moves").text()).toEqual("Moves: 2");
+      expect($player2.hasClass("has_turn")).toBeTruthy();
+      // expect($player2.css("background-color")).not.toEqual("none");
     });
   });
 });

@@ -87,6 +87,7 @@ describe Sudocoup::Player::Socket do
       @player.number = 1
       @player.total_time = 14
       @player.name = "Rossta"
+      @player.has_turn!
     end
     it "should return TIME message with player ids and times" do
 #     {
@@ -104,6 +105,7 @@ describe Sudocoup::Player::Socket do
       json['moves'].should == []
       json['current_time'].should == 14
       json['max_time'].should == 120
+      json['has_turn'].should be_true
     end
   end
 

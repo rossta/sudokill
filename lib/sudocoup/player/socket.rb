@@ -73,6 +73,7 @@ module Sudocoup
           arr << [%Q|"moves"|, %Q|[#{moves.map(&:to_json).join(',')}]|]
           arr << [%Q|"current_time"|, current_time]
           arr << [%Q|"max_time"|, max_time]
+          arr << [%Q|"has_turn"|, has_turn?]
         end
         %Q|{#{attrs.map { |a| a.join(":") }.join(",") } }|
       end

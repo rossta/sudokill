@@ -82,12 +82,13 @@ module Sudocoup
       defer.callback {
         if @game.ready?
           broadcast board_json
+          broadcast status_json("New game about to begin!")
           @game.play! do |player|
             player.send start_message(player)
           end
           request_next_player_move
         else
-          broadcast @game.status, SUDOKOUP
+          broadcast status_json(@game.status)
         end
       }
       defer

@@ -30,7 +30,6 @@ Sudocoup = (function() {
           self.show();
         });
 
-      self.status("Enter your name and connect");
       return self;
     },
 
@@ -426,6 +425,10 @@ Sudocoup = (function() {
           self.close();
           return false;
         }).
+        delegate("input.play", "click", function(){
+          self.send("PLAY");
+          return false;
+        }).
         delegate("a.toggle", "click", function() {
           var text = $(this).text();
           text = text == "Options" ? "Hide" : "Options";
@@ -507,6 +510,7 @@ Sudocoup = (function() {
         $opts.append("<label for='s_port' class='port'>Port</label>");
         $opts.append("<input id='s_port' type='text' name='port' class='port' />");
 
+    $connectForm.append("<input type='button' name='play' value='Play' class='play' />");
     $connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
     return $connectForm;
   },

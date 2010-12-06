@@ -58,7 +58,15 @@ form.websocket a.toggle {
   font-size: 12px;
   margin: 0.5em 0;
 }
-form.websocket.connected label.name { display:none; }
+form.websocket input.play { display:none;}
+form.websocket.connected {
+  position:absolute;
+  top:1em;
+  right:1em;
+}
+form.websocket.connected .required,
+form.websocket.connected .optional { display:none; }
+form.websocket.connected input.play { display:inline; }
 
 /* score board */
 #score_board { margin:2em auto 1em; }

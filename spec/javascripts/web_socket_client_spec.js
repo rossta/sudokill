@@ -120,6 +120,16 @@ describe("WebSocketClient", function() {
         expect(status).toEqual("Not connected");
       });
     });
+    describe("play", function() {
+      it("should send PLAY message when play button clicked", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        spyOn(websocket, "send");
+        $form.find("input.play").click();
+        expect(websocket.send).toHaveBeenCalledWith("PLAY\r\n");
+      });
+    });
   });
 
   describe("connect", function() {

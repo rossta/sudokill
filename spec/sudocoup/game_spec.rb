@@ -260,7 +260,7 @@ describe Sudocoup::Game do
 
   describe "status" do
     it "should return 'Waiting for more players' if waiting" do
-      @game.status.should == 'Game waiting for more players'
+      @game.status.should == 'Waiting for more players'
     end
   end
 

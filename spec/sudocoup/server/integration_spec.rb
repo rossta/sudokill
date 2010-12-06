@@ -44,7 +44,8 @@ describe Sudocoup::Server do
           http.callback { server.play_game.succeed }
 
           http.stream { |msg|
-            msg.should == "Sudocoup: Game waiting for more players"
+            json = JSON.parse(msg)
+            json["message"].should == "Waiting for more players"
             EventMachine.stop
           }
         }
@@ -79,7 +80,12 @@ describe Sudocoup::Server do
             http.stream { |msg| 
               json = JSON.parse(msg)
               json['action'].should == "STATUS"
-              json['message'].should == "Client's turn!"
+              json['message'].should == "New game about to begin!"
+              http.stream { |msg| 
+                json = JSON.parse(msg)
+                json['action'].should == "STATUS"
+                json['message'].should == "Client's turn!"
+              }
             }
             EventMachine.stop
           }

@@ -40,7 +40,7 @@ module Sudocoup
     def status
       case state
       when :waiting
-        "Game waiting for more players"
+        "Waiting for more players"
       else
         "Game #{state.to_s}"
       end

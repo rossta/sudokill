@@ -18,7 +18,6 @@ module Sudocoup
             send @app.board_json
           when /PLAY/
             @app.play_game.succeed
-            @app.broadcast "New game about to begin!"
           when /^\d+ \d+ \d+$/
             @app.request_add_move.succeed(self, response)
           end

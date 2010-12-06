@@ -62,7 +62,7 @@ module Sudocoup
         player.stop_timer!
         [:ok, "#{player.name} played: #{move}"]
       elsif @board.violated?
-        [:violation, "#{player.name} played: #{move} and violated the constraints!"]
+        [:violation, "#{previous_player.name} WINS! #{player.name} played #{move} and violated the constraints"]
       else
         [:reject, "Illegal move. #{player.name} cannot play #{move}"]
       end

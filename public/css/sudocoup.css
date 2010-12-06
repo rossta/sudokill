@@ -42,7 +42,6 @@ input {font-family: Georgia, Times, serif;}
 #msg.visible { display:table; }
 #msg p { margin: 0 0 1em;}
 #msg input { border:1px solid #999; padding:5px;width:80%;}
-#msg .pane { overflow:auto; height: 12em; }
 
 form.websocket { text-align:center; }
 form.websocket input.name { font-size:1.5em; }
@@ -62,15 +61,19 @@ form.websocket a.toggle {
 form.websocket.connected label.name { display:none; }
 
 /* score board */
-#score_board {
-  margin:2em auto 1em;
-}
+#score_board { margin:2em auto 1em; }
 #score_board .header { color:#AAA;}
+#score_board #score { width: 250px; border-right:1px solid #AAA;}
+
+#score_board #score,
+#score_board #queue,
+#msg .pane { overflow:auto; height: 8em; }
 
 #game_status {
   display:table;
   margin:0 auto 1em;
   padding:1em;
   color:#B7FF4F;
+  text-align:center;
 }
 #game_status .msg { display:table-cell;}

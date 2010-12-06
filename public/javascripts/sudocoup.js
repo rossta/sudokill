@@ -34,7 +34,7 @@ Sudocoup = (function() {
     },
 
     show: function(mode) {
-      var self = this;
+      var self = this, $board;
       mode = mode || 'show';
       self.board.build();
       self.score.build();
@@ -43,6 +43,13 @@ Sudocoup = (function() {
 
       $(".title").hide();
       $(".logo").show();
+      $board = $("#game_board");
+      self.$status.css({
+        position:"absolute",
+        top:$board.offset().top + $board.height() + "px",
+        left:$board.offset().left + "px",
+        width: $board.width()
+      });
 
       return self;
     },
@@ -136,12 +143,14 @@ Sudocoup = (function() {
 
   GameBoard = Base.extend({
     constructor: function(domId, container) {
-      this.hilite         = "#333333";
-      this.none           = "none";
-      this.domId          = domId;
-      this.dim            = 50;
-      this.numberSquares  = new MultiArray(9, 9);
-      this.backgroundSquares = new MultiArray(9, 9);
+      var self = this;
+      self.hilite         = "#333333";
+      self.none           = "none";
+      self.domId          = domId;
+      self.$selector      = $("#" + self.domId);
+      self.dim            = 50;
+      self.numberSquares  = new MultiArray(9, 9);
+      self.backgroundSquares = new MultiArray(9, 9);
       $("<div />").attr("id", domId).appendTo(container);
     },
     update: function(i, j, number){
@@ -340,6 +349,7 @@ Sudocoup = (function() {
       self.$input     = $("<input type='text' name='message' placeholder='Say anything...' />");
 
       self.$msg.attr("id", "msg").appendTo(selector);
+      self.$msg.hide();
       self.$pane.addClass("pane").appendTo(self.$msg);
 
       self.$form.appendTo(self.$msg);
@@ -481,6 +491,7 @@ Sudocoup = (function() {
     $connectForm.append("<div class='required'></div>");
     var $name = $connectForm.find("div.required");
         $name.append("<input id='s_name' type='text' name='name' class='name' placeholder='Your name please' autofocus='true' />");
+        $name.append("<label for='s_name' class='name'>Your name please</label>");
 
     var $toggle = $("<a></a>").attr("href", "#").text("Options").addClass("toggle");
         $name.append($toggle);

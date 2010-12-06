@@ -89,13 +89,14 @@ describe Sudocoup::Game do
         it "should notify players if player 1 move results in board violation" do
           @board.stub!(:add_move).and_return(false)
           @board.should_receive(:violated?).and_return(true)
-          @game.add_player_move(@player_1, "1 2 3").should == [:violation, "Player 1 played: 1 2 3 and violated the constraints!"]
+          @game.add_player_move(@player_1, "1 2 3").should == [:violation, "Player 2 WINS! Player 1 played 1 2 3 and violated the constraints"]
         end
         it "should notify players if player 2 move results in board violation" do
           @board.stub!(:add_move).and_return(false)
+          @player_1.stub!(:has_turn?).and_return(false)
           @player_2.stub!(:has_turn?).and_return(true)
           @board.should_receive(:violated?).and_return(true)
-          @game.add_player_move(@player_2, "1 2 3").should == [:violation, "Player 2 played: 1 2 3 and violated the constraints!"]
+          @game.add_player_move(@player_2, "1 2 3").should == [:violation, "Player 1 WINS! Player 2 played 1 2 3 and violated the constraints"]
         end
       end
     end

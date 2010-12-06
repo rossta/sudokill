@@ -114,6 +114,7 @@ module Sudocoup
         when :violation
           broadcast move_json(move, status.to_s)
           @game.send_players game_over_message(msg)
+          broadcast status_json(msg)
           @game = Game.new
           while @game.available? && @queue.any?
             join_game @queue.shift

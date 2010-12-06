@@ -17,7 +17,7 @@ describe("Sudocoup.Messager", function() {
     it("should print to the message pane", function() {
       var messager = new Sudocoup.Messager('#sudocoup');
       messager.print("I know that's right!");
-      var output = $("#pane");
+      var output = $("#msg .pane");
       expect(output.length).toEqual(1);
       expect(output.text()).toEqual("I know that's right!");
     });
@@ -25,7 +25,7 @@ describe("Sudocoup.Messager", function() {
       var messager = new Sudocoup.Messager('#sudocoup');
       messager.print("That's awesome!");
       messager.print("I know that's right!");
-      var paragraphs = $("#pane p");
+      var paragraphs = $("#msg .pane p");
       expect(paragraphs.length).toEqual(2);
       expect(paragraphs.first().text()).toEqual("That's awesome!");
       expect(paragraphs.last().text()).toEqual("I know that's right!");

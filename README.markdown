@@ -4,13 +4,23 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 
 ## Try it out ##
 
+### Mac / Linux ###
 
-Install*
+Install
 
 	$ git clone git://github.com/rosskaff/sudocoup.git
 
 	// or get sudocoup source using "Download" project link
-	// *Windows users, see instructions (see below)
+
+
+### Windows ###
+
+Install Ruby 1.8.7 from [RubyInstaller](http://rubyinstaller.org): useful [installation info](http://ruby.about.com/od/beginningruby/ss/Installing-A-Ruby-Development-Environment-On-Windows.htm)
+
+		$ gem install eventmachine --platform=mswin32
+		$ gem install em-websocket
+		$ gem install sinatra
+		$ gem install thin --platform=mswin32 // optional: alternative web server to WEBrick
 
 Dependencies
 
@@ -124,13 +134,3 @@ Examples:
 
 	8 8 1
 	// Places value 1 in row 8, column 8 (bottom right)
-
-##Windows Installation##
-
-Install Ruby 1.8.7 from [RubyInstaller](http://rubyinstaller.org)
-* Useful [installation info](http://ruby.about.com/od/beginningruby/ss/Installing-A-Ruby-Development-Environment-On-Windows.htm)
-
-	$ gem install eventmachine --platform=mswin32
-	$ gem install em-websocket
-	$ gem install sinatra
-	$ gem install thin --platform=mswin32 // optional: alternative web server to WEBrick

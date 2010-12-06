@@ -5,6 +5,7 @@ declare winner,loser, num moves
 start new game with players from queue
 EM.run server specs
 timer, in progress
+handle player disconnect during game
 
 HUMAN PLAYER
 enter game queue as human

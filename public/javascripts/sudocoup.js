@@ -9,12 +9,16 @@ Sudocoup = (function() {
       opts = opts || {};
       self.mode     = opts['mode'] || 'normal';
       self.board    = new GameBoard("game_board", self.selector);
-      self.client   = new WebSocketClient(this, self.mode);
-      self.score    = new ScoreBoard("score_board", self.selector);
-      self.messager = new Messager(self.selector);
 
-      self.$status = buildStatus("game_status");
+      self.$status = buildContainer("game_status");
       self.$sudocoup.append(self.$status);
+
+      self.client   = new WebSocketClient(this, self.mode);
+
+      self.$gameLog = buildContainer("game_log");
+      self.$sudocoup.append(self.$gameLog);
+      self.score    = new ScoreBoard("score_board", "#game_log");
+      self.messager = new Messager("#game_log");
 
       // listen for events
       self.$sudocoup
@@ -24,6 +28,8 @@ Sudocoup = (function() {
         .bind("connected", function() {
           self.show();
         });
+
+      self.status("Enter your name and connect");
       return self;
     },
 
@@ -33,6 +39,7 @@ Sudocoup = (function() {
       self.board.build();
       self.score.build();
       if (!(self.mode == 'simple')) self.messager.show();
+      self.$gameLog.show();
 
       $(".title").hide();
       $(".logo").show();
@@ -71,7 +78,11 @@ Sudocoup = (function() {
     },
 
     status: function(msg) {
-      this.$status.text(msg).show();
+      var self = this, $msg = $("<div/>");
+      $msg.text(msg).addClass("message");
+      self.$status.empty().append($msg).show();
+      self.log(msg);
+      return self;
     },
 
     dispatch: function(message) {
@@ -323,14 +334,13 @@ Sudocoup = (function() {
     constructor: function(selector) {
       var self = this;
       self.$selector  = $(selector);
-      self.$msg       = $("<div>");
-      self.$pane      = $("<div>");
+      self.$msg       = $("<div />");
+      self.$pane      = $("<div />");
       self.$form      = $("<form></form>");
       self.$input     = $("<input type='text' name='message' placeholder='Say anything...' />");
 
       self.$msg.attr("id", "msg").appendTo(selector);
-      self.$msg.hide();
-      self.$pane.attr("id", "pane").appendTo(self.$msg);
+      self.$pane.addClass("pane").appendTo(self.$msg);
 
       self.$form.appendTo(self.$msg);
       self.$input.attr("id", "msg_field").appendTo(self.$form);
@@ -362,7 +372,7 @@ Sudocoup = (function() {
     },
 
     show: function() {
-      return this.$msg.show();
+      return this.$msg.addClass("visible");
     }
 
   }),
@@ -372,7 +382,7 @@ Sudocoup = (function() {
       var self = this;
       self.game = game;
       self.$connectForm = buildConnectForm();
-      self.$status      = buildStatus("websocket_status");
+      self.$status      = buildContainer("websocket_status");
 
       $(game.selector).append(self.$connectForm).append(self.$status);
 
@@ -460,7 +470,7 @@ Sudocoup = (function() {
 
   userAgentName = function() {
     var name = "Unknown Agent";
-    if (navigator.userAgent) name = navigator.userAgent.slice(0, 30);
+    if (navigator.userAgent) name = navigator.userAgent.slice(0, 15);
     return name;
   },
   PIPE = "|",
@@ -471,7 +481,6 @@ Sudocoup = (function() {
     $connectForm.append("<div class='required'></div>");
     var $name = $connectForm.find("div.required");
         $name.append("<input id='s_name' type='text' name='name' class='name' placeholder='Your name please' autofocus='true' />");
-        $name.append("<label for='s_name' class='name'>Your name please</label>");
 
     var $toggle = $("<a></a>").attr("href", "#").text("Options").addClass("toggle");
         $name.append($toggle);
@@ -487,7 +496,7 @@ Sudocoup = (function() {
     return $connectForm;
   },
 
-  buildStatus = function(domId) {
+  buildContainer = function(domId) {
     var $status = $("<div />");
     $status.attr("id", domId).hide();
     return $status;

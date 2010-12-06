@@ -9,7 +9,7 @@ input {font-family: Georgia, Times, serif;}
   height:67px; width:231px; display:none;
 }
 .border { border: 1px solid #666; }
-.table { display:table; border-collapse:collapse;}
+.table { display:table; }
 .row { display:table-row;}
 .cell   { display:table-cell; vertical-align:middle;}
 .cell_top { display:table-cell; vertical-align:top;}
@@ -28,22 +28,21 @@ input {font-family: Georgia, Times, serif;}
   position: absolute;
   top: 0px;
 }
+#score_board,
 #msg {
   width: 400px;
-  position:absolute;
-  bottom:10px;
-  right:10px;
-  background-color:white;
-  color: #333;
-  border:3px solid #CCC;
+  color: #AAA;
+  border:2px solid #CCC;
   border-radius:5px;
   -webkit-border-radius:5px;
   -moz-border-radius:5px;
-  padding:5px;
+  border-spacing:5px;
+  margin:1em auto 1em;
 }
+#msg.visible { display:table; }
 #msg p { margin: 0 0 1em;}
 #msg input { border:1px solid #999; padding:5px;width:80%;}
-#pane { overflow:auto; height: 12em; }
+#msg .pane { overflow:auto; height: 12em; }
 
 form.websocket { text-align:center; }
 form.websocket input.name { font-size:1.5em; }
@@ -64,8 +63,14 @@ form.websocket.connected label.name { display:none; }
 
 /* score board */
 #score_board {
-  margin:2em auto;
+  margin:2em auto 1em;
 }
 #score_board .header { color:#AAA;}
-#score_board #score,
-#score_board #queue { width:125px;}
+
+#game_status {
+  display:table;
+  margin:0 auto 1em;
+  padding:1em;
+  color:#B7FF4F;
+}
+#game_status .msg { display:table-cell;}

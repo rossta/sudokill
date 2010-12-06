@@ -31,7 +31,7 @@ module Sudocoup
           new_player player
         end
 
-        EventMachine.add_periodic_timer(3.0) {
+        EventMachine.add_periodic_timer(1.0) {
           if @game.in_progress?
             broadcast player_json
           end
@@ -40,6 +40,7 @@ module Sudocoup
         EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
             ws.onopen    {
+
               ws.sid = @channel.subscribe { |msg| ws.send msg }
 
               ws.onmessage { |msg|
@@ -47,6 +48,7 @@ module Sudocoup
                   type, name = msg.split(PIPE)
                   ws.name = name.chomp
                   broadcast "#{ws.name} just joined the game room", SUDOKOUP
+                  ws.send status_json "Welcome to Sudocoup, #{ws.name}"
                 else
                   broadcast msg, ws.name
                 end
@@ -159,7 +161,7 @@ module Sudocoup
     def player_json
       %Q|{"action":"SCORE","max_time":#{@game.max_time},"players":[#{players.map(&:to_json).join(",")}]}|
     end
-    
+
     def status_json(status)
       %Q|{"action":"STATUS","message":"#{status}"}|
     end

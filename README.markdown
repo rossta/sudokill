@@ -13,17 +13,14 @@ Download or clone:
 ### Dependencies ###
 
 **Mac / Linux**
-I recommend using Ruby version 1.8.7 or above
+
+I recommend using Ruby version 1.8.7 or above. If you need to upgrade your rubies, use [RVM](http://rvm.beginrescueend.com/).
 
 	$ ruby -v
 
-If you need to upgrade your rubies, use [RVM](http://rvm.beginrescueend.com/)
-
-Make sure you have rubygems installed
+Make sure you have rubygems installed. If you need rubygems, download from [rubygems.org](http://rubygems.org/pages/download).
 
 	$ gem -v
-
-If you need rubygems, download from [rubygems.org](http://rubygems.org/pages/download)
 
 Add the project gems:
 

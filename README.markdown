@@ -4,16 +4,22 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets
 
 ## Try it out ##
 
-### Mac / Linux ###
+### Install ###
 
-Install
+Download using link above or clone:
 
 	$ git clone git://github.com/rosskaff/sudocoup.git
 
-	// or get sudocoup source using "Download" project link
+### Dependencies ###
 
+**Mac / Linux**
 
-### Windows ###
+	$ gem install eventmachine
+	$ gem install em-websocket
+	$ gem install sinatra
+	$ gem install thin // optional: alternative web server to WEBrick
+
+**Windows**
 
 Install Ruby 1.8.7 from [RubyInstaller](http://rubyinstaller.org): useful [installation info](http://ruby.about.com/od/beginningruby/ss/Installing-A-Ruby-Development-Environment-On-Windows.htm)
 
@@ -22,28 +28,21 @@ Install Ruby 1.8.7 from [RubyInstaller](http://rubyinstaller.org): useful [insta
 		$ gem install sinatra
 		$ gem install thin --platform=mswin32 // optional: alternative web server to WEBrick
 
-Dependencies
+### Run ###
 
-	$ gem install eventmachine
-	$ gem install em-websocket
-	$ gem install sinatra
-	$ gem install thin // optional: alternative web server to WEBrick
-
-Start the server
+Start the game server
 
 	$ ruby script/server
 
-Join the audience to see the game in action:
+Start the web server. Visit http://localhost:45678
 
 	$ ruby script/web
 
-	// Visit http://localhost:45678/
-
-Run sample clients and forward messages to server via STDIN:
+Run sample client scripts. Send messages to game server via STDIN:
 
 	$ ruby script/play NAME
 
-Server and player scripts accept optional command line parameters
+Optional command line parameters
 
 	$ ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
 

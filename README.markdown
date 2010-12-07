@@ -123,13 +123,16 @@ Example:
 
 **REJECT|REASON**
 
-Your move was not accepted.
+Your move was not accepted. Reasons:
 
-Reasons:
+	1 Not in the game
+	2 Wait your turn
+	3 Illegal move
 
-	VALUE
-	ROW
-	COLUMN
+Example:
+
+	REJECT|1 Not in the game
+	//Rejection! You're on the bench
 
 
 **WIN**

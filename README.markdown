@@ -1,6 +1,6 @@
 # Sudocoup #
 
-Competitive Sudoku backed by EventMachine and HTML5 Websockets
+Competitive Sudoku backed by EventMachine and HTML5 Websockets. (Rules of the game)[http://www.cs.nyu.edu/courses/fall10/G22.2965-001/sudokill.html]
 
 ## Try it out ##
 

@@ -44,9 +44,16 @@ Start the game server
 
 	$ ruby script/server
 
-Start the web server. Visit http://localhost:45678
+Start the web server. Visit http://localhost:45678.
 
 	$ ruby script/web
+
+For best performance, use a browser that supports HTML5 websockets
+
+* Chrome 5 <=
+* Safari 5.0
+* Firefox 4 beta
+* Opera 10.70
 
 Run sample client scripts. Send messages to game server via STDIN:
 
@@ -55,14 +62,21 @@ Run sample client scripts. Send messages to game server via STDIN:
 Optional command line parameters
 
 	$ ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
-
 	$ ruby script/web [HOST] [PORT]
+
+	//or run both web and game server together with thin and enable WEB env:
+	$ WEB=1 ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
 
 	$ ruby script/play NAME [HOST] [PORT]
 
+### At NYU ###
+
+The game is also available on linserv1.cims.nyu.edu. The game server is listening on port 44444. To view the game, visit the [Sudocoup game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:
+
+	host: linserv1.cims.nyu.edu
+	port: 48080
 
 ## Server Protocol ##
-
 
 **READY**
 

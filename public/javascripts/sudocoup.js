@@ -385,7 +385,8 @@ Sudocoup = (function() {
     },
 
     show: function() {
-      return this.$msg.addClass("visible");
+      this.$msg.show()
+      this.$msg.addClass("visible");
     }
 
   }),

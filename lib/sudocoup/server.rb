@@ -9,6 +9,7 @@ module Sudocoup
     end
 
     attr_reader :game, :queue
+    attr_accessor :max_time
 
     def initialize(opts = {})
       @host     = opts[:host] || '0.0.0.0'
@@ -18,6 +19,7 @@ module Sudocoup
 
       @game     = Game.new
       @queue    = []
+      @max_time = opts[:max_time] || 120
     end
 
     def start
@@ -33,6 +35,9 @@ module Sudocoup
 
         EventMachine.add_periodic_timer(1.0) {
           if @game.in_progress?
+            if !time_left?(current_player)
+              end_game(@game.times_up_violation(current_player))
+            end
             broadcast player_json
           end
         }
@@ -114,12 +119,7 @@ module Sudocoup
           broadcast msg, SUDOKOUP
         when :violation
           broadcast move_json(move, status.to_s)
-          @game.send_players game_over_message(msg)
-          broadcast status_json(msg)
-          @game = Game.new
-          while @game.available? && @queue.any?
-            join_game @queue.shift
-          end
+          end_game(msg)
         end
       }
       defer
@@ -152,6 +152,19 @@ module Sudocoup
       broadcast status_json "#{@game.current_player.name}'s turn!"
     end
 
+    def time_left?(player)
+      player.current_time <= max_time
+    end
+
+    def end_game(msg)
+      @game.send_players game_over_message(msg)
+      broadcast status_json(msg)
+      @game = Game.new
+      while @game.available? && @queue.any?
+        join_game @queue.shift
+      end
+    end
+
     def board_json
       %Q|{"action":"CREATE","values":#{@game.board.to_json}}|
     end
@@ -161,7 +174,7 @@ module Sudocoup
     end
 
     def player_json
-      %Q|{"action":"SCORE","max_time":#{@game.max_time},"players":[#{players.map(&:to_json).join(",")}]}|
+      %Q|{"action":"SCORE","max_time":#{max_time},"players":[#{players.map(&:to_json).join(",")}]}|
     end
 
     def status_json(status)

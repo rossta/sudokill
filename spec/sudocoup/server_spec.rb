@@ -36,9 +36,9 @@ describe Sudocoup::Server do
     before(:each) do
       @player_1 = mock(Sudocoup::Player::Socket, :number => 1, :current_time => 14, :name => "Player 1", :to_json => %Q|{"number":1}|)
       @player_2 = mock(Sudocoup::Player::Socket, :number => 2, :current_time => 25, :name => "Player 1", :to_json => %Q|{"number":2}|)
-      @game     = mock(Sudocoup::Game, :players => [@player_1, @player_2], :max_time => 120)
+      @game     = mock(Sudocoup::Game, :players => [@player_1, @player_2])
       Sudocoup::Game.stub!(:new).and_return(@game)
-      @server   = Sudocoup::Server.new
+      @server   = Sudocoup::Server.new(:max_time => 120)
     end
     it "should return TIME message with player ids and times" do
 # {
@@ -148,6 +148,26 @@ describe Sudocoup::Server do
         @player_1.should_receive(:send).with("WAIT")
         @server.new_player(@player_1)
       end
+    end
+  end
+
+  describe "time_left?" do
+    before(:each) do
+      subject.max_time = 120
+    end
+    it "should return true if player time is less than max time" do
+      player = mock(Sudocoup::Player::Socket, :current_time => 60)
+      subject.time_left?(player).should be_true
+    end
+
+    it "should return true if player time is equal to max time" do
+      player = mock(Sudocoup::Player::Socket, :current_time => 120)
+      subject.time_left?(player).should be_true
+    end
+
+    it "should return false if player time is more than max time" do
+      player = mock(Sudocoup::Player::Socket, :current_time => 121)
+      subject.time_left?(player).should be_false
     end
   end
 end

@@ -3,12 +3,11 @@ module Sudocoup
     include Sudocoup::StateMachine
     has_states :waiting, :ready, :in_progress, :over
 
-    attr_accessor :board, :state, :moves, :size, :max_time
+    attr_accessor :board, :state, :moves, :size
     attr_reader :players
 
     def initialize(opts = {})
       @size = opts[:size] || 2
-      @max_time = opts[:max_time] || 120
       reset
     end
 
@@ -104,6 +103,10 @@ module Sudocoup
       next_player!
       current_player.send msg
       current_player.start_timer!
+    end
+
+    def times_up_violation(player)
+      "#{previous_player.name} WINS! #{player.name} ran out of time!"
     end
 
   end

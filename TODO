@@ -3,26 +3,19 @@ allow free move when row/col full
 better error message for illegal moves
 declare winner,loser, num moves
 start new game with players from queue
-EM.run server specs
-timer, in progress
 handle player disconnect during game
+spec times up violation
+refactor reject/violation messaging
+refactor server json/broadcast msgs
 
 HUMAN PLAYER
 enter game queue as human
 accept/send input for human player
 
 VIEW
-indicate player turn
-trigger play from view
+trigger new game from view
 win logic
-timers
+graphic timers
 chrome
-highlight playable col/row
-fav.ico
 display game queue
-display player times
-connected feedback
 display game over state
-
-BUGS
-FF connect form submit w/o console no worky

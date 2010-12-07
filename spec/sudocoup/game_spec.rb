@@ -64,7 +64,7 @@ describe Sudocoup::Game do
       @non_player = mock(Sudocoup::Player::Socket, :name => "Party crasher")
       @non_player.should_not_receive(:has_turn?)
       @board.should_not_receive(:add_move)
-      @game.add_player_move(@non_player, "1 2 3").should == [:reject, "Not in the game, Party crasher"]
+      @game.add_player_move(@non_player, "1 2 3").should == [:reject, "1 Not in the game, Party crasher"]
     end
     describe "player's turn" do
       before(:each) do
@@ -83,7 +83,7 @@ describe Sudocoup::Game do
       end
       it "should send reject message to player_1 if move is an error" do
         @board.stub!(:add_move).and_return(false)
-        @game.add_player_move(@player_1, "0 0 0").should == [:reject, "Illegal move. Player 1 cannot play 0 0 0"]
+        @game.add_player_move(@player_1, "0 0 0").should == [:reject, "3 Illegal move. Player 1 cannot play 0 0 0"]
       end
       describe "game ends on player move" do
         it "should notify players if player 1 move results in board violation" do
@@ -108,7 +108,7 @@ describe Sudocoup::Game do
         @board.should_not_receive(:add_move)
       end
       it "should not send update to game display" do
-        @game.add_player_move(@player_1, "1 2 3").should == [:reject, "Wait your turn, Player 1"]
+        @game.add_player_move(@player_1, "1 2 3").should == [:reject, "2 Wait your turn, Player 1"]
       end
     end
   end

@@ -55,8 +55,8 @@ module Sudocoup
     end
 
     def add_player_move(player, move)
-      return [:reject, "Not in the game, #{player.name}"] unless @players.include? player
-      return [:reject, "Wait your turn, #{player.name}"] unless player.has_turn?
+      return [:reject, "1 Not in the game, #{player.name}"] unless @players.include? player
+      return [:reject, "2 Wait your turn, #{player.name}"] unless player.has_turn?
 
       if @board.add_move *move.split.map(&:to_i)
         player.stop_timer!
@@ -64,7 +64,7 @@ module Sudocoup
       elsif @board.violated?
         [:violation, "#{previous_player.name} WINS! #{player.name} played #{move} and violated the constraints"]
       else
-        [:reject, "Illegal move. #{player.name} cannot play #{move}"]
+        [:reject, "3 Illegal move. #{player.name} cannot play #{move}"]
       end
     end
 

@@ -11,10 +11,6 @@ require "em-websocket"
 
 %w[ socket web_socket ].each { |file| require "sudocoup/player/#{file}" }
 
-def log(message, name = "Server")
-  Sudocoup::Logger.log "%-10s>> #{message}" % name
-end
-
 module Sudocoup
 CONFIG_1 = <<-TXT
 7 0 5 0 0 0 2 9 4
@@ -28,3 +24,8 @@ CONFIG_1 = <<-TXT
 5 3 9 0 0 0 8 0 2
 TXT
 end
+
+def log(message, name = "Server")
+  Sudocoup::Logger.log "%-10s>> #{message}" % name
+end
+

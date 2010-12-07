@@ -9,6 +9,12 @@ require 'sudocoup/web_server'
 host    = ARGV.shift || '0.0.0.0'
 port    = ARGV.shift || 45678
 
+if ENV["LOG"]
+  log = File.new("log/sinatra.log", "a+")
+  log.sync = true
+  STDOUT.reopen(log)
+  STDERR.reopen(log)
+end
+
 # ruby lib/sudocoup/web_server.rb [-h] [-x] [-e production] [-o linserv1.cims.nyu.edu] [-p 45678] [-s HANDLER]
 Sudocoup::WebServer.run!(:bind => host, :port => port)
-

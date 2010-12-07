@@ -1,10 +1,26 @@
+require 'logger'
 module Sudocoup
 
-  class Logger
+  module Logger
     @@log = true
 
+    @@logger = nil
+
+    def self.logger=(logger)
+      @@logger = logger
+    end
+
+    def self.logger
+      @@logger
+    end
+
     def self.log(message)
-      puts message if log?
+      return unless log?
+      if logger
+        logger.info message
+      else
+        puts message
+      end
     end
 
     def self.log?

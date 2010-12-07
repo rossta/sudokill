@@ -9,6 +9,12 @@ host    = ARGV.shift
 port    = ARGV.shift
 ws_port = ARGV.shift
 
+if ENV["LOG"]
+  log = "log/sudocoup.log"
+  file = File.open(log, "a")
+  Sudocoup::Logger.logger = Logger.new(log)
+end
+
 if ENV['WEB']
   fork do
     Sudocoup::WebServer.run!

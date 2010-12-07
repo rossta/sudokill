@@ -7,7 +7,7 @@ namespace :sudocoup do
       system "script/server"
     end
     task :production do
-      system "LOG=1 script/server &"
+      system "LOG=1 script/server 0.0.0.0 44444 48080 &"
     end
   end
 

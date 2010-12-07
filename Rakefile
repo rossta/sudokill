@@ -2,17 +2,20 @@ require "rubygems"
 require "rake"
 
 namespace :sudocoup do
-  namespace :watch do
+  namespace :game_server do
     task :default do
-      system "ruby app.rb"
-    end
-    task :production do
-      # ruby app.rb [-h] [-x] [-e production] [-o linserv1.cims.nyu.edu] [-p 45678] [-s HANDLER]
-      system "ruby app.rb -e production -p 45678"
+      system "script/server"
     end
   end
-  task :watch => "sudocoup:watch:default"
+
+  namespace :web_server do
+    task :default do
+      system "script/web"
+    end
+  end
+  task :web => "sudocoup:web_server:default"
 end
+task :sudocoup => "sudocoup:game_server:default"
 
 begin
   require 'jasmine'

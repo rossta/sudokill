@@ -26,6 +26,6 @@ task :sudocoup => "sudocoup:game:default"
 begin
   require 'jasmine'
   load 'jasmine/tasks/jasmine.rake'
-rescue
+rescue LoadError
   warn "jasmine gem not available"
 end

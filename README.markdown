@@ -71,7 +71,11 @@ Optional command line parameters
 
 ### At NYU ###
 
-The game is also available on linserv1.cims.nyu.edu. The game server is listening on port 44444. To view the game, visit the [Sudocoup game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:
+The game server is currently available on linserv1.cims.nyu.edu, port 44444. 
+	
+	$ ruby script/play NAME linserv1.cims.nyu.edu 44444
+
+To view, visit the [Sudocoup game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:
 
 	host: linserv1.cims.nyu.edu
 	port: 48080

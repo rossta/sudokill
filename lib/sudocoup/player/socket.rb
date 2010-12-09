@@ -32,6 +32,7 @@ module Sudocoup
           when :send
             send response
           when :new_connection
+            @app.announce_player(self)
             send response
           when :move
             @app.request_add_move.succeed(self, response)
@@ -50,6 +51,7 @@ module Sudocoup
       end
 
       def unbind
+        @app.remove_player(self)
         log "#{@dispatch.name} disconnected"
       end
 

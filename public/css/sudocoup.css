@@ -58,7 +58,8 @@ form.websocket a.toggle {
   font-size: 12px;
   margin: 0.5em 0;
 }
-form.websocket input.play { display:none;}
+form.websocket input.play,
+form.websocket input.stop { display:none;}
 form.websocket.connected {
   position:absolute;
   top:1em;

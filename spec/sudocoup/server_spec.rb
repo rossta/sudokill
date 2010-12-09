@@ -35,7 +35,7 @@ describe Sudocoup::Server do
   describe "player_json" do
     before(:each) do
       @player_1 = mock(Sudocoup::Player::Socket, :number => 1, :current_time => 14, :name => "Player 1", :to_json => %Q|{"number":1}|)
-      @player_2 = mock(Sudocoup::Player::Socket, :number => 2, :current_time => 25, :name => "Player 1", :to_json => %Q|{"number":2}|)
+      @player_2 = mock(Sudocoup::Player::Socket, :number => 2, :current_time => 25, :name => "Player 2", :to_json => %Q|{"number":2}|)
       @game     = mock(Sudocoup::Game, :players => [@player_1, @player_2])
       Sudocoup::Game.stub!(:new).and_return(@game)
       @server   = Sudocoup::Server.new(:max_time => 120)
@@ -70,6 +70,38 @@ describe Sudocoup::Server do
       players.size.should == 2
       player_1_json = players.shift
       player_1_json['number'].should == 1
+    end
+  end
+  describe "queue_json" do
+    before(:each) do
+      @player_1 = mock(Sudocoup::Player::Socket, :number => nil, :current_time => 0, :name => "Player 1", :to_json => %Q|{"name":"Player 1"}|, :send =>nil)
+      @player_2 = mock(Sudocoup::Player::Socket, :number => nil, :current_time => 0, :name => "Player 2", :to_json => %Q|{"name":"Player 2"}|, :send =>nil)
+      @game     = mock(Sudocoup::Game)
+      Sudocoup::Game.stub!(:new).and_return(@game)
+      @server   = Sudocoup::Server.new(:max_time => 120)
+      @server.queue << @player_1
+      @server.queue << @player_2
+    end
+    it "should return TIME message with player ids and times" do
+# {
+#   players: [
+#     {
+#       name: 'Player 1'
+#     },
+#     {
+#       name: 'Player 2'
+#     }
+#   ]
+# }
+      json_s = @server.queue_json
+      json = JSON.parse(json_s)
+      json['action'].should == 'QUEUE'
+      players = json['players']
+      players.size.should == 2
+      player_1_json = players.shift
+      player_2_json = players.shift
+      player_1_json['name'].should == "Player 1"
+      player_2_json['name'].should == "Player 2"
     end
   end
   describe "start_message" do
@@ -116,7 +148,7 @@ describe Sudocoup::Server do
   end
   describe "new_player" do
     before(:each) do
-      @player_1 = mock(Sudocoup::Player::Socket, :number => 1, :send => true)
+      @player_1 = mock(Sudocoup::Player::Socket, :number => 1, :send => true, :name => "Player 1")
       @game = mock(Sudocoup::Game, :join_game => true, :ready? => false, :players => [@player_1])
       Sudocoup::Game.stub!(:new).and_return(@game)
       @server = Sudocoup::Server.new

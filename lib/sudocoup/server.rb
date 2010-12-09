@@ -33,10 +33,9 @@ module Sudocoup
           new_player player
         end
 
-        EventMachine.add_periodic_timer(0.2) {
-          if @game.in_progress? && !time_left?(@game.current_player)
-            end_game_and_start_new(@game.times_up_violation(@game.current_player))
-          elsif @game.in_progress?
+        EventMachine.add_periodic_timer(0.25) {
+          if @game.in_progress?
+            end_game_and_start_new(@game.times_up_violation(@game.current_player)) if !time_left?(@game.current_player)
             broadcast(player_json) if players.any?
           end
         }
@@ -115,7 +114,7 @@ module Sudocoup
       msg = "#{name}: #{msg}" unless name.nil?
       @channel.push msg
     end
-    
+
     def request_add_move
       defer = EM::DefaultDeferrable.new
       defer.callback { |player, move|
@@ -145,11 +144,18 @@ module Sudocoup
       end
     end
 
+    def remove_player(player)
+      if @game.players.delete(player)
+        end_game_and_start_new("#{player.name} left the game")
+      elsif @queue.delete(player)
+        broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
+      end
+    end
+
     def join_game(player)
       joined = @game.join_game(player)
       if joined
         player.send("READY")
-        broadcast(player_json)
         broadcast("Ready to begin", SUDOKOUP) if @game.ready?
       end
       joined
@@ -158,6 +164,16 @@ module Sudocoup
     def join_queue(player)
       @queue << player
       player.send("WAIT")
+    end
+    
+    def announce_player(player)
+      if @game.players.include? player
+        broadcast player_json
+        broadcast("#{player.name} is now in the game", SUDOKOUP)
+      elsif @queue.include? player
+        broadcast queue_json
+        broadcast("#{player.name} is now waiting On Deck", SUDOKOUP)
+      end
     end
 
     def request_next_player_move
@@ -174,8 +190,11 @@ module Sudocoup
       broadcast status_json(msg)
       @game = Game.new
       while @game.available? && @queue.any?
-        join_game @queue.shift
+        player = @queue.shift
+        join_game player
+        announce_player player
       end
+      broadcast queue_json
     end
 
     def board_json
@@ -188,6 +207,10 @@ module Sudocoup
 
     def player_json
       %Q|{"action":"SCORE","max_time":#{max_time},"players":[#{players.map(&:to_json).join(",")}]}|
+    end
+
+    def queue_json
+      %Q|{"action":"QUEUE","players":[#{queue.map(&:to_json).join(",")}]}|
     end
 
     def status_json(status)

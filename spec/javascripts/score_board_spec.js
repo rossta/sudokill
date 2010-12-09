@@ -41,7 +41,7 @@ describe("ScoreBoard", function() {
   describe("updateScore", function() {
     it("should display player json data in #score", function() {
       var board = createScoreBoard().build();
-      var $score = $("#score_board");
+      var $score = $("#score");
       var players = [
         {
           number: 1,
@@ -82,7 +82,7 @@ describe("ScoreBoard", function() {
 
     it("should add latecomers to #score", function() {
       var board = createScoreBoard().build();
-      var $score = $("#score_board");
+      var $score = $("#score");
       var players = [
         {
           number: 1,
@@ -139,6 +139,30 @@ describe("ScoreBoard", function() {
       expect($player2.find(".current_time").text()).toEqual("Time: 8");
       expect($player2.find(".max_time").text()).toEqual("120");
       expect($player2.hasClass("has_turn")).toBeTruthy();
+    });
+  });
+  
+  describe("updateQueue", function() {
+    it("should display player json data in #queue", function() {
+      var board = createScoreBoard().build();
+      var $queue = $("#queue");
+      var players = [
+        {
+          name: 'Player 1'
+        },
+        {
+          name: 'Player 2'
+        }
+      ];
+      var $player1, $player2;
+
+      board.updateQueue(players);
+      $player1 = $queue.find('.player').first();
+      $player2 = $queue.find('.player').last();
+
+      expect($queue.find(".player")).toHaveLength(2);
+      expect($player1.find(".name").text()).toEqual("Player 1");
+      expect($player2.find(".name").text()).toEqual("Player 2");
     });
   });
 });

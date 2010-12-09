@@ -94,7 +94,7 @@ Sudocoup = (function() {
 
     dispatch: function(message) {
       var self = this, value, json;
-      if (message.match(/UPDATE|CREATE|SCORE|STATUS/)) {
+      if (message.match(/UPDATE|CREATE|SCORE|QUEUE|STATUS/)) {
         try {
           json = $.parseJSON(message);
         } catch (e) {
@@ -111,6 +111,9 @@ Sudocoup = (function() {
             break;
           case "SCORE":
             self.score.updateScore(json.players);
+            break;
+          case "QUEUE":
+            self.score.updateQueue(json.players);
             break;
           case "STATUS":
             self.status(json.message);
@@ -286,12 +289,36 @@ Sudocoup = (function() {
       $("<div />").attr("id", domId).appendTo(container);
       self.$selector = $("#" + domId);
     },
+    
+    updateQueue: function(players) {
+      var self = this, $queue = self.$selector.find("#queue");
+      if ($queue.find(".player").length != players.length) {
+        $queue.find(".player").remove();
+        _(players).each(function(p, i) { 
+          $("<div />").addClass("player player_" + (i + 1)).appendTo($queue); 
+        });
+      }
+      $queue.find(".player").empty();
+      _(players).each(function(player, i) {
+        var selector = "player_" + (i + 1),
+            $player = $queue.find("." + selector);
+        if (!$player) {
+          $player = $("<div />");
+          $player.addClass("player").addClass(selector).appendTo($queue);
+        }
+        $("<div />").appendTo($player).addClass("name").text(player["name"]);
+      });
+      return self;
+      
+    },
 
     updateScore: function(players) {
       var self = this, $score = self.$selector.find("#score");
       if ($score.find(".player").length != players.length) {
         $score.find(".player").remove();
-        _(players).each(function(p, i) { $("<div />").addClass("player player_" + (i + 1)).appendTo($score); });
+        _(players).each(function(p, i) { 
+          $("<div />").addClass("player player_" + (i + 1)).appendTo($score); 
+        });
       }
       $score.find(".player").empty();
 

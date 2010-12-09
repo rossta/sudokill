@@ -119,6 +119,33 @@ describe("Sudocoup", function() {
         ]);
       });
     });
+    describe("{ action: QUEUE }", function() {
+      it("should update score board with player json", function() {
+        var json = "";
+        json += "{";
+        json += "\"action\":\"QUEUE\",";
+        json +=   "\"players\": [";
+        json +=     "{";
+        json +=       "\"name\": \"Player 1\"";
+        json +=     "},";
+        json +=     "{";
+        json +=       "\"name\": \"Player 2\"";
+        json +=     "}";
+        json +=   "]";
+        json += "}";
+        var sudocoup = Sudocoup.setup('sudocoup');
+        spyOn(sudocoup.score, "updateQueue");
+        sudocoup.dispatch(json);
+        expect(sudocoup.score.updateQueue).toHaveBeenCalledWith([
+          {
+            "name": "Player 1"
+          },
+          {
+            "name": "Player 2"
+          }
+        ]);
+      });
+    });
     describe("{ action: STATUS }", function() {
       it("should print message in game status div", function() {
         var json = "{\"action\":\"STATUS\",\"message\":\"Game is now in progress\"}";

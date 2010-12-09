@@ -1,8 +1,9 @@
 PLAYER
-count moves
 declare winner,loser, num moves
-start new game with players from queue
-handle player disconnect during game
+start new game with players from queue (specs)
+handle player disconnect during game (specs)
+handle leave queue (specs)
+when player quits, don't start new game if game hasn't started yet
 refactor reject/violation messaging
 refactor server json/broadcast msgs
 

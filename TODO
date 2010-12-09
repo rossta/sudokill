@@ -21,3 +21,4 @@ display game over state
 
 BUGS
 stop/play button disappears on disconnect/reconnect
+moving and removing players then PLAY

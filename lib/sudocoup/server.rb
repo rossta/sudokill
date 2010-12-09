@@ -74,7 +74,8 @@ module Sudocoup
 
     def stop
       log "Stopping server"
-      @queue.map(&:close)
+      players.map(&:close)
+      queue.map(&:close)
       EventMachine.stop
     end
 
@@ -85,7 +86,7 @@ module Sudocoup
     def play_game
       defer = EM::DefaultDeferrable.new
       defer.callback {
-        if @game.ready?
+        if @game.players.any? && @game.ready?
           broadcast board_json
           broadcast status_json("New game about to begin!")
           @game.play! do |player|
@@ -152,9 +153,15 @@ module Sudocoup
           end_game_and_start_new("#{player.name} left the game")
         elsif !@game.over? && @queue.any?
           add_player_from_queue
+        else
+          @game.waiting!
+          log "#{player.name} left game but no new player was added"
         end
       elsif @queue.delete(player)
+        broadcast queue_json
         broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
+      else
+        log "#{player.name} left but wasn't in game or on deck"
       end
     end
 

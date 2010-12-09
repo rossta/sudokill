@@ -308,7 +308,8 @@ describe Sudocoup::Server do
     describe "from queue" do
       it "should broadcast player left queue" do
         @server.join_queue @player_3
-        @channel.should_receive(:push).with(/Player 3 left the On Deck circle/)
+        @channel.should_receive(:push).with(/QUEUE/).once.ordered
+        @channel.should_receive(:push).with(/Player 3 left the On Deck circle/).once.ordered
         @server.remove_player @player_3
       end
     end

@@ -208,4 +208,27 @@ describe Sudocoup::Server do
       end
     end
   end
+  describe "periodic timer" do
+    it "should end game if time is up for player while game in progress" do
+      EM.run {
+        server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
+        server.start
+
+        # Two players join game
+        socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
+        socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
+
+        socket_2.onopen = lambda {
+          server.players.first.total_time = 121
+          server.play_game.succeed
+          sleep 1.1
+        }
+        socket_1.onmessage = lambda { |msg|
+          first, second, third = msg.split("\r\n")
+          third.split(@pipe).first.should == "GAME OVER"
+          EM.stop
+        }
+      }
+    end
+  end
 end

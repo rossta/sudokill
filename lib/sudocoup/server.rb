@@ -35,8 +35,8 @@ module Sudocoup
 
         EventMachine.add_periodic_timer(1.0) {
           if @game.in_progress?
-            if !time_left?(current_player)
-              end_game(@game.times_up_violation(current_player))
+            if !time_left?(@game.current_player)
+              end_game(@game.times_up_violation(@game.current_player))
             end
             broadcast player_json
           end

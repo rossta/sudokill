@@ -69,8 +69,8 @@ module Sudocoup
       def to_json
         attrs = [].tap do |arr|
           arr << [%Q|"name"|, %Q|"#{name}"|]
-          arr << [%Q|"number"|, number]
-          arr << [%Q|"moves"|, %Q|[#{moves.map(&:to_json).join(',')}]|]
+          arr << [%Q|"number"|, number] unless @number.nil?
+          arr << [%Q|"moves"|, moves.size]
           arr << [%Q|"current_time"|, current_time]
           arr << [%Q|"max_time"|, max_time]
           arr << [%Q|"has_turn"|, has_turn?]

@@ -34,12 +34,10 @@ module Sudocoup
         end
 
         EventMachine.add_periodic_timer(1.0) {
-          if @game.in_progress?
-            if !time_left?(@game.current_player)
-              end_game(@game.times_up_violation(@game.current_player))
-            end
-            broadcast player_json
+          if @game.in_progress? && !time_left?(@game.current_player)
+            end_game(@game.times_up_violation(@game.current_player))
           end
+          broadcast(player_json) if players.any?
         }
 
         EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,

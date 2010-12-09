@@ -73,13 +73,72 @@ describe("ScoreBoard", function() {
       expect($player1.find(".max_time").text()).toEqual("120");
       expect($player1.find(".moves").text()).toEqual("Moves: 3");
       expect($player1.hasClass("has_turn")).toBeFalsy();
-      // expect($player1.css("background-color")).toEqual("");
       
       expect($player2.find(".name").text()).toEqual("Player 2");
       expect($player2.find(".current_time").text()).toEqual("Time: 8");
       expect($player2.find(".max_time").text()).toEqual("120");
       expect($player2.hasClass("has_turn")).toBeTruthy();
-      // expect($player2.css("background-color")).not.toEqual("none");
+    });
+
+    it("should add latecomers to #score", function() {
+      var board = createScoreBoard().build();
+      var $score = $("#score_board");
+      var players = [
+        {
+          number: 1,
+          current_time: 14,
+          max_time: 120,
+          name: 'Player 1',
+          moves: 3,
+          has_turn: true
+        }
+      ];
+
+      board.updateScore(players);
+      $player1 = $score.find('.player').first();
+
+      expect($score.find(".player")).toHaveLength(1);
+
+      expect($player1.find(".name").text()).toEqual("Player 1");
+      expect($player1.find(".current_time").text()).toEqual("Time: 14");
+      expect($player1.find(".max_time").text()).toEqual("120");
+      expect($player1.find(".moves").text()).toEqual("Moves: 3");
+      expect($player1.hasClass("has_turn")).toBeTruthy();
+      
+      players = [
+        {
+          number: 1,
+          current_time: 16,
+          max_time: 120,
+          name: 'Player 1',
+          moves: 3,
+          has_turn: false
+        },
+        {
+          number: 2,
+          current_time: 8,
+          max_time: 120,
+          name: 'Player 2',
+          moves: 2,
+          has_turn: true
+        }
+      ];
+      board.updateScore(players);
+      $player1 = $score.find('.player').first();
+      $player2 = $score.find('.player').last();
+
+      expect($score.find(".player")).toHaveLength(2);
+
+      expect($player1.find(".name").text()).toEqual("Player 1");
+      expect($player1.find(".current_time").text()).toEqual("Time: 16");
+      expect($player1.find(".max_time").text()).toEqual("120");
+      expect($player1.find(".moves").text()).toEqual("Moves: 3");
+      expect($player1.hasClass("has_turn")).toBeFalsy();
+      
+      expect($player2.find(".name").text()).toEqual("Player 2");
+      expect($player2.find(".current_time").text()).toEqual("Time: 8");
+      expect($player2.find(".max_time").text()).toEqual("120");
+      expect($player2.hasClass("has_turn")).toBeTruthy();
     });
   });
 });

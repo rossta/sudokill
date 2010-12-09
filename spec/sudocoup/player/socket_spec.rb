@@ -102,13 +102,34 @@ describe Sudocoup::Player::Socket do
       json = JSON.parse(json_s)
       json['number'].should == 1
       json['name'].should == 'Rossta'
-      json['moves'].should == []
+      json['moves'].should == 0
       json['current_time'].should == 14
       json['max_time'].should == 120
       json['has_turn'].should be_true
     end
+    it "should not include values that are not defined" do
+#     {
+#       current_time: 0,
+#       max_time: 120,
+#       name: 'Player 1',
+#       moves: []
+#     }
+      @player.number = nil
+      @player.total_time = nil
+      @player.waiting!
+
+      json_s = @player.to_json
+
+      json = JSON.parse(json_s)
+      json['number'].should be_nil
+      json['name'].should == 'Rossta'
+      json['moves'].should == 0
+      json['current_time'].should == 0
+      json['max_time'].should == 120
+      json['has_turn'].should be_false
+    end
   end
-  
+
   describe "add_move" do
     it "should add move to move list" do
       move = mock(Sudocoup::Move)

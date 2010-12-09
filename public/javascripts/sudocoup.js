@@ -289,10 +289,12 @@ Sudocoup = (function() {
 
     updateScore: function(players) {
       var self = this, $score = self.$selector.find("#score");
-      if (!$score.find(".player").length) {
+      if ($score.find(".player").length != players.length) {
+        $score.find(".player").remove();
         _(players).each(function(p, i) { $("<div />").addClass("player player_" + (i + 1)).appendTo($score); });
       }
       $score.find(".player").empty();
+
       _(players).each(function(player, i) {
         var selector = "player_" + (i + 1),
             $player = $score.find("." + selector);
@@ -385,7 +387,7 @@ Sudocoup = (function() {
     },
 
     show: function() {
-      this.$msg.show()
+      this.$msg.show();
       this.$msg.addClass("visible");
     }
 

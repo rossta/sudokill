@@ -51,7 +51,7 @@ describe Sudocoup::Game do
     before(:each) do
       @player_1 = mock(Sudocoup::Player::Socket, :name => "Player 1", :stop_timer! => nil)
       @player_2 = mock(Sudocoup::Player::Socket, :name => "Player 2", :stop_timer! => nil)
-      @board = mock(Sudocoup::Board, :add_move => true, :violated? => false)
+      @board = mock(Sudocoup::Board, :add_move => true, :violated? => false, :error => "board error")
       @game.board = @board
       @game.players << @player_1
       @game.players << @player_2
@@ -83,20 +83,18 @@ describe Sudocoup::Game do
       end
       it "should send reject message to player_1 if move is an error" do
         @board.stub!(:add_move).and_return(false)
-        @game.add_player_move(@player_1, "0 0 0").should == [:reject, "3 Illegal move. Player 1 cannot play 0 0 0"]
+        @game.add_player_move(@player_1, "0 0 0").should == [:violation, "Player 2 WINS! Player 1 played 0 0 0: board error"]
       end
       describe "game ends on player move" do
         it "should notify players if player 1 move results in board violation" do
           @board.stub!(:add_move).and_return(false)
-          @board.should_receive(:violated?).and_return(true)
-          @game.add_player_move(@player_1, "1 2 3").should == [:violation, "Player 2 WINS! Player 1 played 1 2 3 and violated the constraints"]
+          @game.add_player_move(@player_1, "1 2 3").should == [:violation, "Player 2 WINS! Player 1 played 1 2 3: board error"]
         end
         it "should notify players if player 2 move results in board violation" do
           @board.stub!(:add_move).and_return(false)
           @player_1.stub!(:has_turn?).and_return(false)
           @player_2.stub!(:has_turn?).and_return(true)
-          @board.should_receive(:violated?).and_return(true)
-          @game.add_player_move(@player_2, "1 2 3").should == [:violation, "Player 1 WINS! Player 2 played 1 2 3 and violated the constraints"]
+          @game.add_player_move(@player_2, "1 2 3").should == [:violation, "Player 1 WINS! Player 2 played 1 2 3: board error"]
         end
       end
     end

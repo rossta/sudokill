@@ -132,7 +132,6 @@ Your move was not accepted. Reasons:
 
 	1 Not in the game
 	2 Wait your turn
-	3 Illegal move
 
 Example:
 

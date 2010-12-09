@@ -4,8 +4,7 @@ module Sudocoup
     RANGE = (1..9)
     INDICES = (0..8)
 
-    attr_reader :rows
-    attr_accessor :error
+    attr_accessor :rows, :error
 
     def initialize
       @moves = []

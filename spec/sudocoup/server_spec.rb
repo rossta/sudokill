@@ -116,9 +116,9 @@ describe Sudocoup::Server do
   end
   describe "new_player" do
     before(:each) do
-      @game = mock(Sudocoup::Game, :join_game => true, :ready? => false)
-      Sudocoup::Game.stub!(:new).and_return(@game)
       @player_1 = mock(Sudocoup::Player::Socket, :number => 1, :send => true)
+      @game = mock(Sudocoup::Game, :join_game => true, :ready? => false, :players => [@player_1])
+      Sudocoup::Game.stub!(:new).and_return(@game)
       @server = Sudocoup::Server.new
     end
     describe "game available" do

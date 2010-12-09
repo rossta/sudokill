@@ -18,6 +18,8 @@ module Sudocoup
             send @app.board_json
           when /PLAY/
             @app.play_game.succeed
+          when /STOP/
+            @app.stop_game.succeed
           when /^\d+ \d+ \d+$/
             @app.request_add_move.succeed(self, response)
           end

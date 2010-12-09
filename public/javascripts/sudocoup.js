@@ -430,6 +430,12 @@ Sudocoup = (function() {
         }).
         delegate("input.play", "click", function(){
           self.send("PLAY");
+          $(this).removeClass("play").addClass("stop").val("Stop");
+          return false;
+        }).
+        delegate("input.stop", "click", function(){
+          self.send("STOP");
+          $(this).removeClass("stop").addClass("play").val("Play");
           return false;
         }).
         delegate("a.toggle", "click", function() {

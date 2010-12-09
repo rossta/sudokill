@@ -129,6 +129,44 @@ describe("WebSocketClient", function() {
         $form.find("input.play").click();
         expect(websocket.send).toHaveBeenCalledWith("PLAY\r\n");
       });
+      it("should change input value and class to 'stop'", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        var $button = $form.find("input.play");
+        spyOn(websocket, "send");
+        expect($button).not.toHaveClass("stop");
+        expect($button.val()).toEqual("Play");
+        $button.click();
+        expect($button).not.toHaveClass("play");
+        expect($button).toHaveClass("stop");
+        expect($button.val()).toEqual("Stop");
+      });
+    });
+    describe("stop", function() {
+      it("should send STOP message when stop button clicked", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        spyOn(websocket, "send");
+        $form.find("input.play").click();
+        $form.find("input.stop").click();
+        expect(websocket.send).toHaveBeenCalledWith("STOP\r\n");
+      });
+      it("should change input value and class to 'play'", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        var $button = $form.find("input.play");
+        spyOn(websocket, "send");
+        $button.click();
+        expect($button).not.toHaveClass("play");
+        expect($button.val()).toEqual("Stop");
+        $button.click();
+        expect($button).not.toHaveClass("stop");
+        expect($button).toHaveClass("play");
+        expect($button.val()).toEqual("Play");
+      });
     });
   });
 

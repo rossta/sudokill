@@ -8,7 +8,7 @@ module Sudocoup
       new(opts).start
     end
 
-    attr_reader :game, :queue
+    attr_reader :game, :queue, :channel
     attr_accessor :max_time
 
     def initialize(opts = {})
@@ -33,11 +33,12 @@ module Sudocoup
           new_player player
         end
 
-        EventMachine.add_periodic_timer(1.0) {
+        EventMachine.add_periodic_timer(0.2) {
           if @game.in_progress? && !time_left?(@game.current_player)
-            end_game(@game.times_up_violation(@game.current_player))
+            end_game_and_start_new(@game.times_up_violation(@game.current_player))
+          elsif @game.in_progress?
+            broadcast(player_json) if players.any?
           end
-          broadcast(player_json) if players.any?
         }
 
         EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
@@ -97,11 +98,24 @@ module Sudocoup
       defer
     end
 
+    def stop_game
+      defer = EM::DefaultDeferrable.new
+      defer.callback {
+        if @game.in_progress?
+          end_game_and_start_new("Game stopped!")
+        else
+          broadcast status_json(@game.status)
+        end
+      }
+      defer
+    end
+
     def broadcast(msg, name = nil)
+      return if @channel.nil?
       msg = "#{name}: #{msg}" unless name.nil?
       @channel.push msg
     end
-
+    
     def request_add_move
       defer = EM::DefaultDeferrable.new
       defer.callback { |player, move|
@@ -117,7 +131,7 @@ module Sudocoup
           broadcast msg, SUDOKOUP
         when :violation
           broadcast move_json(move, status.to_s)
-          end_game(msg)
+          end_game_and_start_new(msg)
         end
       }
       defer
@@ -135,6 +149,7 @@ module Sudocoup
       joined = @game.join_game(player)
       if joined
         player.send("READY")
+        broadcast(player_json)
         broadcast("Ready to begin", SUDOKOUP) if @game.ready?
       end
       joined
@@ -154,7 +169,7 @@ module Sudocoup
       player.current_time <= max_time
     end
 
-    def end_game(msg)
+    def end_game_and_start_new(msg)
       @game.send_players game_over_message(msg)
       broadcast status_json(msg)
       @game = Game.new

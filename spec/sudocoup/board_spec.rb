@@ -28,7 +28,7 @@ TXT
           board[i][j].should == value.to_i
         end
       end
-      
+
     end
 
   end
@@ -49,7 +49,7 @@ JSON
 
     describe "to_msg" do
       it "should return space delimited values, pipe joined rows" do
-        
+
         msg = <<-MSG
 7 0 5 0 0 0 2 9 4|0 0 1 2 0 6 0 0 0|0 0 0 0 0 0 0 0 7|9 0 4 5 0 0 0 2 0|0 0 7 3 6 2 1 0 0|0 2 0 0 0 1 7 0 8|1 0 0 0 9 0 0 0 0|0 0 0 7 0 5 9 0 0|5 3 9 0 0 0 8 0 2
 MSG
@@ -141,6 +141,57 @@ MSG
         end
         it "should not report error" do
           @board.add_move(0, 5, 8)
+          @board.error.should be_nil
+        end
+      end
+      describe "legal move: new row when row and column full" do
+        # Start
+        # 7 0 5 0 0 0 2 9 4
+        # 0 0 1 2 0 6 0 0 0
+        # 0 0 0 0 0 0 0 0 7
+        # 9 0 4 5 0 0 0 2 0
+        # 0 0 7 3 6 2 1 0 0
+        # 0 2 0 0 0 1 7 0 8
+        # 1 0 0 0 9 0 0 0 0
+        # 0 0 0 7 0 5 9 0 0
+        # 5 3 9 0 0 0 8 0 2
+        
+        # Finish
+        # 7 6 5 1 3 8 2 9 4
+        # 4 9 1 2 7 6 5 8 3
+        # 2 8 3 4 5 9 6 1 7
+        # 9 1 4 5 8 7 3 2 6
+        # 8 5 7 3 6 2 1 4 9
+        # 3 2 6 9 4 1 7 5 8
+        # 1 7 2 8 9 3 4 6 5
+        # 6 4 8 7 2 5 9 3 1
+        # 5 3 9 6 1 4 8 7 2
+
+        # Start
+        # row 1: 0 0 1 2 0 6 0 0 0
+        # col 1: 0 0 0 0 0 2 0 0 3
+        
+        it "should return true" do
+          # fill in row 1 except col 1
+          @board[1][0] = 4
+          @board[1][4] = 7
+          @board[1][6] = 5
+          @board[1][7] = 8
+          @board[1][8] = 3
+
+          # fill in col 1 except row 1
+          @board.add_move(0, 1, 6).should be_true
+          @board.add_move(2, 1, 8).should be_true
+          @board.add_move(3, 1, 1).should be_true
+          @board.add_move(4, 1, 5).should be_true
+          @board.add_move(6, 1, 7).should be_true
+          @board.add_move(7, 1, 4).should be_true
+          
+          # fill in final spot in row 1 col 1
+          @board.add_move(1, 1, 9).should be_true
+          
+          # new col and row move
+          @board.add_move(2, 2, 3).should be_true
           @board.error.should be_nil
         end
       end

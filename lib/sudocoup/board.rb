@@ -1,6 +1,9 @@
 module Sudocoup
 
   class Board
+    RANGE = (1..9)
+    INDICES = (0..8)
+
     attr_reader :rows
     attr_accessor :error
 
@@ -19,12 +22,12 @@ module Sudocoup
     end
 
     def to_json
-      rows = @rows.map { |row| "[#{row.join(", ")}]" }.join(", ")
-      "[#{rows}]"
+      json_rows = @rows.map { |row| "[#{row.join(", ")}]" }.join(", ")
+      "[#{json_rows}]"
     end
 
     def to_msg
-      @rows.map { |row| row.join(" ") }.join(PIPE)
+      rows.map { |row| row.join(" ") }.join(PIPE)
     end
 
     def add_move(row, col, val)
@@ -70,11 +73,11 @@ module Sudocoup
     end
 
     def available?(row, col, val)
-      @rows[row][col].zero?
+      rows[row][col].zero?
     end
 
     def valid_space?(row, col)
-      @rows[row] && @rows[row][col]
+      rows[row] && rows[row][col]
     end
 
     def valid_value?(val)
@@ -83,30 +86,52 @@ module Sudocoup
 
     def required_placement?(row, col)
       return true if @moves.empty?
-      @moves.last.row == row || @moves.last.col == col
+      last_move = @moves.last
+      return true if full_row?(last_move.row) && full_col?(last_move.col)
+      last_move.row == row || last_move.col == col
     end
 
     def row_violation?(row, val)
-      @rows[row].any? { |v| v == val }
+      rows[row].any? { |v| v == val }
     end
 
     def col_violation?(col, val)
-      @rows.any? { |r| r[col] == val }
+      rows.any? { |r| r[col] == val }
     end
 
     def section_violation?(row, col, val)
       sections = [(0..2), (3..5), (6..8)]
-      rows = sections[(row / 3)].to_a
-      cols = sections[(col / 3)].to_a
-      rows.any? do |r|
-        cols.any? do |c|
-          @rows[r][c] == val
+      lrows = sections[(row / 3)].to_a
+      lcols = sections[(col / 3)].to_a
+      lrows.any? do |r|
+        lcols.any? do |c|
+          rows[r][c] == val
         end
       end
     end
-    
+
+    def full_row?(row)
+      rows[row].sort == RANGE.to_a
+    end
+
+    def full_col?(col)
+      columns[col].sort == RANGE.to_a
+    end
+
     def section(row, val)
       (row / 3) + (val / 3)
+    end
+
+    def columns
+      [].tap do |cols|
+        INDICES.each do |j|
+          col = []
+          INDICES.each do |k|
+            col << rows[k][j]
+          end
+          cols << col
+        end
+      end
     end
 
   end

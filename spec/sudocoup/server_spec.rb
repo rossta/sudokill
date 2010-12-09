@@ -202,4 +202,115 @@ describe Sudocoup::Server do
       subject.time_left?(player).should be_false
     end
   end
+  
+  describe "end_game_and_start_new" do
+    before(:each) do
+      @game     = mock(Sudocoup::Game, :send_players => nil, :available? => false)
+      @new_game = mock(Sudocoup::Game, :available? => true, :ready? => false, :join_game => true)
+      @channel  = mock(EM::Channel, :push => nil)
+      Sudocoup::Game.stub!(:new).and_return(@game)
+      EM::Channel.stub!(:new).and_return(@channel)
+      @server   = Sudocoup::Server.new
+    end
+    it "should send game over message to players" do
+      @game.should_receive(:send_players).with(/GAME OVER/)
+      @server.end_game_and_start_new("Game stopped")
+    end
+    it "should initialize new game" do
+      @server.game.should == @game
+      Sudocoup::Game.should_receive(:new).and_return(@new_game)
+      @server.end_game_and_start_new("Game stopped")
+      @server.game.should == @new_game
+    end
+    describe "add players to new game" do
+      before(:each) do
+        Sudocoup::Game.stub!(:new).and_return(@new_game)
+        @player_1 = mock(Sudocoup::Player::Socket, :name => "Player 1", :to_json => "Player 1", :send => nil)
+        @player_2 = mock(Sudocoup::Player::Socket, :name => "Player 2", :to_json => "Player 2", :send => nil)
+        @new_game.stub!(:players).and_return([@player_1, @player_2])
+        @server.join_queue @player_1
+        @server.join_queue @player_2
+      end
+      it "should add players from queue" do
+        @new_game.should_receive(:join_game).once.with(@player_1).ordered
+        @new_game.should_receive(:join_game).once.with(@player_2).ordered
+        @server.end_game_and_start_new("Game stopped")
+      end
+    end
+  end
+  
+  describe "announce_player" do
+    before(:each) do
+      @player   = mock(Sudocoup::Player::Socket, :name => "Player 1", :to_json => "Player 1", :send => nil)
+      @game     = mock(Sudocoup::Game, :players => [])
+      @channel  = mock(EM::Channel, :push => nil)
+      Sudocoup::Game.stub!(:new).and_return(@game)
+      @server = Sudocoup::Server.new
+      @server.channel = @channel
+    end
+    it "should broadcast player json and in game message if player is in game" do
+      @game.stub!(:players).and_return([@player])
+      @channel.should_receive(:push).once.with(/SCORE/).ordered
+      @channel.should_receive(:push).once.with(/Player 1 is now in the game/).ordered
+      @server.announce_player @player
+    end
+    it "should broadcast queue json and on deck message if player is in queue" do
+      @server.join_queue(@player)
+      @channel.should_receive(:push).once.with(/QUEUE/).ordered
+      @channel.should_receive(:push).once.with(/Player 1 is now waiting/).ordered
+      @server.announce_player @player
+    end
+  end
+  
+  describe "remove_player" do
+    before(:each) do
+      @player_1 = mock(Sudocoup::Player::Socket, :name => "Player 1", :to_json => "Player 1", :send => nil)
+      @player_2 = mock(Sudocoup::Player::Socket, :name => "Player 2", :to_json => "Player 2", :send => nil)
+      @player_3 = mock(Sudocoup::Player::Socket, :name => "Player 3", :to_json => "Player 3", :send => nil)
+      @game     = mock(Sudocoup::Game, :players => [], :in_progress? => false, :available? => false, :over? => false, :ready? => false)
+      @channel  = mock(EM::Channel, :push => nil)
+      Sudocoup::Game.stub!(:new).and_return(@game)
+      @server = Sudocoup::Server.new
+      @server.channel = @channel
+    end
+    describe "from game in progress" do
+      it "should end game and start new" do
+        @game.stub!(:players).and_return([@player_1, @player_2])
+        @game.should_receive(:in_progress?).and_return(true)
+        @game.should_receive(:send_players).with(/GAME OVER/)
+        @server.remove_player @player_1
+      end
+    end
+    describe "from game not started" do
+      before(:each) do
+        @server.join_queue @player_3
+        @game.stub!(:players).and_return([@player_1, @player_3])
+        @game.stub!(:in_progress?).and_return(false)
+        @game.stub!(:over?).and_return(false)
+        @game.stub!(:join_game).and_return(true)
+      end
+      it "should add one player from queue and keep other player" do
+        @game.should_receive(:join_game).with(@player_3)
+        @server.remove_player @player_1
+      end
+      it "should broadcast player 3 in game" do
+        @channel.should_receive(:push).once.with(/SCORE/).ordered
+        @channel.should_receive(:push).once.with(/Player 3 is now in the game/).ordered
+        @server.remove_player @player_1
+      end
+      it "should not end game" do
+        @game.should_receive(:in_progress?).and_return(false)
+        @game.should_receive(:over?).and_return(false)
+        @game.should_not_receive(:send_players).with(/GAME OVER/)
+        @server.remove_player @player_1
+      end
+    end
+    describe "from queue" do
+      it "should broadcast player left queue" do
+        @server.join_queue @player_3
+        @channel.should_receive(:push).with(/Player 3 left the On Deck circle/)
+        @server.remove_player @player_3
+      end
+    end
+  end
 end

@@ -18,3 +18,6 @@ graphic timers
 chrome
 display game queue
 display game over state
+
+BUGS
+stop/play button disappears on disconnect/reconnect

@@ -8,8 +8,8 @@ module Sudocoup
       new(opts).start
     end
 
-    attr_reader :game, :queue, :channel
-    attr_accessor :max_time
+    attr_reader :game, :queue
+    attr_accessor :max_time, :channel
 
     def initialize(opts = {})
       @host     = opts[:host] || '0.0.0.0'
@@ -35,7 +35,9 @@ module Sudocoup
 
         EventMachine.add_periodic_timer(0.25) {
           if @game.in_progress?
-            end_game_and_start_new(@game.times_up_violation(@game.current_player)) if !time_left?(@game.current_player)
+            if !time_left?(@game.current_player)
+              end_game_and_start_new(@game.times_up_violation(@game.current_player))
+            end
             broadcast(player_json) if players.any?
           end
         }
@@ -146,7 +148,11 @@ module Sudocoup
 
     def remove_player(player)
       if @game.players.delete(player)
-        end_game_and_start_new("#{player.name} left the game")
+        if @game.in_progress?
+          end_game_and_start_new("#{player.name} left the game")
+        elsif !@game.over? && @queue.any?
+          add_player_from_queue
+        end
       elsif @queue.delete(player)
         broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
       end
@@ -190,11 +196,15 @@ module Sudocoup
       broadcast status_json(msg)
       @game = Game.new
       while @game.available? && @queue.any?
-        player = @queue.shift
-        join_game player
-        announce_player player
+        add_player_from_queue
       end
       broadcast queue_json
+    end
+    
+    def add_player_from_queue
+      player = @queue.shift
+      join_game player
+      announce_player player
     end
 
     def board_json

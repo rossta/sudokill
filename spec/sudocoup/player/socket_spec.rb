@@ -108,5 +108,14 @@ describe Sudocoup::Player::Socket do
       json['has_turn'].should be_true
     end
   end
+  
+  describe "add_move" do
+    it "should add move to move list" do
+      move = mock(Sudocoup::Move)
+      Sudocoup::Move.should_receive(:new).with(0, 1, 2).and_return(move)
+      @player.add_move(0, 1, 2)
+      @player.moves.should == [move]
+    end
+  end
 
 end

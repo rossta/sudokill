@@ -1,13 +1,10 @@
 PLAYER
-allow free move when row/col full
-better error message for illegal moves
+count moves
 declare winner,loser, num moves
 start new game with players from queue
 handle player disconnect during game
-spec times up violation
 refactor reject/violation messaging
 refactor server json/broadcast msgs
-end game if illegal move
 
 HUMAN PLAYER
 enter game queue as human

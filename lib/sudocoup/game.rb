@@ -57,16 +57,18 @@ module Sudocoup
       return [:reject, "1 Not in the game, #{player.name}"] unless @players.include? player
       return [:reject, "2 Wait your turn, #{player.name}"] unless player.has_turn?
 
-      if @board.add_move *move.split.map(&:to_i)
-        player.stop_timer!
+      player.stop_timer!
+      move_to_i = move.split.map(&:to_i)
+      if add_move_to_board *move_to_i
+        player.add_move *move_to_i
         [:ok, "#{player.name} played: #{move}"]
       else
         [:violation, "#{previous_player.name} WINS! #{player.name} played #{move}: #{@board.error}"]
       end
     end
 
-    def add_move(x, y, value)
-      @board.add_move(x, y, value)
+    def add_move_to_board(row, col, val)
+      @board.add_move(row, col, val)
     end
 
     def current_player

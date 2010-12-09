@@ -49,8 +49,8 @@ describe Sudocoup::Game do
 
   describe "add_player_move" do
     before(:each) do
-      @player_1 = mock(Sudocoup::Player::Socket, :name => "Player 1", :stop_timer! => nil)
-      @player_2 = mock(Sudocoup::Player::Socket, :name => "Player 2", :stop_timer! => nil)
+      @player_1 = mock(Sudocoup::Player::Socket, :name => "Player 1", :stop_timer! => nil, :add_move => nil)
+      @player_2 = mock(Sudocoup::Player::Socket, :name => "Player 2", :stop_timer! => nil, :add_move => nil)
       @board = mock(Sudocoup::Board, :add_move => true, :violated? => false, :error => "board error")
       @game.board = @board
       @game.players << @player_1
@@ -76,6 +76,10 @@ describe Sudocoup::Game do
       end
       it "should stop player timer" do
         @player_1.should_receive(:stop_timer!)
+        @game.add_player_move(@player_1, "1 2 3")
+      end
+      it "should add to players list of moves" do
+        @player_1.should_receive(:add_move).with(1, 2, 3)
         @game.add_player_move(@player_1, "1 2 3")
       end
       it "should return success message if move successful" do
@@ -111,18 +115,18 @@ describe Sudocoup::Game do
     end
   end
 
-  describe "add_move" do
+  describe "add_move_to_board" do
     before(:each) do
       @board = mock(Sudocoup::Board, :add_move => true)
       @game.board = @board
     end
     describe "legal_move" do
       it "should return true" do
-        @game.add_move(4, 5, 9).should be_true
+        @game.add_move_to_board(4, 5, 9).should be_true
       end
       it "should add move to board" do
         @board.should_receive(:add_move)
-        @game.add_move(4, 5, 9)
+        @game.add_move_to_board(4, 5, 9)
       end
     end
     describe "illegal_move" do
@@ -130,11 +134,11 @@ describe Sudocoup::Game do
         @board.stub!(:add_move).and_return(false)
       end
       it "should return true" do
-        @game.add_move(4, 5, 9).should be_false
+        @game.add_move_to_board(4, 5, 9).should be_false
       end
       it "should add move to board" do
         @board.should_receive(:add_move)
-        @game.add_move(4, 5, 9)
+        @game.add_move_to_board(4, 5, 9)
       end
     end
   end

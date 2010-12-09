@@ -111,6 +111,10 @@ module Sudocoup
         @moves ||= []
       end
 
+      def add_move(row, col, val)
+        moves << Move.new(row, col, val)
+      end
+
       protected
 
       def format(text)

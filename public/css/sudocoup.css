@@ -59,7 +59,9 @@ form.websocket a.toggle {
   margin: 0.5em 0;
 }
 form.websocket input.play,
-form.websocket input.stop { display:none;}
+form.websocket input.stop,
+form.websocket input.join,
+form.websocket input.leave { display:none;}
 form.websocket.connected {
   position:absolute;
   top:1em;
@@ -67,7 +69,25 @@ form.websocket.connected {
 }
 form.websocket.connected .required,
 form.websocket.connected .optional { display:none; }
-form.websocket.connected input.play { display:inline; }
+form.websocket.connected input.play,
+form.websocket.connected input.join,
+form.websocket.connected input.stop,
+form.websocket.connected input.leave { display:inline; }
+
+form.game_board input { display:none;}
+#board_val {
+  background-color: #121212;
+  border: none;
+  color: white;
+  font-family: Helvetica, Arial;
+  font-size: 2em;
+  height: 48px;
+  line-height: 0.5em;
+  padding: 0px;
+  position: absolute;
+  text-align: center;
+  width: 48px;
+}
 
 /* score board */
 #score_board { margin:2em auto 1em; }

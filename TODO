@@ -6,17 +6,17 @@ handle leave queue (specs)
 when player quits, don't start new game if game hasn't started yet
 refactor reject/violation messaging
 refactor server json/broadcast msgs
+specs for game board js
 
 HUMAN PLAYER
 enter game queue as human
-accept/send input for human player
+handle JOIN, LEAVE and move messages from human player
+extract common socket/websocket player methods
 
 VIEW
-trigger new game from view
 win logic
 graphic timers
 chrome
-display game queue
 display game over state
 
 BUGS

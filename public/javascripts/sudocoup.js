@@ -7,6 +7,7 @@ Sudocoup = (function() {
       self.$sudocoup  = $(self.selector);
 
       opts = opts || {};
+      self.opts     = opts;
       self.mode     = opts['mode'] || 'normal';
       self.board    = new GameBoard("game_board", self.selector);
 
@@ -145,29 +146,55 @@ Sudocoup = (function() {
   },
 
   GameBoard = Base.extend({
-    constructor: function(domId, container) {
+    constructor: function(domId, container, opts) {
+      opts = opts || {};
       var self = this;
+      self.opts           = opts;
       self.hilite         = "#333333";
-      self.none           = "none";
+      self.transparent    = "transparent";
       self.domId          = domId;
       self.$selector      = $("#" + self.domId);
       self.dim            = 50;
       self.numberSquares  = new MultiArray(9, 9);
       self.backgroundSquares = new MultiArray(9, 9);
       $("<div />").attr("id", domId).appendTo(container);
+      self.$sudocoup      = $(container);
+      self.valids = [1,2,3,4,5,6,7,8,9];
+
+      self.$form  = $("<form></form>");
+      self.$row = $("<input name='board_row' id='board_row' type='hidden' />");
+      self.$col = $("<input name='board_col' id='board_col' type='hidden' />");
+      self.$val = $("<input name='board_val' id='board_val' type='text' />");
+      self.$form.append(self.$row);
+      self.$form.append(self.$col);
+      self.$form.append(self.$val);
+      self.$sudocoup.append(self.$form);
+      self.$val.hide();
+      self.$form.addClass(domId).submit(function() {
+        var row = self.$row.val();
+        var col = self.$col.val();
+        var val = self.$val.val();
+        if (self.isValid(val)) {
+          self.$sudocoup.trigger("send_message", [row, col, val].join(" "));
+        }
+        return false;
+      });
+    },
+    isValid: function(val) {
+      return _(this.valids).include(parseFloat(val));
     },
     update: function(i, j, number){
       var self = this,
           rtext = self.numberSquares[i][j],
           rsquare = self.backgroundSquares[i][j],
           hilite = self.hilite,
-          none = self.none;
+          transparent = self.transparent;
       _(self.backgroundSquares).each(function(row, k) {
         _(row).each(function(sq){
           if (i===k) {
             sq.attr({fill:hilite});
           } else {
-            sq.attr({fill:none});
+            sq.attr({fill:transparent});
           }
         });
         row[j].attr({fill:hilite});
@@ -177,7 +204,7 @@ Sudocoup = (function() {
       });
       rsquare.animate({fill:Raphael.getColor()},300, function() {
         rtext.attr({text: number});
-        rsquare.animate({fill:none}, 300);
+        rsquare.animate({fill:transparent}, 300);
       });
       return rtext;
     },
@@ -190,15 +217,13 @@ Sudocoup = (function() {
           var square = self.numberSquares[i][j];
           if (value > 0) {
             square.attr({text:value});
-            // self.update(i, j, value);
           } else {
             square.attr({text:" "});
-            // self.update(i, j, " ");
           }
         }
       }
       self.squares.animate({fill:Raphael.getColor()}, 300, function() {
-        self.squares.animate({fill:self.none}, 300);
+        self.squares.animate({fill:self.transparent}, 300);
       });
     },
     raphael: function() {
@@ -225,8 +250,8 @@ Sudocoup = (function() {
 
       r.rect(0, 0, gDim * 3, gDim * 3).attr({
         stroke: strokeColor,
-        "stroke-opacity": 0.5,
-        "stroke-width": 4
+        "stroke-opacity": 0.8,
+        "stroke-width": 5
       });
 
       for(var i = 0; i < 3; i++) {
@@ -235,6 +260,7 @@ Sudocoup = (function() {
           x = j * gDim;
           group = r.rect(x, y, gDim, gDim);
           groups.push(group);
+          group = r.rect(x, y, dim, dim);
         }
       }
 
@@ -247,7 +273,25 @@ Sudocoup = (function() {
           cx = x + (dim/2);
           cy = y + (dim/2);
 
-          square = r.rect(x, y, dim, dim);
+          square = r.rect(x, y, dim, dim).attr({
+            fill: self.transparent
+          });
+
+          if (self.opts["humans"]) {
+            $(square.node).click(function() {
+              var row = $(this).data("row");
+              var col = $(this).data("col");
+              if (self.isValid(self.numberSquares[row][col].attr("text"))) return;
+              var offset = $(this).offset();
+              self.$val.css({
+                top: offset.top + 1,
+                left: offset.left + 1
+              }).show().focus().val(null);
+              self.$row.val(row);
+              self.$col.val(col);
+              return false;
+            }).data("row", i).data("col", j);
+          }
 
           text = r.text(cx, cy, Math.floor(Math.random()*9) + 1).attr({
             fill: bcolor,
@@ -256,14 +300,13 @@ Sudocoup = (function() {
             "color": "white"
           });
 
-          this.numberSquares[i][j] = text;
-          this.backgroundSquares[i][j] = square;
+          self.numberSquares[i][j] = text;
+          self.backgroundSquares[i][j] = square;
 
           squares.push(square);
           start += 0.01;
         }
       }
-
 
       squares.attr({
         stroke: strokeColor,
@@ -276,6 +319,7 @@ Sudocoup = (function() {
         "stroke-opacity": 0.5,
         "stroke-width": 2
       });
+
 
       self.squares  = squares;
       self.groups   = groups;
@@ -422,7 +466,7 @@ Sudocoup = (function() {
   WebSocketClient = Base.extend({
     constructor: function(game, mode) {
       var self = this;
-      self.game = game;
+      self.game         = game;
       self.$connectForm = buildConnectForm();
       self.$status      = buildContainer("websocket_status");
       self.location     = new Location();
@@ -432,6 +476,9 @@ Sudocoup = (function() {
       mode = mode || 'normal';
       self.$connectForm.addClass("websocket welcome").addClass(mode);
       self.$connectForm.find('input[name=host]').val(self.location.hostname());
+      if (game.opts && !game.opts["humans"]) {
+        self.$connectForm.find("input.join").hide();
+      }
 
       self.$connectForm.submit(function(){
           var $this = $(this),
@@ -464,6 +511,16 @@ Sudocoup = (function() {
         delegate("input.stop", "click", function(){
           self.send("STOP");
           $(this).removeClass("stop").addClass("play").val("Play");
+          return false;
+        }).
+        delegate("input.join", "click", function(){
+          self.send("JOIN");
+          $(this).removeClass("join").addClass("leave").val("Leave game");
+          return false;
+        }).
+        delegate("input.leave", "click", function(){
+          self.send("LEAVE");
+          $(this).removeClass("leave").addClass("join").val("Join game");
           return false;
         }).
         delegate("a.toggle", "click", function() {
@@ -556,6 +613,7 @@ Sudocoup = (function() {
         $opts.append("<label for='s_port' class='port'>Port</label>");
         $opts.append("<input id='s_port' type='text' name='port' class='port' />");
 
+    $connectForm.append("<input type='button' name='join' value='Join game' class='join' />");
     $connectForm.append("<input type='button' name='play' value='Play' class='play' />");
     $connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
     return $connectForm;
@@ -571,6 +629,7 @@ Sudocoup = (function() {
   classMethods.GameBoard  = GameBoard;
   classMethods.ScoreBoard = ScoreBoard;
   classMethods.Messager   = Messager;
+  classMethods.MultiArray   = MultiArray;
   classMethods.WebSocketClient = WebSocketClient;
 
   return Base.extend(instanceMethods, classMethods);

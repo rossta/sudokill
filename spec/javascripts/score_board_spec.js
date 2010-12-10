@@ -1,10 +1,10 @@
-describe("ScoreBoard", function() {
+describe("Sudocoup.ScoreBoard", function() {
   var createScoreBoard = function() {
     return new Sudocoup.ScoreBoard("score_board", "#sudocoup");
   };
 
   beforeEach(fixture);
-  // afterEach(removeFixture);
+  afterEach(removeFixture);
 
   describe("constructor", function() {
     it("should append div with given dom id to game container", function() {

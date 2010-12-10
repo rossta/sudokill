@@ -10,11 +10,6 @@ describe("WebSocketClient", function() {
     return new Sudocoup.WebSocketClient(game);
   };
 
-  // stub:
-  //   log: function(){}
-  //   print: function(){}
-  //   dispatch: function(){}
-
   describe("constructor", function() {
     it("should append the jquery form: $connectForm", function() {
       var client = new Sudocoup.WebSocketClient(game);
@@ -172,6 +167,55 @@ describe("WebSocketClient", function() {
         expect($button).not.toHaveClass("stop");
         expect($button).toHaveClass("play");
         expect($button.val()).toEqual("Play");
+      });
+    });
+    describe("join_game", function() {
+      it("should send JOIN message when join button clicked", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        var $button = $form.find("input.join");
+        spyOn(websocket, "send");
+        $button.click();
+        expect(websocket.send).toHaveBeenCalledWith("JOIN\r\n");
+      });
+      it("should change input value and class to 'leave'", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        var $button = $form.find("input.join");
+        spyOn(websocket, "send");
+        expect($button).not.toHaveClass("leave");
+        expect($button.val()).toEqual("Join game");
+        $button.click();
+        expect($button).not.toHaveClass("join");
+        expect($button).toHaveClass("leave");
+        expect($button.val()).toEqual("Leave game");
+      });
+    });
+    describe("leave_game", function() {
+      it("should send LEAVE message when leave button clicked", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        spyOn(websocket, "send");
+        $form.find("input.join").click();
+        $form.find("input.leave").click();
+        expect(websocket.send).toHaveBeenCalledWith("LEAVE\r\n");
+      });
+      it("should change input value and class to 'join'", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        var $form = $('form.websocket');
+        spyOn(websocket, "send");
+        var $button = $form.find("input.join");
+        $button.click();
+        expect($button).not.toHaveClass("join");
+        expect($button.val()).toEqual("Leave game");
+        $button.click();
+        expect($button).not.toHaveClass("leave");
+        expect($button).toHaveClass("join");
+        expect($button.val()).toEqual("Join game");
       });
     });
   });

@@ -47,6 +47,12 @@ describe("WebSocketClient", function() {
       expect($form).toHaveSelector('label.host');
       expect($form).toHaveSelector('label.port');
     });
+    it('should initialize host value to hostname', function() {
+      var client = new Sudocoup.WebSocketClient(game), websocket;
+      var hostname = new Sudocoup.Location().hostname();
+      var $host = $('input[name=host]');
+      expect($host.val()).toEqual(hostname);
+    });
   });
 
   describe("events", function() {
@@ -179,6 +185,12 @@ describe("WebSocketClient", function() {
       var websocket = client.connect("Rossta", "localhost", "8080");
       expect(websocket).toEqual(jasmine.any(WebSocket));
       expect(websocket.URL).toEqual("ws://localhost:8080/");
+    });
+    it("should set hostname from location if not given", function() {
+      var client = createClient(), websocket;
+      spyOn(client.location, "hostname").andReturn("linserv1.cims.nyu.edu");
+      websocket = client.connect("Rossta");
+      expect(websocket.URL).toEqual("ws://linserv1.cims.nyu.edu:8080/");
     });
     describe("ws.onmessage", function() {
       it("should forward event data to game dispatch", function() {

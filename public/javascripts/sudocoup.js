@@ -289,13 +289,13 @@ Sudocoup = (function() {
       $("<div />").attr("id", domId).appendTo(container);
       self.$selector = $("#" + domId);
     },
-    
+
     updateQueue: function(players) {
       var self = this, $queue = self.$selector.find("#queue");
       if ($queue.find(".player").length != players.length) {
         $queue.find(".player").remove();
-        _(players).each(function(p, i) { 
-          $("<div />").addClass("player player_" + (i + 1)).appendTo($queue); 
+        _(players).each(function(p, i) {
+          $("<div />").addClass("player player_" + (i + 1)).appendTo($queue);
         });
       }
       $queue.find(".player").empty();
@@ -309,15 +309,15 @@ Sudocoup = (function() {
         $("<div />").appendTo($player).addClass("name").text(player["name"]);
       });
       return self;
-      
+
     },
 
     updateScore: function(players) {
       var self = this, $score = self.$selector.find("#score");
       if ($score.find(".player").length != players.length) {
         $score.find(".player").remove();
-        _(players).each(function(p, i) { 
-          $("<div />").addClass("player player_" + (i + 1)).appendTo($score); 
+        _(players).each(function(p, i) {
+          $("<div />").addClass("player player_" + (i + 1)).appendTo($score);
         });
       }
       $score.find(".player").empty();
@@ -425,11 +425,13 @@ Sudocoup = (function() {
       self.game = game;
       self.$connectForm = buildConnectForm();
       self.$status      = buildContainer("websocket_status");
+      self.location     = new Location();
 
       $(game.selector).append(self.$connectForm).append(self.$status);
 
       mode = mode || 'normal';
       self.$connectForm.addClass("websocket welcome").addClass(mode);
+      self.$connectForm.find('input[name=host]').val(self.location.hostname());
 
       self.$connectForm.submit(function(){
           var $this = $(this),
@@ -477,7 +479,7 @@ Sudocoup = (function() {
       var self = this,
       game  = self.game,
       name  = name || 'Patron ' + userAgentName(),
-      host  = host || 'localhost',
+      host  = host || self.location.hostname(),
       port  = port || '8080',
       url   = "ws://" + host + ":" + port + "/",
       ws = new WebSocket(url);
@@ -520,6 +522,15 @@ Sudocoup = (function() {
     }
   }),
 
+  Location = function() {
+    this.hostname = function() {
+      return window.location.hostname;
+    };
+    this.host = function() {
+      return window.location.host;
+    };
+  },
+
   userAgentName = function() {
     var name = "Unknown Agent";
     if (navigator.userAgent) name = navigator.userAgent.slice(0, 15);
@@ -556,6 +567,7 @@ Sudocoup = (function() {
     return $status;
   };
 
+  classMethods.Location   = Location;
   classMethods.GameBoard  = GameBoard;
   classMethods.ScoreBoard = ScoreBoard;
   classMethods.Messager   = Messager;

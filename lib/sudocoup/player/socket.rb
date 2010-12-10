@@ -33,7 +33,6 @@ module Sudocoup
             send response
           when :new_connection
             @app.announce_player(self)
-            send response
           when :move
             @app.request_add_move.succeed(self, response)
           when :play

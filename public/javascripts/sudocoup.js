@@ -381,7 +381,7 @@ Sudocoup = (function() {
       self.$form      = $("<form></form>");
       self.$input     = $("<input type='text' name='message' placeholder='Say anything...' />");
 
-      self.$msg.hide().attr("id", "msg").appendTo(selector);
+      self.$msg.attr("id", "msg").appendTo(selector);
       self.$pane.addClass("pane").appendTo(self.$msg);
 
       self.$form.appendTo(self.$msg);
@@ -414,7 +414,6 @@ Sudocoup = (function() {
     },
 
     show: function() {
-      this.$msg.show();
       this.$msg.addClass("visible");
     }
 

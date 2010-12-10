@@ -45,11 +45,12 @@ describe("Sudocoup.Messager", function() {
   });
 
   describe("show", function() {
-    it("should be hidden when created", function() {
+    it("should be add visible class", function() {
       var messager = new Sudocoup.Messager('#sudocoup');
       var msgDiv = messager.$msg;
+      messager.show();
       expect(msgDiv).toHaveLength(1);
-      expect(msgDiv).not.toBeVisible();
+      expect(msgDiv).toHaveClass("visible");
     });
   });
 

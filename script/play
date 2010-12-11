@@ -3,13 +3,17 @@
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
-require 'rubygems'
-require 'eventmachine'
-
-require 'sudocoup/player/echo'
 
 name = ARGV.shift || "Client"
 host = ARGV.shift || "0.0.0.0"
 port = (ARGV.shift || 44444).to_i
 
-Sudocoup::Player::Echo.play!(name, host, port)
+if ENV['PLAYER'] == "naive"
+  require 'sudocoup'
+  Sudocoup::Player::Naive.play!(name, host, port)
+else
+  require 'rubygems'
+  require 'eventmachine'
+  require 'sudocoup/player/echo'
+  Sudocoup::Player::Echo.play!(name, host, port)
+end

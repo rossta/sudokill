@@ -44,7 +44,7 @@ module Sudocoup
            trap("TERM") { stop.call }
            trap("INT") { stop.call }
 
-           client = EM.connect host, port, Sudocoup::Player::Echo, :name => name, :stop => stop
+           client = EM.connect host, port, Echo, :name => name, :stop => stop
 
            client.callback { |text|
              client.send text

@@ -7,6 +7,7 @@ when player quits, don't start new game if game hasn't started yet
 refactor reject/violation messaging
 refactor server json/broadcast msgs
 specs for game board js
+start new game when ended prematurely
 
 HUMAN PLAYER
 enter game queue as human
@@ -14,6 +15,7 @@ handle JOIN, LEAVE and move messages from human player
 extract common socket/websocket player methods
 
 VIEW
+update interface state when game ends
 win logic
 graphic timers
 chrome

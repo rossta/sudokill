@@ -11,6 +11,8 @@ require "em-websocket"
 
 %w[ client_connection socket web_socket ].each { |file| require "sudocoup/client/#{file}" }
 
+%w[ naive ].each { |file| require "sudocoup/player/#{file}" }
+
 module Sudocoup
 CONFIG_1 = <<-TXT
 7 0 5 0 0 0 2 9 4

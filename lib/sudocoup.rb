@@ -7,9 +7,9 @@ require "eventmachine"
 require "addressable/uri"
 require "em-websocket"
 
-%w[ state_machine server board move dispatch logger game web_server ].each { |file| require "sudocoup/#{file}" }
+%w[ state_machine timer server board move dispatch logger game web_server ].each { |file| require "sudocoup/#{file}" }
 
-%w[ socket web_socket ].each { |file| require "sudocoup/player/#{file}" }
+%w[ player_connection socket web_socket ].each { |file| require "sudocoup/player/#{file}" }
 
 module Sudocoup
 CONFIG_1 = <<-TXT

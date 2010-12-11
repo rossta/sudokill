@@ -1,0 +1,41 @@
+module Sudocoup
+
+  class Clock
+    def self.time
+      Time.now.to_i
+    end
+  end
+
+  module Timer
+
+    attr_accessor :start_time, :stop_time, :last_lap, :total_time
+    def total_time
+      @total_time ||= 0
+    end
+
+    def current_time
+      unless @start_time.nil?
+        Clock.time - @start_time + total_time
+      else
+        total_time
+      end
+    end
+
+    def start_timer!
+      @start_time = Clock.time
+    end
+
+    def stop_timer!
+      @stop_time = Clock.time
+      @last_lap  = @stop_time - @start_time
+      @start_time = nil
+      total_time
+      @total_time += @last_lap
+    end
+
+    def max_time
+      120 # TODO add as option to app
+    end
+
+  end
+end

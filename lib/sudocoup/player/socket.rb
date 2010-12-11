@@ -1,16 +1,10 @@
 module Sudocoup
-  class Clock
-    def self.time
-      Time.now.to_i
-    end
-  end
 
   module Player
     class Socket < EventMachine::Connection
-      include Sudocoup::StateMachine
-      has_states :waiting, :playing, :has_turn
+      include PlayerConnection
 
-      attr_accessor :dispatch, :number, :name
+      attr_accessor :dispatch
 
       def initialize(opts = {})
         waiting!
@@ -42,6 +36,7 @@ module Sudocoup
             send response
             close_connection_after_writing
           end
+          log line, logger_name
         end
       end
 
@@ -51,7 +46,7 @@ module Sudocoup
 
       def unbind
         @app.remove_player(self)
-        log "#{@dispatch.name} disconnected"
+        log "#{name} disconnected"
       end
 
       def send(text)
@@ -60,6 +55,10 @@ module Sudocoup
 
       def name
         @name ||= @dispatch.name
+      end
+      
+      def logger_name
+        "SK[#{name}]"
       end
 
       def enter_game(number)
@@ -73,39 +72,9 @@ module Sudocoup
           arr << [%Q|"number"|, number] unless @number.nil?
           arr << [%Q|"moves"|, moves.size]
           arr << [%Q|"current_time"|, current_time]
-          arr << [%Q|"max_time"|, max_time]
           arr << [%Q|"has_turn"|, has_turn?]
         end
         %Q|{#{attrs.map { |a| a.join(":") }.join(",") } }|
-      end
-
-      attr_accessor :start_time, :stop_time, :last_lap, :total_time
-      def total_time
-        @total_time ||= 0
-      end
-
-      def current_time
-        unless @start_time.nil?
-          Clock.time - @start_time + total_time
-        else
-          total_time
-        end
-      end
-
-      def start_timer!
-        @start_time = Clock.time
-      end
-
-      def stop_timer!
-        @stop_time = Clock.time
-        @last_lap  = @stop_time - @start_time
-        @start_time = nil
-        total_time
-        @total_time += @last_lap
-      end
-
-      def max_time
-        120 # TODO add as option to app
       end
 
       def moves

@@ -20,7 +20,7 @@ describe Sudocoup::Player::WebSocket do
   describe "receive_data" do
     describe "\d+ \d+ \d+" do
       it "should request add move callback" do
-        callback  = mock(Proc, :succeed => nil)
+        callback  = mock(Proc)
         deferr    = mock(EM::Deferrable, :succeed => callback)
         @app.should_receive(:request_add_move).and_return(callback)
         callback.should_receive(:succeed).with(@player, "1 2 3")

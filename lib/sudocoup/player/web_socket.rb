@@ -2,7 +2,9 @@ module Sudocoup
 
   module Player
     class WebSocket < EventMachine::WebSocket::Connection
-      attr_accessor :app, :name, :sid, :number, :conn
+      include PlayerConnection
+
+      attr_accessor :sid, :conn
 
       def initialize(opts = {})
         super
@@ -25,11 +27,6 @@ module Sudocoup
           end
           log line, logger_name
         end
-      end
-
-      def unbind
-        @app.remove_player(self)
-        log "#{@name} disconnected"
       end
 
       def name

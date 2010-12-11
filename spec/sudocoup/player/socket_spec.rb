@@ -3,6 +3,10 @@ require 'spec_helper'
 describe Sudocoup::Player::Socket do
   before(:each) do
     @player = Sudocoup::Player::Socket.new({})
+    @app    = mock(Sudocoup::Server,
+      :remove_player => nil
+    )
+    @player.app = @app
   end
 
   describe "enter_game" do
@@ -93,7 +97,6 @@ describe Sudocoup::Player::Socket do
 #     {
 #       number: 1,
 #       current_time: 14,
-#       max_time: 120,
 #       name: 'Player 1',
 #       moves: 3
 #     }
@@ -104,13 +107,11 @@ describe Sudocoup::Player::Socket do
       json['name'].should == 'Rossta'
       json['moves'].should == 0
       json['current_time'].should == 14
-      json['max_time'].should == 120
       json['has_turn'].should be_true
     end
     it "should not include values that are not defined" do
 #     {
 #       current_time: 0,
-#       max_time: 120,
 #       name: 'Player 1',
 #       moves: []
 #     }
@@ -125,7 +126,6 @@ describe Sudocoup::Player::Socket do
       json['name'].should == 'Rossta'
       json['moves'].should == 0
       json['current_time'].should == 0
-      json['max_time'].should == 120
       json['has_turn'].should be_false
     end
   end
@@ -136,6 +136,13 @@ describe Sudocoup::Player::Socket do
       Sudocoup::Move.should_receive(:new).with(0, 1, 2).and_return(move)
       @player.add_move(0, 1, 2)
       @player.moves.should == [move]
+    end
+  end
+
+  describe "unbind" do
+    it "should remove player from app" do
+      @app.should_receive(:remove_player).with(@player)
+      @player.unbind
     end
   end
 

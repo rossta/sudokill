@@ -8,13 +8,16 @@ Sudocoup = (function() {
 
       opts = opts || {};
       self.opts     = opts;
-      self.mode     = opts['mode'] || 'normal';
+
+      if (opts['mode'])   Settings['mode']    = opts['mode'];
+      if (opts['humans']) Settings['humans']  = opts['humans'];
+
       self.board    = new GameBoard("game_board", self.selector);
 
       self.$status = buildContainer("game_status");
       self.$sudocoup.append(self.$status);
 
-      self.client   = new WebSocketClient(this, self.mode);
+      self.client   = new WebSocketClient(this);
 
       self.$gameLog = buildContainer("game_log");
       self.$sudocoup.append(self.$gameLog);
@@ -34,12 +37,11 @@ Sudocoup = (function() {
       return self;
     },
 
-    show: function(mode) {
+    show: function() {
       var self = this, $board;
-      mode = mode || 'show';
       self.board.build();
       self.score.build();
-      if (!(self.mode == 'simple')) self.messager.show();
+      if (!(Settings.mode == 'simple')) self.messager.show();
       self.$gameLog.show();
 
       $(".title").hide();
@@ -277,7 +279,7 @@ Sudocoup = (function() {
             fill: self.transparent
           });
 
-          if (self.opts["humans"]) {
+          if (Settings.humans) {
             $(square.node).click(function() {
               var row = $(this).data("row");
               var col = $(this).data("col");
@@ -464,7 +466,7 @@ Sudocoup = (function() {
   }),
 
   WebSocketClient = Base.extend({
-    constructor: function(game, mode) {
+    constructor: function(game) {
       var self = this;
       self.game         = game;
       self.$connectForm = buildConnectForm();
@@ -472,13 +474,8 @@ Sudocoup = (function() {
       self.location     = new Location();
 
       $(game.selector).append(self.$connectForm).append(self.$status);
-
-      mode = mode || 'normal';
-      self.$connectForm.addClass("websocket welcome").addClass(mode);
+      self.$connectForm.addClass("websocket welcome").addClass(Settings.mode);
       self.$connectForm.find('input[name=host]').val(self.location.hostname());
-      if (game.opts && !game.opts["humans"]) {
-        self.$connectForm.find("input.join").hide();
-      }
 
       self.$connectForm.submit(function(){
           var $this = $(this),
@@ -492,6 +489,7 @@ Sudocoup = (function() {
         bind("connected", function(){
           $(this).find("input.submit").attr("value", "Disconnect");
           self.$connectForm.removeClass("welcome").addClass("connected");
+          if (!Settings.humans) self.$connectForm.find("input.join").hide();
           self.status("Connected");
         }).
         bind("disconnected", function() {
@@ -579,6 +577,11 @@ Sudocoup = (function() {
     }
   }),
 
+  Settings = {
+    mode: 'normal',
+    humans: false
+  },
+
   Location = function() {
     this.hostname = function() {
       return window.location.hostname;
@@ -625,6 +628,7 @@ Sudocoup = (function() {
     return $status;
   };
 
+  classMethods.Settings   = Settings;
   classMethods.Location   = Location;
   classMethods.GameBoard  = GameBoard;
   classMethods.ScoreBoard = ScoreBoard;

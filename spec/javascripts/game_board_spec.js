@@ -36,6 +36,33 @@ describe("Sudocoup.GameBoard", function() {
       }
     });
     it("should append form for row, col, val input", function() {
+      board = new Sudocoup.GameBoard("game_board", "#sudocoup");
+      var $form = $("form.game_board");
+      expect($form).toHaveSelector("input[name*=row]");
+      expect($form).toHaveSelector("input[name*=col]");
+      expect($form).toHaveSelector("input[name*=val]");
+    });
+  });
+
+  describe("submit", function() {
+    beforeEach(function() {
+      board = createGameBoard();
+    });
+    it("should trigger send message with 'row col val' from inputs if valid", function() {
+      $("input[name*=row]").val("1");
+      $("input[name*=col]").val("2");
+      $("input[name*=val]").val("3");
+      spyOn(board.$sudocoup, "trigger");
+      board.$form.submit();
+      expect(board.$sudocoup.trigger).toHaveBeenCalledWith("send_message", "1 2 3");
+    });
+    it("should not trigger send message if value not valid", function() {
+      $("input[name*=row]").val("1");
+      $("input[name*=col]").val("2");
+      $("input[name*=val]").val("0");
+      spyOn(board.$sudocoup, "trigger");
+      board.$form.submit();
+      expect(board.$sudocoup.trigger).not.toHaveBeenCalled();
     });
   });
 

@@ -2,7 +2,7 @@ module Sudocoup
 
   module Player
     class WebSocket < EventMachine::WebSocket::Connection
-      attr_accessor :app, :name, :sid, :number
+      attr_accessor :app, :name, :sid, :number, :conn
 
       def initialize(opts = {})
         super
@@ -12,7 +12,7 @@ module Sudocoup
 
       def receive_data(data)
         super(data)
-        if line = data.slice!(/(.+)\r?\n/)
+        if line = data.slice!(/(.+)\r?\n/).chomp
           case line
           when /NEW CONNECTION/
             send @app.board_json
@@ -21,10 +21,15 @@ module Sudocoup
           when /STOP/
             @app.stop_game.succeed
           when /^\d+ \d+ \d+$/
-            @app.request_add_move.succeed(self, response)
+            @app.request_add_move.succeed(self, line)
           end
           log line, logger_name
         end
+      end
+
+      def unbind
+        @app.remove_player(self)
+        log "#{@name} disconnected"
       end
 
       def name

@@ -18,13 +18,16 @@ describe("WebSocketClient", function() {
       expect(client.$connectForm).toHaveClass("welcome");
     });
     it("should add mode class to form", function() {
+      var original = Sudocoup.Settings.mode;
       var client1 = new Sudocoup.WebSocketClient(game);
       expect(client1.$connectForm).toHaveClass("normal");
       expect(client1.$connectForm).not.toHaveClass("simple");
-
-      var client2 = new Sudocoup.WebSocketClient(game, "simple");
+      
+      Sudocoup.Settings.mode = "simple";
+      var client2 = new Sudocoup.WebSocketClient(game);
       expect(client2.$connectForm).toHaveClass("simple");
       expect(client2.$connectForm).not.toHaveClass("normal");
+      Sudocoup.Settings.mode = original;
     });
     it("should append form to game selector", function() {
       var client = new Sudocoup.WebSocketClient(game);
@@ -170,6 +173,15 @@ describe("WebSocketClient", function() {
       });
     });
     describe("join_game", function() {
+      it("should hide join button while human settings are false", function() {
+        var client = createClient();
+        var websocket = client.connect();
+        spyOn(websocket, "send");
+        websocket.onopen();
+        var $form = $('form.websocket');
+        var $button = $form.find("input.join");
+        expect($button).not.toBeVisible();
+      });
       it("should send JOIN message when join button clicked", function() {
         var client = createClient();
         var websocket = client.connect();

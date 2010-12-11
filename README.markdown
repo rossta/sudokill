@@ -13,7 +13,7 @@ Download or clone:
 
 ### Dependencies ###
 
-**Mac / Linux**
+**Mac**
 
 I recommend using Ruby version 1.8.7 or above. If you need to upgrade your rubies, use [RVM](http://rvm.beginrescueend.com/).
 
@@ -29,6 +29,16 @@ Add the project gems:
 	$ gem install em-websocket
 	$ gem install sinatra
 	$ gem install thin // optional: alternative web server to WEBrick
+
+**Linux**
+
+From Max:
+
+	$ sudo apt-get install ruby rubygems1.8
+	
+	$ sudo chown -R <user>:<user> /var/lib/gems
+	//insert your own username and verify the location of the gem dir first
+	//then install gems as described for the Mac installation
 
 **Windows**
 

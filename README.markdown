@@ -55,20 +55,24 @@ Start the game server
 
 	$ ruby script/server
 
-Start the web server. Visit http://localhost:45678.
+Start the web server.
 
 	$ ruby script/web
 
-For best performance, use a browser that supports HTML5 websockets
-
-* Chrome 5 <=
-* Safari 5.0
-* Firefox 4 beta
-* Opera 10.70
-
-Run sample client scripts. Send messages to game server via STDIN:
+Start two player client scripts. Once the game starts, send messages to game server via STDIN:
 
 	$ ruby script/play NAME
+
+Visit http://localhost:45678, enter a visitor name, and "Connect". 
+
+Press "Play" when two player clients (from previous step) are connected to the game server.
+
+For best performance, use a browser that supports HTML5 websockets
+
+	* Chrome 5+
+	* Safari 5+
+	* Firefox 4 beta
+	* Opera 10.70
 
 Optional command line parameters
 

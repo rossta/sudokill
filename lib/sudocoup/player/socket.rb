@@ -36,17 +36,12 @@ module Sudocoup
             send response
             close_connection_after_writing
           end
-          log line, logger_name
+          # log line, logger_name
         end
       end
 
       def close
         close_connection_after_writing
-      end
-
-      def unbind
-        @app.remove_player(self)
-        log "#{name} disconnected"
       end
 
       def send(text)
@@ -59,30 +54,6 @@ module Sudocoup
       
       def logger_name
         "SK[#{name}]"
-      end
-
-      def enter_game(number)
-        @number = number
-        playing!
-      end
-
-      def to_json
-        attrs = [].tap do |arr|
-          arr << [%Q|"name"|, %Q|"#{name}"|]
-          arr << [%Q|"number"|, number] unless @number.nil?
-          arr << [%Q|"moves"|, moves.size]
-          arr << [%Q|"current_time"|, current_time]
-          arr << [%Q|"has_turn"|, has_turn?]
-        end
-        %Q|{#{attrs.map { |a| a.join(":") }.join(",") } }|
-      end
-
-      def moves
-        @moves ||= []
-      end
-
-      def add_move(row, col, val)
-        moves << Move.new(row, col, val)
       end
 
       protected

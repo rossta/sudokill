@@ -24,6 +24,30 @@ module Sudocoup
         log "#{name} disconnected"
       end
       
+      def enter_game(number)
+        @number = number
+        playing!
+      end
+
+      def to_json
+        attrs = [].tap do |arr|
+          arr << [%Q|"name"|, %Q|"#{name}"|]
+          arr << [%Q|"number"|, number] unless @number.nil?
+          arr << [%Q|"moves"|, moves.size]
+          arr << [%Q|"current_time"|, current_time]
+          arr << [%Q|"has_turn"|, has_turn?]
+        end
+        %Q|{#{attrs.map { |a| a.join(":") }.join(",") } }|
+      end
+
+      def moves
+        @moves ||= []
+      end
+
+      def add_move(row, col, val)
+        moves << Move.new(row, col, val)
+      end
+
     end
   end
 end

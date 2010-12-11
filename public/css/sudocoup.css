@@ -92,10 +92,10 @@ form.game_board input { display:none;}
 /* score board */
 #score_board { margin:2em auto 1em; }
 #score_board .header { color:#AAA; padding: 5px;}
-#score_board #score { width: 215px; border-right:1px solid #AAA; padding-right:5px;}
 #score_board #score,
 #score_board #queue,
-#msg .pane { overflow:auto; height: 8em; padding:5px;}
+#msg .pane { overflow:auto; height: 11em; padding:5px;}
+#score_board #score { width: 205px; border-right:1px solid #AAA; padding-right:10px;}
 
 #score_board .player { background-color: "none"; padding:5px;}
 #score_board .player.name { font-size:1.2em;}

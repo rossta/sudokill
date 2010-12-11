@@ -1,6 +1,6 @@
 module Sudocoup
-  module Player
-    module PlayerConnection
+  module Client
+    module ClientConnection
       # module ClassMethods
       # end
       # module InstanceMethods

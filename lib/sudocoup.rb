@@ -9,7 +9,7 @@ require "em-websocket"
 
 %w[ state_machine timer server board move dispatch logger game web_server ].each { |file| require "sudocoup/#{file}" }
 
-%w[ player_connection socket web_socket ].each { |file| require "sudocoup/player/#{file}" }
+%w[ client_connection socket web_socket ].each { |file| require "sudocoup/client/#{file}" }
 
 module Sudocoup
 CONFIG_1 = <<-TXT

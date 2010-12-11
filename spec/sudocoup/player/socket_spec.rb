@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Sudocoup::Player::Socket do
+describe Sudocoup::Client::Socket do
   before(:each) do
-    @player = Sudocoup::Player::Socket.new({})
+    @player = Sudocoup::Client::Socket.new({})
     @app    = mock(Sudocoup::Server,
       :remove_player => nil
     )

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sudocoup::Player::WebSocket do
+describe Sudocoup::Client::WebSocket do
   before(:each) do
     @conn   = mock(EventMachine::Connection, :send_data => nil)
     @app    = mock(Sudocoup::Server,
@@ -9,7 +9,7 @@ describe Sudocoup::Player::WebSocket do
       :stop_game => mock(EM::Deferrable, :succeed => true),
       :request_add_move => mock(EM::Deferrable, :succeed => true)
     )
-    @player = Sudocoup::Player::WebSocket.new({})
+    @player = Sudocoup::Client::WebSocket.new({})
     @player.app   = @app
     @player.conn  = @conn
     def @player.send_data(data)

@@ -1,8 +1,8 @@
 module Sudocoup
 
-  module Player
+  module Client
     class Socket < EventMachine::Connection
-      include PlayerConnection
+      include ClientConnection
 
       attr_accessor :dispatch
 

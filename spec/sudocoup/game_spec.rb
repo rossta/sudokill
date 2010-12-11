@@ -31,8 +31,8 @@ describe Sudocoup::Game do
     end
     before(:each) do
       @game = Sudocoup::Game.new
-      @player_1 = mock(Sudocoup::Player::Socket, :enter_game => nil)
-      @player_2 = mock(Sudocoup::Player::Socket, :enter_game => nil)
+      @player_1 = mock(Sudocoup::Client::Socket, :enter_game => nil)
+      @player_2 = mock(Sudocoup::Client::Socket, :enter_game => nil)
       @game.join_game @player_1
       @game.join_game @player_2
     end
@@ -49,8 +49,8 @@ describe Sudocoup::Game do
 
   describe "add_player_move" do
     before(:each) do
-      @player_1 = mock(Sudocoup::Player::Socket, :name => "Player 1", :stop_timer! => nil, :add_move => nil)
-      @player_2 = mock(Sudocoup::Player::Socket, :name => "Player 2", :stop_timer! => nil, :add_move => nil)
+      @player_1 = mock(Sudocoup::Client::Socket, :name => "Player 1", :stop_timer! => nil, :add_move => nil)
+      @player_2 = mock(Sudocoup::Client::Socket, :name => "Player 2", :stop_timer! => nil, :add_move => nil)
       @board = mock(Sudocoup::Board, :add_move => true, :violated? => false, :error => "board error")
       @game.board = @board
       @game.players << @player_1
@@ -61,7 +61,7 @@ describe Sudocoup::Game do
       @game.add_player_move(@player_1, "1 2 3")
     end
     it "should verify player is in game" do
-      @non_player = mock(Sudocoup::Player::Socket, :name => "Party crasher")
+      @non_player = mock(Sudocoup::Client::Socket, :name => "Party crasher")
       @non_player.should_not_receive(:has_turn?)
       @board.should_not_receive(:add_move)
       @game.add_player_move(@non_player, "1 2 3").should == [:reject, "1 Not in the game, Party crasher"]
@@ -268,8 +268,8 @@ describe Sudocoup::Game do
 
   describe "players" do
     before(:each) do
-      @player_1 = Sudocoup::Player::Socket.new({})
-      @player_2 = Sudocoup::Player::Socket.new({})
+      @player_1 = Sudocoup::Client::Socket.new({})
+      @player_2 = Sudocoup::Client::Socket.new({})
       @player_1.stub!(:send_data)
       @player_2.stub!(:send_data)
       @game.join_game @player_1
@@ -329,8 +329,8 @@ describe Sudocoup::Game do
     describe "send_players" do
       it "should send given message to all players in game" do
         game = Sudocoup::Game.new
-        player_1 = mock(Sudocoup::Player::Socket, :number => 1, :send => nil)
-        player_2 = mock(Sudocoup::Player::Socket, :number => 2, :send => nil)
+        player_1 = mock(Sudocoup::Client::Socket, :number => 1, :send => nil)
+        player_2 = mock(Sudocoup::Client::Socket, :number => 2, :send => nil)
         game.join_game(player_1)
         game.join_game(player_2)
         player_1.should_receive(:send).with("foobar")

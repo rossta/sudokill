@@ -29,7 +29,7 @@ module Sudocoup
 
         @channel  = EM::Channel.new
 
-        EventMachine::start_server @host, @port, Player::Socket, :app => self do |player|
+        EventMachine::start_server @host, @port, Client::Socket, :app => self do |player|
           new_player player
         end
 
@@ -42,7 +42,7 @@ module Sudocoup
           end
         }
 
-        EventMachine::start_server @ws_host, @ws_port, Player::WebSocket, :app => self,
+        EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
             ws.onopen    {
 

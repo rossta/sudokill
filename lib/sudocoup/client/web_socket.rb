@@ -1,8 +1,8 @@
 module Sudocoup
 
-  module Player
+  module Client
     class WebSocket < EventMachine::WebSocket::Connection
-      include PlayerConnection
+      include ClientConnection
 
       attr_accessor :sid, :conn
 

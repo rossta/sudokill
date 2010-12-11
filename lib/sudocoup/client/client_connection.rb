@@ -10,7 +10,6 @@ module Sudocoup
         # base.extend   ClassMethods
         # base.send :include, InstanceMethods
         base.send :include, Timer
-        base.send :include, Timer
         base.send :include, StateMachine
 
         base.has_states :waiting, :playing, :has_turn

@@ -6,10 +6,21 @@ describe("WebSocketClient", function() {
     dispatch: function() {},
     status: function() {}
   },
+  fakeWebSocket = function(url) {
+    var methods = { 
+      URL: url, 
+      send: function() {},
+      close: function() {}
+    };
+    return methods;
+  },
   createClient = function() {
     return new Sudocoup.WebSocketClient(game);
   };
-
+  
+  beforeEach(function() {
+    spyOn(window, "WebSocket").andCallFake(fakeWebSocket);
+  });
   describe("constructor", function() {
     it("should append the jquery form: $connectForm", function() {
       var client = new Sudocoup.WebSocketClient(game);
@@ -239,7 +250,6 @@ describe("WebSocketClient", function() {
     it("should create a new WebSocket with url to given host, port", function() {
       var client = createClient();
       var websocket = client.connect("Rossta", "localhost", "8080");
-      expect(websocket).toEqual(jasmine.any(WebSocket));
       expect(websocket.URL).toEqual("ws://localhost:8080/");
     });
     it("should set hostname from location if not given", function() {

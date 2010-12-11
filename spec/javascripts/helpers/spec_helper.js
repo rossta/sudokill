@@ -1,3 +1,11 @@
+try {
+  window.console.log.apply(window.console, ["Tests running..."]);
+} catch(e) {
+  window.console = {
+    log: function() {}
+  };
+}
+
 var fixture = function() {
   return $("<div></div>").attr("id","sudocoup").css({
     position:"absolute",left:"-3000px",top:"0px"

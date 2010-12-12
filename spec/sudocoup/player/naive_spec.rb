@@ -42,13 +42,13 @@ describe Sudocoup::Player::Naive do
   
     describe "rows" do
       it "should return values in row" do
-        @player.row(3, 3).should == [9, 0, 4, 5, 0, 0, 0, 2, 0]
+        @player.row(3).should == [9, 0, 4, 5, 0, 0, 0, 2, 0]
       end
     end
     
     describe "column" do
       it "should return values in column" do
-        @player.column(3, 3).should == [0, 2, 0, 5, 3, 0, 0, 7, 0]
+        @player.column(3).should == [0, 2, 0, 5, 3, 0, 0, 7, 0]
       end
     end
   end

@@ -28,7 +28,6 @@ module Sudocoup
           when /^START/
             puts "game started!"
           when /^ADD/
-              # require "ruby-debug"; debugger
             find_rows(line)
 
             values  = (1..9).to_a
@@ -44,10 +43,11 @@ module Sudocoup
             row_vals  = row(row_i)
             (0..8).each do |j|
               break if !row_vals.any? { |v| v.zero? }
-              col_vals  = column(row_i, j)
+              next if j == col_i
+              row_val   = row_vals[j]
+              next unless row_val.zero?
+              col_vals  = column(j)
               sec_vals  = section(row_i, j)
-              val       = row_vals[j]
-              next unless val.zero?
               val = (1..9).to_a.detect { |v|
                 !row_vals.include?(v) && !col_vals.include?(v) && !sec_vals.include?(v)
               }
@@ -56,14 +56,15 @@ module Sudocoup
               break
             end
             
+            col_vals  = column(col_i)
             if val.nil?
               (0..8).each do |k|
+                break if !col_vals.any? { |v| v.zero? }
                 next if k == row_i
+                row_val   = col_vals[k]
+                next unless row_val.zero?
                 row_vals  = row(k)
-                col_vals  = column(k, col_i)
                 sec_vals  = section(k, col_i)
-                val       = col_vals[k]
-                next unless val.zero?
                 val = (1..9).to_a.detect { |v|
                   !row_vals.include?(v) && !col_vals.include?(v) && !sec_vals.include?(v)
                 }
@@ -100,11 +101,11 @@ module Sudocoup
         "#{text}\r\n"
       end
 
-      def row(row_i, col_i = nil)
+      def row(row_i)
         @rows && @rows[row_i]
       end
 
-      def column(row_i, col_i)
+      def column(col_i)
         @rows && @rows.map { |r| r[col_i] }
       end
 

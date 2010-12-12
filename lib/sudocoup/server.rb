@@ -127,7 +127,7 @@ module Sudocoup
           broadcast move_json(move, status.to_s)
           broadcast msg, SUDOKOUP
           @game.send_players(move)
-          # sleep 1.0
+          sleep 1.0
           request_next_player_move
         when :reject
           player.send reject_message(msg)

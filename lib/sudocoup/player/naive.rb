@@ -3,7 +3,7 @@ module Sudocoup
     class Naive < EventMachine::Connection
       include EM::Deferrable
 
-      attr_accessor :last_move
+      attr_accessor :last_move, :move
 
       def initialize(options = {})
         @name = options[:name]
@@ -19,7 +19,7 @@ module Sudocoup
         return if data.nil?
         @data << data
         while line = @data.slice!(/(.+)\r?\n/)
-          log "Server >> #{line}"
+          log line
           case line.to_s.chomp
           when /^READY/
             puts "getting ready"
@@ -28,13 +28,10 @@ module Sudocoup
           when /^START/
             puts "game started!"
           when /^ADD/
-            move = "0 4 8"
-            response = line.split("|")
-            cmd = response.shift
-            rows = response.map { |row| row.split.map(&:to_i) }
+              # require "ruby-debug"; debugger
+            find_rows(line)
 
             values  = (1..9).to_a
-
             val     = nil
             if !last_move.nil?
               row_i   = last_move[0]
@@ -43,34 +40,49 @@ module Sudocoup
               row_i   = 0
               col_i   = 0
             end
-
+            
+            row_vals  = row(row_i)
             (0..8).each do |j|
-              row = rows[row_i]
-              col = (0..8).to_a.map { |k| rows[k][j] }
-              sec = [].tap do |s|
-                sec_i = row_i / 3
-                sec_j = j / 3
-                (0..2).each do |m|
-                  (0..2).each do |n|
-                    s << rows[sec_i + n][sec_j + m]
-                  end
-                end
-              end
-              row_val = row[j]
-              next unless row_val.zero?
-              val = (1..9).to_a.detect { |v| !row.include?(v) && !col.include?(v) && !sec.include?(v) }
+              break if !row_vals.any? { |v| v.zero? }
+              col_vals  = column(row_i, j)
+              sec_vals  = section(row_i, j)
+              val       = row_vals[j]
+              next unless val.zero?
+              val = (1..9).to_a.detect { |v|
+                !row_vals.include?(v) && !col_vals.include?(v) && !sec_vals.include?(v)
+              }
               next unless !val.nil?
               col_i = j
               break
             end
+            
             if val.nil?
-              col_i = rand(9) 
+              (0..8).each do |k|
+                next if k == row_i
+                row_vals  = row(k)
+                col_vals  = column(k, col_i)
+                sec_vals  = section(k, col_i)
+                val       = col_vals[k]
+                next unless val.zero?
+                val = (1..9).to_a.detect { |v|
+                  !row_vals.include?(v) && !col_vals.include?(v) && !sec_vals.include?(v)
+                }
+                next unless !val.nil?
+                row_i = k
+                break
+              end
+            end
+
+            if val.nil? # guess
+              row_i = rand(9)
+              col_i = rand(9)
               val   = rand(9) + 1
             end
-            move = "#{row_i} #{col_i} #{val}"
-            log "playing #{move}"
-            send move
-          when /^\d+ \d+ \d+ \d+$/
+
+            @move = "#{row_i} #{col_i} #{val}"
+            log "playing #{@move}"
+            send @move
+          when /^\d+ \d+ \d+/
             @last_move = line.chomp.split.map(&:to_i)
             log "last move #{@last_move.join(' ')}"
           when /^GAME OVER/
@@ -86,6 +98,33 @@ module Sudocoup
 
       def format(text)
         "#{text}\r\n"
+      end
+
+      def row(row_i, col_i = nil)
+        @rows && @rows[row_i]
+      end
+
+      def column(row_i, col_i)
+        @rows && @rows.map { |r| r[col_i] }
+      end
+
+      def section(row_i, col_i)
+        [].tap do |sect|
+            j = (row_i / 3)
+            k = (col_i / 3)
+          (0..2).each do |l|
+            (0..2).each do |m|
+              sect << @rows[(j * 3) + l][(k * 3) + m]
+            end
+          end
+        end
+      end
+
+      def find_rows(command)
+        response = command.split("|")
+        cmd = response.shift
+        @rows = response.map { |row| row.split.map(&:to_i) }
+        @rows
       end
 
       def self.play!(name, host, port)

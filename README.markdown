@@ -161,10 +161,11 @@ Example:
 	//Rejection! You're on the bench
 
 
-**WIN**
+**GAME OVER**
 
+A player violated the constraints or left the game. Winner and reason is noted. Both players are disconnected.
 
-**LOSE**
+	GAME OVER|Rossta WINS! BadGuy played 4 7 5: Space occupied error, 4 7 is occupied
 
 
 ## Player Protocol ##

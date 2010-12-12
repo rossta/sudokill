@@ -32,13 +32,17 @@ Add the project gems:
 
 **Linux**
 
-From Max:
+Get Ruby and ruby gems (Thanks to Max and Simon):
 
-	$ sudo apt-get install ruby rubygems1.8
-	
+	$ apt-get install ruby
+	$ apt-get install rubygems1.8
+	$ apt-get install ruby1.8-dev
+
+Then install the project gems as above described for Mac users.
+
+If using "sudo apt-get", you may need to chown the gems dir to get the gems command to work.
+
 	$ sudo chown -R <user>:<user> /var/lib/gems
-	//insert your own username and verify the location of the gem dir first
-	//then install gems as described for the Mac installation
 
 **Windows**
 
@@ -59,9 +63,13 @@ Start the web server.
 
 	$ ruby script/web
 
-Start two player client scripts. Once the game starts, send messages to game server via STDIN:
+Start two player client scripts.
 
+	$ PLAYER=naive ruby script/play NAME
+	// automated naive player
+	
 	$ ruby script/play NAME
+	// manual player: send messages to game server via STDIN
 
 Visit http://localhost:45678, enter a visitor name, and "Connect". 
 

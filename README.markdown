@@ -148,7 +148,7 @@ Example:
 	//Your move and current board rows 0 - 8
 
 
-**REJECT|REASON**
+**REJECT**
 
 Your move was not accepted. Reasons:
 

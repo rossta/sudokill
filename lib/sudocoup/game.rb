@@ -96,7 +96,7 @@ module Sudocoup
     end
 
     def send_players(msg)
-      @players.each { |p| p.send(msg) }
+      @players.each { |player| player.send(msg) }
     end
 
     def request_next_move(msg)

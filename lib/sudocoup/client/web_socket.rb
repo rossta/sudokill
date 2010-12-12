@@ -23,6 +23,8 @@ module Sudocoup
             @app.play_game.succeed
           when /STOP/
             @app.stop_game.succeed
+          when /JOIN/
+            @app.new_player(self)
           when /^\d+ \d+ \d+$/
             @app.request_add_move.succeed(self, line)
           end

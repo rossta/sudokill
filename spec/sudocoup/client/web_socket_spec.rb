@@ -39,6 +39,12 @@ describe Sudocoup::Client::WebSocket do
         @player.receive_data("PLAY\r\n")
       end
     end
+    describe "JOIN" do
+      it "should trigger new player callback" do
+        @app.should_receive(:new_player)
+        @player.receive_data("JOIN\r\n")
+      end
+    end
     describe "NEW CONNECTION" do
       it "should send app board json" do
         @app.should_receive(:board_json).and_return("board_json")

@@ -179,7 +179,7 @@ module Sudocoup
       @queue << player
       player.send("WAIT")
     end
-    
+
     def announce_player(player)
       if @game.players.include? player
         broadcast player_json
@@ -209,7 +209,7 @@ module Sudocoup
       end
       broadcast queue_json
     end
-    
+
     def add_player_from_queue
       player = @queue.shift
       join_game player
@@ -217,23 +217,23 @@ module Sudocoup
     end
 
     def board_json
-      %Q|{"action":"CREATE","values":#{@game.board.to_json}}|
+      BoardJSON.to_json(@game.board)
     end
 
     def move_json(move, status)
-      %Q|{"action":"UPDATE","value":#{Move.new(*move.split).to_json},"status":"#{status}"}|
+      MoveJSON.to_json(move, status)
     end
 
     def player_json
-      %Q|{"action":"SCORE","max_time":#{max_time},"players":[#{players.map(&:to_json).join(",")}]}|
+      PlayerJSON.to_json(players, max_time)
     end
 
     def queue_json
-      %Q|{"action":"QUEUE","players":[#{queue.map(&:to_json).join(",")}]}|
+      QueueJSON.to_json(queue)
     end
 
-    def status_json(status)
-      %Q|{"action":"STATUS","state":"#{@game.state}","message":"#{status}"}|
+    def status_json(message)
+      StatusJSON.to_json(@game.state, message)
     end
 
     def start_message(player)

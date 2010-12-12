@@ -4,11 +4,12 @@ describe("WebSocketClient", function() {
     log: function() {},
     print: function() {},
     dispatch: function() {},
-    status: function() {}
+    status: function() {},
+    listen:function() {}
   },
   fakeWebSocket = function(url) {
-    var methods = { 
-      URL: url, 
+    var methods = {
+      URL: url,
       send: function() {},
       close: function() {}
     };
@@ -17,7 +18,7 @@ describe("WebSocketClient", function() {
   createClient = function() {
     return new Sudocoup.WebSocketClient(game);
   };
-  
+
   beforeEach(function() {
     spyOn(window, "WebSocket").andCallFake(fakeWebSocket);
   });
@@ -33,7 +34,7 @@ describe("WebSocketClient", function() {
       var client1 = new Sudocoup.WebSocketClient(game);
       expect(client1.$connectForm).toHaveClass("normal");
       expect(client1.$connectForm).not.toHaveClass("simple");
-      
+
       Sudocoup.Settings.mode = "simple";
       var client2 = new Sudocoup.WebSocketClient(game);
       expect(client2.$connectForm).toHaveClass("simple");
@@ -65,6 +66,47 @@ describe("WebSocketClient", function() {
   });
 
   describe("events", function() {
+    describe("game_state", function() {
+      var client,websocket,$form;
+      
+      beforeEach(function() {
+        spyOn(game, "listen").andCallFake(function(event, callback) {
+          return $("#sudocoup").bind(event, callback);
+        });
+        client = createClient();
+        websocket = client.connect();
+        $form = $('form.websocket');
+        spyOn(websocket, "send");
+      });
+      it("should display play button when game is over", function() {
+        $form.find("input.play").removeClass("play").addClass("stop").val("Stop");
+        $("#sudocoup").trigger("game_state", "over");
+        expect($form).not.toHaveSelector("input.stop");
+        expect($form).toHaveSelector("input.play");
+        expect($form.find("input.play").val()).toEqual("Play");
+      });
+      it("should display play button when game is waiting", function() {
+        $form.find("input.play").removeClass("play").addClass("stop").val("Stop");
+        $("#sudocoup").trigger("game_state", "waiting");
+        expect($form).not.toHaveSelector("input.stop");
+        expect($form).toHaveSelector("input.play");
+        expect($form.find("input.play").val()).toEqual("Play");
+      });
+      it("should display play button when game is ready", function() {
+        $form.find("input.play").removeClass("play").addClass("stop").val("Stop");
+        $("#sudocoup").trigger("game_state", "ready");
+        expect($form).not.toHaveSelector("input.stop");
+        expect($form).toHaveSelector("input.play");
+        expect($form.find("input.play").val()).toEqual("Play");
+      });
+      it("should display stop button when game is in progress", function() {
+        $form.find("input.play").removeClass("stop").addClass("play").val("Play");
+        $("#sudocoup").trigger("game_state", "in_progress");
+        expect($form).not.toHaveSelector("input.play");
+        expect($form).toHaveSelector("input.stop");
+        expect($form.find("input.stop").val()).toEqual("Stop");
+      });
+    });
     describe("submit", function() {
       it("should call connect", function() {
         var client = createClient();

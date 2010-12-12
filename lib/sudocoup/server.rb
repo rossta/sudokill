@@ -200,6 +200,7 @@ module Sudocoup
     end
 
     def end_game_and_start_new(msg)
+      @game.over!
       @game.send_players game_over_message(msg)
       broadcast status_json(msg)
       @game = Game.new
@@ -232,7 +233,7 @@ module Sudocoup
     end
 
     def status_json(status)
-      %Q|{"action":"STATUS","message":"#{status}"}|
+      %Q|{"action":"STATUS","state":"#{@game.state}","message":"#{status}"}|
     end
 
     def start_message(player)

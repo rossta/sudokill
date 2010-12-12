@@ -37,6 +37,10 @@ Sudocoup = (function() {
       return self;
     },
 
+    listen: function(event, callback) {
+      return this.$sudocoup.bind(event, callback);
+    },
+
     show: function() {
       var self = this, $board;
       self.board.build();
@@ -87,8 +91,9 @@ Sudocoup = (function() {
       this.messager.print(message);
     },
 
-    status: function(msg) {
+    status: function(msg, state) {
       var self = this, $msg = $("<div/>");
+      self.$sudocoup.trigger("game_state", state);
       $msg.text(msg).addClass("message");
       self.$status.empty().append($msg).show();
       self.log(msg);
@@ -119,7 +124,7 @@ Sudocoup = (function() {
             self.score.updateQueue(json.players);
             break;
           case "STATUS":
-            self.status(json.message);
+            self.status(json.message, json.state);
             break;
           default:
             self.log("Unrecognized action", json.action, json);
@@ -503,12 +508,12 @@ Sudocoup = (function() {
         }).
         delegate("input.play", "click", function(){
           self.send("PLAY");
-          $(this).removeClass("play").addClass("stop").val("Stop");
+          self.showStopButton();
           return false;
         }).
         delegate("input.stop", "click", function(){
           self.send("STOP");
-          $(this).removeClass("stop").addClass("play").val("Play");
+          self.showPlayButton();
           return false;
         }).
         delegate("input.join", "click", function(){
@@ -529,6 +534,22 @@ Sudocoup = (function() {
           return false;
         });
 
+      self.game.listen("game_state", function(e, state) {
+        switch (state) {
+          case "in_progress":
+            self.showStopButton();
+            break;
+          default:
+            self.showPlayButton();
+            break;
+        }
+      });
+    },
+    showPlayButton: function() {
+      return this.$connectForm.find("input.stop").removeClass("stop").addClass("play").val("Play");
+    },
+    showStopButton: function() {
+      return this.$connectForm.find("input.play").removeClass("play").addClass("stop").val("Stop");
     },
     connect: function(name, host, port) {
       var self = this,

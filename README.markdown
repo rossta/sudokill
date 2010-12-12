@@ -85,7 +85,13 @@ For best performance, use a browser that supports HTML5 websockets
 Optional command line parameters
 
 	$ ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
+	// default host: localhost
+	// default port: 44444
+	// default websocket port: 8080
+	
 	$ ruby script/web [HOST] [PORT]
+	// default host: localhost
+	// default port: 45678
 
 	//or run both web and game server together with thin and enable WEB env:
 	$ WEB=1 ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]

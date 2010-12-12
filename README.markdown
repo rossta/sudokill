@@ -1,6 +1,6 @@
 # Sudocoup #
 
-Competitive Sudoku backed by EventMachine and HTML5 Websockets. 
+Competitive Sudoku backed by EventMachine and HTML5 Websockets.
 [Rules of the game](http://www.cs.nyu.edu/courses/fall10/G22.2965-001/sudokill.html)
 
 ## Try it out ##
@@ -66,12 +66,15 @@ Start the web server.
 Start two player client scripts.
 
 	$ PLAYER=naive ruby script/play NAME
-	// automated naive player
-	
+	// automated naive player, bash
+
+	$ setenv PLAYER naive; ruby script/play NAME
+	// automated naive player, tcsh
+
 	$ ruby script/play NAME
 	// manual player: send messages to game server via STDIN
 
-Visit http://localhost:45678, enter a visitor name, and "Connect". 
+Visit http://localhost:45678, enter a visitor name, and "Connect".
 
 Press "Play" when two player clients (from previous step) are connected to the game server.
 
@@ -88,20 +91,24 @@ Optional command line parameters
 	// default host: localhost
 	// default port: 44444
 	// default websocket port: 8080
-	
+
 	$ ruby script/web [HOST] [PORT]
 	// default host: localhost
 	// default port: 45678
 
 	//or run both web and game server together with thin and enable WEB env:
 	$ WEB=1 ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
+	//bash
+
+	$ setenv WEB 1; ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
+	//tcsh
 
 	$ ruby script/play NAME [HOST] [PORT]
 
 ### At NYU ###
 
-The game server is currently available on linserv1.cims.nyu.edu, port 44444. 
-	
+The game server is currently available on linserv1.cims.nyu.edu, port 44444.
+
 	$ ruby script/play NAME linserv1.cims.nyu.edu 44444
 
 To view, visit the [Sudocoup game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:

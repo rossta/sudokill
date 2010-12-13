@@ -25,6 +25,8 @@ module Sudocoup
             @app.stop_game.succeed
           when /JOIN/
             @app.new_player(self)
+          when /LEAVE/
+            @app.remove_player(self)
           when /MOVE\|\d \d \d/
             if has_turn?
               cmd, move = line.split(PIPE)
@@ -42,7 +44,7 @@ module Sudocoup
       def logger_name
         "WS[#{name || 'new'}]"
       end
-      
+
       def send_command(*args)
         send(CommandJSON.to_json(*args))
       end

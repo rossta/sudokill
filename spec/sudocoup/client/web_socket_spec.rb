@@ -45,8 +45,14 @@ describe Sudocoup::Client::WebSocket do
     end
     describe "JOIN" do
       it "should trigger new player callback" do
-        @app.should_receive(:new_player)
+        @app.should_receive(:new_player).with(@player)
         @player.receive_data("JOIN\r\n")
+      end
+    end
+    describe "LEAVE" do
+      it "should trigger new player callback" do
+        @app.should_receive(:remove_player).with(@player)
+        @player.receive_data("LEAVE\r\n")
       end
     end
     describe "NEW CONNECTION" do

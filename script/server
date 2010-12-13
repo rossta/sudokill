@@ -21,4 +21,10 @@ if ENV['WEB']
   end
 end
 
-Sudocoup::Server.start(:host => host, :port => port, :ws_port => ws_port)
+Sudocoup::Server.start(
+  :host => host, 
+  :port => port, 
+  :ws_port => ws_port,
+  :config => Sudocoup::CONFIG_2,
+  :size => 2
+)

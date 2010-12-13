@@ -16,8 +16,9 @@ module Sudocoup
       @port     = (opts[:port] || 44444).to_i
       @ws_host  = '0.0.0.0'
       @ws_port  = (opts[:ws_port] || 8080).to_i
+      @opts     = opts
 
-      @game     = Game.new
+      @game     = Game.new(:size => @opts[:size], :config => @opts[:config])
       @queue    = []
       @max_time = opts[:max_time] || 120
     end
@@ -221,7 +222,7 @@ module Sudocoup
     end
 
     def new_game
-      @game = Game.new
+      @game = Game.new(:size => @opts[:size], :config => @opts[:config])
       while @game.available? && @queue.any?
         add_player_from_queue
       end

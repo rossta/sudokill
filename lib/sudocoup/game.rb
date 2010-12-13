@@ -7,7 +7,8 @@ module Sudocoup
     attr_reader :players
 
     def initialize(opts = {})
-      @size = opts[:size] || 2
+      @size   = opts[:size] || 2
+      @config = opts[:config] || CONFIG_1
       reset
     end
 
@@ -15,7 +16,7 @@ module Sudocoup
       waiting!
       @players = []
       @board = Board.new
-      @board.build
+      @board.build(@config)
       @moves = []
     end
 

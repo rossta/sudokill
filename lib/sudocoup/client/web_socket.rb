@@ -50,6 +50,10 @@ module Sudocoup
         send(CommandJSON.to_json(*args))
       end
 
+      def close
+        send("Server disconnected", SUDOKOUP)
+      end
+      
       protected
 
       def ensure_app

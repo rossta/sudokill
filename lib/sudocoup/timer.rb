@@ -32,6 +32,13 @@ module Sudocoup
       total_time
       @total_time += @last_lap
     end
+    
+    def reset_time
+      @start_time = nil
+      @stop_time = nil
+      @last_lap = nil
+      @total_time = 0
+    end
 
     def max_time
       120 # TODO add as option to app

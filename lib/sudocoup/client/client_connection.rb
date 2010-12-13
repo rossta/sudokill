@@ -17,12 +17,12 @@ module Sudocoup
           attr_accessor :name, :number, :app
         }
       end
-      
+
       def unbind
         @app.remove_player(self)
         log "#{name} disconnected"
       end
-      
+
       def enter_game(number)
         @number = number
         playing!
@@ -46,9 +46,14 @@ module Sudocoup
       def add_move(row, col, val)
         moves << Move.new(row, col, val)
       end
-      
+
       def send_command(*args)
         send(*args)
+      end
+
+      def reset
+        reset_time
+        @moves = []
       end
 
     end

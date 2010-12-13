@@ -36,7 +36,7 @@ module Sudocoup
         EventMachine.add_periodic_timer(0.25) {
           if @game.in_progress?
             if !time_left?(@game.current_player)
-              end_game_and_start_new(@game.times_up_violation(@game.current_player))
+              end_game(@game.times_up_violation(@game.current_player))
             end
             broadcast(player_json) if players.any?
           end
@@ -86,6 +86,8 @@ module Sudocoup
     def play_game
       defer = EM::DefaultDeferrable.new
       defer.callback {
+        new_game if @game.over?
+
         if @game.players.any? && @game.ready?
           broadcast board_json
           broadcast status_json("New game about to begin!")
@@ -104,7 +106,7 @@ module Sudocoup
       defer = EM::DefaultDeferrable.new
       defer.callback {
         if @game.in_progress?
-          end_game_and_start_new("Game stopped!")
+          end_game("Game stopped!")
         else
           broadcast status_json(@game.status)
         end
@@ -134,7 +136,7 @@ module Sudocoup
           broadcast msg, SUDOKOUP
         when :violation
           broadcast move_json(move, status.to_s)
-          end_game_and_start_new(msg)
+          end_game(msg)
         end
       }
       defer
@@ -147,7 +149,7 @@ module Sudocoup
         join_queue player
       end
     end
-    
+
     def new_visitor(visitor)
       visitor.send board_json
       visitor.send player_json
@@ -157,7 +159,7 @@ module Sudocoup
     def remove_player(player)
       if @game.players.delete(player)
         if @game.in_progress?
-          end_game_and_start_new("#{player.name} left the game")
+          end_game("#{player.name} left the game")
         elsif !@game.over? && @queue.any?
           @game.waiting!
           add_player_from_queue
@@ -179,6 +181,7 @@ module Sudocoup
     def join_game(player)
       joined = @game.join_game(player)
       if joined
+        player.reset
         send_player_message(player, "READY")
         broadcast("Ready to begin", SUDOKOUP) if @game.ready?
       end
@@ -211,15 +214,17 @@ module Sudocoup
       player.current_time <= max_time
     end
 
-    def end_game_and_start_new(msg)
+    def end_game(msg)
       @game.over!
       send_players game_over_message(msg)
       broadcast status_json(msg)
+    end
+
+    def new_game
       @game = Game.new
       while @game.available? && @queue.any?
         add_player_from_queue
       end
-      broadcast queue_json
     end
 
     def add_player_from_queue

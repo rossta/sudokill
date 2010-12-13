@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'json'
 
 describe Sudocoup::Client::Socket do
   before(:each) do

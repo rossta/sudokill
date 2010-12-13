@@ -70,11 +70,33 @@ describe Sudocoup::Client::WebSocket do
       @player.unbind
     end
   end
-  
+
   describe "send_command" do
     it "should wrap command in command json message" do
-      @conn.should_receive(:send_data).with(/\"action\":\"COMMAND\",\"command\":\"ADD\"/)
+      @conn.should_receive(:send_data).with(/\"action\":\"COMMAND\"/)
       @player.send_command("ADD")
+      @conn.should_receive(:send_data).with(/\"command\":\"ADD\"/)
+      @player.send_command("ADD")
+    end
+  end
+  
+  describe "reset" do
+    it "should set reset timers" do
+      Sudocoup::Clock.stub!(:time).and_return(1200000045)
+      @player.start_timer!
+      Sudocoup::Clock.stub!(:time).and_return(1200000055)
+      @player.stop_timer!
+
+      @player.reset
+      @player.start_time.should be_nil
+      @player.stop_time.should be_nil
+      @player.last_lap.should be_nil
+      @player.total_time.should == 0
+    end
+    it "should empty moves" do
+      @player.add_move 1, 2, 3
+      @player.reset
+      @player.moves.should be_empty
     end
   end
 end

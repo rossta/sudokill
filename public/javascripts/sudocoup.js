@@ -102,7 +102,7 @@ Sudocoup = (function() {
 
     dispatch: function(message) {
       var self = this, value, json;
-      if (message.match(/UPDATE|CREATE|SCORE|QUEUE|STATUS/)) {
+      if (message.match(/UPDATE|CREATE|SCORE|QUEUE|STATUS|COMMAND/)) {
         try {
           json = $.parseJSON(message);
         } catch (e) {
@@ -125,6 +125,9 @@ Sudocoup = (function() {
             break;
           case "STATUS":
             self.status(json.message, json.state);
+            break;
+          case "COMMAND":
+            self.$sudocoup.trigger("game_command", json.command);
             break;
           default:
             self.log("Unrecognized action", json.action, json);
@@ -184,8 +187,13 @@ Sudocoup = (function() {
         var val = self.$val.val();
         if (self.isValid(val)) {
           self.$sudocoup.trigger("send_message", ["MOVE", [row, col, val].join(" ")].join("|"));
+          // self.backgroundSquares[parseInt(row,10)][parseInt(col,10)].attr({fill:Raphael.getColor()});
+          self.$val.hide();
         }
         return false;
+      });
+      self.$val.blur(function() {
+        $(this).hide();
       });
     },
     isValid: function(val) {

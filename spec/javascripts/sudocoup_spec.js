@@ -15,8 +15,8 @@ describe("Sudocoup", function() {
       expect(Sudocoup.GameBoard.prototype.build).toHaveBeenCalled();
     });
     it("should append div#game_board to selector", function(){
-      sudocoup = new Sudocoup('sudocoup').show(),
-      $sudocoup = $("#sudocoup");
+      sudocoup = new Sudocoup('sudocoup').show();
+      var $sudocoup = $("#sudocoup");
       expect($sudocoup).toHaveSelector("#game_board");
     });
   });
@@ -163,6 +163,16 @@ describe("Sudocoup", function() {
         $("#sudocoup").bind("game_state", function(e, state) { statusSpy(state); });
         sudocoup.dispatch(json);
         expect(statusSpy).toHaveBeenCalledWith("in_progress");
+      });
+    });
+    describe("{ action: COMMAND }", function() {
+      it("should trigger game command event", function() {
+        var sudocoup = Sudocoup.setup('sudocoup');
+        var json = "{\"action\":\"COMMAND\",\"command\":\"ADD\"}";
+        var commandSpy = jasmine.createSpy("command");
+        $("#sudocoup").bind("game_command", function(e, state) { commandSpy(state); });
+        sudocoup.dispatch(json);
+        expect(commandSpy).toHaveBeenCalledWith("ADD");
       });
     });
     describe("listen", function() {

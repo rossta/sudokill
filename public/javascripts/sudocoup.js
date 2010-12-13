@@ -257,7 +257,6 @@ Sudocoup = (function() {
     build: function() {
       var self = this,
           r   = self.raphael(),
-          groups  = r.set(),
           squares = r.set(),
           dim = 50,
           gDim = 3 * dim,
@@ -265,23 +264,13 @@ Sudocoup = (function() {
           strokeColor = 'green',
           color = "hsb(" + start + ", 1, .5)",
           bcolor = "hsb(" + start + ", 1, 1)",
-          group, square, text, x, y, cx, cy;
+          group, square, text, x, y, cx, cy, path;
 
       r.rect(0, 0, gDim * 3, gDim * 3).attr({
         stroke: strokeColor,
         "stroke-opacity": 0.8,
         "stroke-width": 5
       });
-
-      for(var i = 0; i < 3; i++) {
-        y = i * gDim;
-        for(var j = 0; j < 3; j++) {
-          x = j * gDim;
-          group = r.rect(x, y, gDim, gDim);
-          groups.push(group);
-          group = r.rect(x, y, dim, dim);
-        }
-      }
 
       for(var i = 0; i < 9; i++) {
         y = i * dim;
@@ -333,14 +322,14 @@ Sudocoup = (function() {
         "stroke-width": 1
       });
 
-      groups.attr({
-        stroke: strokeColor,
-        "stroke-width": 3
-      });
-
-
+      path = [];
+      path.push("M1,1L1,449L449,449L449,1L1,1");
+      path.push("M149,1L149,449");
+      path.push("M299,1L299,449");
+      path.push("M1,299L449,299");
+      path.push("M1,149L449,149");
+      r.path(path.join("")).attr({stroke:strokeColor, "stroke-width":2});
       self.squares  = squares;
-      self.groups   = groups;
     }
   },{}),
 

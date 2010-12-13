@@ -159,12 +159,16 @@ module Sudocoup
         if @game.in_progress?
           end_game_and_start_new("#{player.name} left the game")
         elsif !@game.over? && @queue.any?
+          @game.waiting!
           add_player_from_queue
         else
           @game.waiting!
+          broadcast player_json
+          broadcast queue_json
           log "#{player.name} left game but no new player was added"
         end
       elsif @queue.delete(player)
+        broadcast player_json
         broadcast queue_json
         broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
       else
@@ -188,12 +192,12 @@ module Sudocoup
 
     def announce_player(player)
       if @game.players.include? player
-        broadcast player_json
         broadcast("#{player.name} is now in the game", SUDOKOUP)
       elsif @queue.include? player
-        broadcast queue_json
         broadcast("#{player.name} is now waiting On Deck", SUDOKOUP)
       end
+      broadcast player_json
+      broadcast queue_json
     end
 
     def request_next_player_move

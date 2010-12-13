@@ -270,14 +270,16 @@ describe Sudocoup::Server do
     end
     it "should broadcast player json and in game message if player is in game" do
       @game.stub!(:players).and_return([@player])
-      @channel.should_receive(:push).once.with(/SCORE/).ordered
       @channel.should_receive(:push).once.with(/Player 1 is now in the game/).ordered
+      @channel.should_receive(:push).once.with(/SCORE/).ordered
+      @channel.should_receive(:push).once.with(/QUEUE/).ordered
       @server.announce_player @player
     end
     it "should broadcast queue json and on deck message if player is in queue" do
       @server.join_queue(@player)
-      @channel.should_receive(:push).once.with(/QUEUE/).ordered
       @channel.should_receive(:push).once.with(/Player 1 is now waiting/).ordered
+      @channel.should_receive(:push).once.with(/SCORE/).ordered
+      @channel.should_receive(:push).once.with(/QUEUE/).ordered
       @server.announce_player @player
     end
   end
@@ -309,19 +311,22 @@ describe Sudocoup::Server do
         @game.stub!(:in_progress?).and_return(false)
         @game.stub!(:over?).and_return(false)
         @game.stub!(:join_game).and_return(true)
+        @game.stub!(:waiting!).and_return(true)
       end
       it "should add one player from queue and keep other player" do
         @game.should_receive(:join_game).with(@player_3)
         @server.remove_player @player_1
       end
       it "should broadcast player 3 in game" do
-        @channel.should_receive(:push).once.with(/SCORE/).ordered
         @channel.should_receive(:push).once.with(/Player 3 is now in the game/).ordered
+        @channel.should_receive(:push).once.with(/SCORE/).ordered
+        @channel.should_receive(:push).once.with(/QUEUE/).ordered
         @server.remove_player @player_1
       end
-      it "should not end game" do
+      it "should not end game and set it to waiting" do
         @game.should_receive(:in_progress?).and_return(false)
         @game.should_receive(:over?).and_return(false)
+        @game.should_receive(:waiting!).and_return(true)
         @player_1.should_not_receive(:send_command).with(/GAME OVER/)
         @player_2.should_not_receive(:send_command).with(/GAME OVER/)
         @server.remove_player @player_1

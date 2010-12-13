@@ -25,6 +25,7 @@ module Sudocoup
             @app.stop_game.succeed
           when /JOIN/
             @app.new_player(self)
+            @app.announce_player(self)
           when /LEAVE/
             @app.remove_player(self)
           when /MOVE\|\d \d \d/

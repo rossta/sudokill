@@ -45,7 +45,8 @@ describe Sudocoup::Client::WebSocket do
     end
     describe "JOIN" do
       it "should trigger new player callback" do
-        @app.should_receive(:new_player).with(@player)
+        @app.should_receive(:new_player).with(@player).once.ordered
+        @app.should_receive(:announce_player).with(@player).once.ordered
         @player.receive_data("JOIN\r\n")
       end
     end

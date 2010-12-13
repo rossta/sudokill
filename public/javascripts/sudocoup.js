@@ -160,9 +160,10 @@ Sudocoup = (function() {
       opts = opts || {};
       var self = this;
       self.opts           = opts;
-      self.hilite         = "#333333";
+      self.hilite         = "#222222";
       self.none           = "none";
       self.transparent    = "transparent";
+      self.black          = "#000000";
       self.domId          = domId;
       self.$selector      = $("#" + self.domId);
       self.dim            = 50;
@@ -205,13 +206,14 @@ Sudocoup = (function() {
           rsquare = self.backgroundSquares[i][j],
           hilite = self.hilite,
           transparent = self.transparent,
-          none = self.none;
+          none = self.none,
+          black = self.black;
       _(self.backgroundSquares).each(function(row, k) {
         _(row).each(function(sq){
-          if (i===k) {
+          if (i==k) {
             sq.attr({fill:hilite});
           } else {
-            sq.attr({fill:transparent});
+            sq.attr({fill:black});
           }
         });
         row[j].attr({fill:hilite});
@@ -221,9 +223,7 @@ Sudocoup = (function() {
       });
       rsquare.animate({fill:Raphael.getColor()},300, function() {
         rtext.attr({text: number});
-        rsquare.animate({fill:none}, 300, function(){
-          rsquare.attr({fill:transparent});
-        });
+        rsquare.animate({fill:black}, 300);
       });
       return rtext;
     },
@@ -242,9 +242,7 @@ Sudocoup = (function() {
         }
       }
       self.squares.animate({fill:Raphael.getColor()}, 300, function() {
-        self.squares.animate({fill:self.none}, 300, function() {
-          self.squares.attr({fill:self.transparent});
-        });
+        self.squares.animate({fill:self.black}, 300);
       });
     },
     raphael: function() {
@@ -295,7 +293,7 @@ Sudocoup = (function() {
           cy = y + (dim/2);
 
           square = r.rect(x, y, dim, dim).attr({
-            fill: self.none
+            fill: self.black
           });
 
           if (Settings.humans) {
@@ -331,14 +329,13 @@ Sudocoup = (function() {
 
       squares.attr({
         stroke: strokeColor,
-        "stroke-opacity": 0.5,
+        "stroke-opacity": 0.7,
         "stroke-width": 1
       });
 
       groups.attr({
         stroke: strokeColor,
-        "stroke-opacity": 0.5,
-        "stroke-width": 2
+        "stroke-width": 3
       });
 
 

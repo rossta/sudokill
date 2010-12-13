@@ -508,7 +508,8 @@ Sudocoup = (function() {
         bind("connected", function(){
           $(this).find("input.submit").attr("value", "Disconnect");
           self.$connectForm.removeClass("welcome").addClass("connected");
-          if (!Settings.humans) self.$connectForm.find("input.join").hide();
+          if (!Settings.humans) { self.$connectForm.find("input.join").hide();}
+          else { self.showJoinButton(); }
           self.status("Connected");
         }).
         bind("disconnected", function() {
@@ -532,12 +533,12 @@ Sudocoup = (function() {
         }).
         delegate("input.join", "click", function(){
           self.send("JOIN");
-          $(this).removeClass("join").addClass("leave").val("Leave game");
+          self.showLeaveButton();
           return false;
         }).
         delegate("input.leave", "click", function(){
           self.send("LEAVE");
-          $(this).removeClass("leave").addClass("join").val("Join game");
+          self.showJoinButton();
           return false;
         }).
         delegate("a.toggle", "click", function() {
@@ -558,6 +559,12 @@ Sudocoup = (function() {
             break;
         }
       });
+    },
+    showLeaveButton: function() {
+      return this.$connectForm.find("input.join").removeClass("join").addClass("leave").val("Leave game");
+    },
+    showJoinButton: function() {
+      return this.$connectForm.find("input.leave").removeClass("leave").addClass("join").val("Join game");
     },
     showPlayButton: function() {
       return this.$connectForm.find("input.stop").removeClass("stop").addClass("play").val("Play");

@@ -18,7 +18,7 @@ module Sudocoup
           line = line.chomp
           case line
           when /NEW CONNECTION/
-            send @app.board_json
+            @app.new_visitor(self)
           when /PLAY/
             @app.play_game.succeed
           when /STOP/

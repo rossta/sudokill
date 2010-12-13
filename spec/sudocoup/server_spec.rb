@@ -186,6 +186,16 @@ describe Sudocoup::Server do
       end
     end
   end
+  
+  describe "new_visitor" do
+    it "should send appropriate json" do
+      visitor = mock(Sudocoup::Client::WebSocket, :send => nil)
+      visitor.should_receive(:send).with(subject.board_json).once.ordered
+      visitor.should_receive(:send).with(subject.player_json).once.ordered
+      visitor.should_receive(:send).with(subject.queue_json).once.ordered
+      subject.new_visitor visitor
+    end
+  end
 
   describe "time_left?" do
     before(:each) do

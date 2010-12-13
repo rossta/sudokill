@@ -147,6 +147,12 @@ module Sudocoup
         join_queue player
       end
     end
+    
+    def new_visitor(visitor)
+      visitor.send board_json
+      visitor.send player_json
+      visitor.send queue_json
+    end
 
     def remove_player(player)
       if @game.players.delete(player)

@@ -57,8 +57,7 @@ describe Sudocoup::Client::WebSocket do
     end
     describe "NEW CONNECTION" do
       it "should send app board json" do
-        @app.should_receive(:board_json).and_return("board_json")
-        @conn.should_receive(:send_data).with(/board_json/)
+        @app.should_receive(:new_visitor)
         @player.receive_data("NEW CONNECTION|Rossta\r\n")
       end
     end

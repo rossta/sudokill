@@ -196,7 +196,8 @@ Sudocoup = (function() {
           rtext = self.numberSquares[i][j],
           rsquare = self.backgroundSquares[i][j],
           hilite = self.hilite,
-          transparent = self.transparent;
+          transparent = self.transparent,
+          none = self.none;
       _(self.backgroundSquares).each(function(row, k) {
         _(row).each(function(sq){
           if (i===k) {
@@ -605,7 +606,7 @@ Sudocoup = (function() {
 
   Settings = {
     mode: 'normal',
-    humans: false
+    humans: (/humans/.exec(window.location.href))
   },
 
   Location = function() {

@@ -14,7 +14,8 @@ module Sudocoup
 
       def receive_data(data)
         super(data)
-        if line = data.slice!(/(.+)\r?\n/).chomp
+        if line = data.slice!(/(.+)\r?\n/)
+          line = line.chomp
           case line
           when /NEW CONNECTION/
             send @app.board_json

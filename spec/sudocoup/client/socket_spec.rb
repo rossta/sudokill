@@ -2,11 +2,24 @@ require 'spec_helper'
 
 describe Sudocoup::Client::Socket do
   before(:each) do
+    @dispatch = mock(Sudocoup::Dispatch, :name => "Rossta")
+    Sudocoup::Dispatch.stub!(:new).and_return(@dispatch)
     @player = Sudocoup::Client::Socket.new({})
     @app    = mock(Sudocoup::Server,
       :remove_player => nil
     )
     @player.app = @app
+  end
+  
+  describe "receive_data" do
+    it "should call dispatch if end line encountered" do
+      @dispatch.should_receive(:call).with("MESSAGE")
+      @player.receive_data("MESSAGE\r\n")
+    end
+    it "should not call dispatch if end line not encountered" do
+      @dispatch.should_not_receive(:call).with("MESSAGE")
+      @player.receive_data("MESSAGE")
+    end
   end
 
   describe "enter_game" do

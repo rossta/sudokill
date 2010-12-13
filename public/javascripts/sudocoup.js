@@ -158,6 +158,7 @@ Sudocoup = (function() {
       var self = this;
       self.opts           = opts;
       self.hilite         = "#333333";
+      self.none           = "none";
       self.transparent    = "transparent";
       self.domId          = domId;
       self.$selector      = $("#" + self.domId);
@@ -182,7 +183,7 @@ Sudocoup = (function() {
         var col = self.$col.val();
         var val = self.$val.val();
         if (self.isValid(val)) {
-          self.$sudocoup.trigger("send_message", [row, col, val].join(" "));
+          self.$sudocoup.trigger("send_message", ["MOVE", [row, col, val].join(" ")].join("|"));
         }
         return false;
       });
@@ -211,7 +212,9 @@ Sudocoup = (function() {
       });
       rsquare.animate({fill:Raphael.getColor()},300, function() {
         rtext.attr({text: number});
-        rsquare.animate({fill:transparent}, 300);
+        rsquare.animate({fill:none}, 300, function(){
+          rsquare.attr({fill:transparent});
+        });
       });
       return rtext;
     },
@@ -230,7 +233,9 @@ Sudocoup = (function() {
         }
       }
       self.squares.animate({fill:Raphael.getColor()}, 300, function() {
-        self.squares.animate({fill:self.transparent}, 300);
+        self.squares.animate({fill:self.none}, 300, function() {
+          self.squares.attr({fill:self.transparent});
+        });
       });
     },
     raphael: function() {
@@ -281,7 +286,7 @@ Sudocoup = (function() {
           cy = y + (dim/2);
 
           square = r.rect(x, y, dim, dim).attr({
-            fill: self.transparent
+            fill: self.none
           });
 
           if (Settings.humans) {

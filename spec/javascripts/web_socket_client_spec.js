@@ -68,7 +68,7 @@ describe("WebSocketClient", function() {
   describe("events", function() {
     describe("game_state", function() {
       var client,websocket,$form;
-      
+
       beforeEach(function() {
         spyOn(game, "listen").andCallFake(function(event, callback) {
           return $("#sudocoup").bind(event, callback);
@@ -226,7 +226,15 @@ describe("WebSocketClient", function() {
       });
     });
     describe("join_game", function() {
+      var humans;
+      beforeEach(function() {
+        humans = Sudocoup.Settings.humans;
+      });
+      afterEach(function() {
+        Sudocoup.Settings.humans = humans;
+      });
       it("should hide join button while human settings are false", function() {
+        Sudocoup.Settings.humans = false;
         var client = createClient();
         var websocket = client.connect();
         spyOn(websocket, "send");

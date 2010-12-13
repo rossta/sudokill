@@ -48,13 +48,13 @@ describe("Sudocoup.GameBoard", function() {
     beforeEach(function() {
       board = createGameBoard();
     });
-    it("should trigger send message with 'row col val' from inputs if valid", function() {
+    it("should trigger send message with 'MOVE|row col val' from inputs if valid", function() {
       $("input[name*=row]").val("1");
       $("input[name*=col]").val("2");
       $("input[name*=val]").val("3");
       spyOn(board.$sudocoup, "trigger");
       board.$form.submit();
-      expect(board.$sudocoup.trigger).toHaveBeenCalledWith("send_message", "1 2 3");
+      expect(board.$sudocoup.trigger).toHaveBeenCalledWith("send_message", "MOVE|1 2 3");
     });
     it("should not trigger send message if value not valid", function() {
       $("input[name*=row]").val("1");

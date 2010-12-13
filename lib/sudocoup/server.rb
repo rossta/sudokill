@@ -90,7 +90,7 @@ module Sudocoup
           broadcast board_json
           broadcast status_json("New game about to begin!")
           @game.play! do |player|
-            player.send start_message(player)
+            send_player_message(player, start_message(player))
           end
           request_next_player_move
         else
@@ -130,7 +130,7 @@ module Sudocoup
           sleep 1.0
           request_next_player_move
         when :reject
-          player.send reject_message(msg)
+          send_player_message(player, reject_message(msg))
           broadcast msg, SUDOKOUP
         when :violation
           broadcast move_json(move, status.to_s)
@@ -169,7 +169,7 @@ module Sudocoup
     def join_game(player)
       joined = @game.join_game(player)
       if joined
-        player.send("READY")
+        send_player_message(player, "READY")
         broadcast("Ready to begin", SUDOKOUP) if @game.ready?
       end
       joined
@@ -177,7 +177,7 @@ module Sudocoup
 
     def join_queue(player)
       @queue << player
-      player.send("WAIT")
+      send_player_message(player, "WAIT")
     end
 
     def announce_player(player)
@@ -192,7 +192,7 @@ module Sudocoup
 
     def request_next_player_move
       @game.next_player_request do |player|
-        player.send(add_message)
+        send_player_message(player, add_message)
       end
       broadcast status_json "#{@game.current_player.name}'s turn!"
     end
@@ -217,9 +217,13 @@ module Sudocoup
       join_game player
       announce_player player
     end
-    
+
     def send_players(msg)
-      players.each { |player| player.send(msg) }
+      players.each { |player| send_player_message(player, msg) }
+    end
+
+    def send_player_message(player, msg)
+      player.send_command msg
     end
 
     def board_json
@@ -239,7 +243,7 @@ module Sudocoup
     end
 
     def status_json(message)
-      StatusJSON.to_json(@game.state, message)
+      StatusJSON.to_json(@game.sudocoup_state, message)
     end
 
     def start_message(player)

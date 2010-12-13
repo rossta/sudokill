@@ -46,6 +46,10 @@ module Sudocoup
       def add_move(row, col, val)
         moves << Move.new(row, col, val)
       end
+      
+      def send_command(*args)
+        send(*args)
+      end
 
     end
   end

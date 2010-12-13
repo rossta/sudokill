@@ -18,13 +18,17 @@ describe Sudocoup::Client::WebSocket do
   end
 
   describe "receive_data" do
-    describe "\d+ \d+ \d+" do
-      it "should request add move callback" do
+    describe "MOVE" do
+      it "should request add move callback if playing" do
         callback  = mock(Proc)
-        deferr    = mock(EM::Deferrable, :succeed => callback)
+        @player.has_turn!
         @app.should_receive(:request_add_move).and_return(callback)
         callback.should_receive(:succeed).with(@player, "1 2 3")
-        @player.receive_data("1 2 3\r\n")
+        @player.receive_data("MOVE|1 2 3\r\n")
+      end
+      it "should not request add move callback if not playing" do
+        @app.should_not_receive(:request_add_move)
+        @player.receive_data("MOVE|1 2 3\r\n")
       end
     end
     describe "STOP" do
@@ -58,6 +62,13 @@ describe Sudocoup::Client::WebSocket do
     it "should remove player from app" do
       @app.should_receive(:remove_player).with(@player)
       @player.unbind
+    end
+  end
+  
+  describe "send_command" do
+    it "should wrap command in command json message" do
+      @conn.should_receive(:send_data).with(/\"action\":\"COMMAND\",\"command\":\"ADD\"/)
+      @player.send_command("ADD")
     end
   end
 end

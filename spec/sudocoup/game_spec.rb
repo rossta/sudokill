@@ -208,11 +208,11 @@ describe Sudocoup::Game do
   describe "states" do
     describe "available?" do
       it "should be true if waiting and player size < num players" do
-        @game.state = :waiting
+        @game.waiting!
         @game.available?.should be_true
       end
       it "should be false if not waiting" do
-        @game.state = :ready
+        @game.ready!
         @game.available?.should be_false
       end
       it "should be false if player size == num players" do
@@ -223,17 +223,17 @@ describe Sudocoup::Game do
     end
     describe "in_progress?" do
       it "should be false if game state != :in_progress" do
-        @game.state.should_not == :in_progress
+        @game.sudocoup_state.should_not == :in_progress
         @game.in_progress?.should be_false
       end
       it "should return true if game state == :in_progress" do
-        @game.state = :in_progress
+        @game.sudocoup_state = :in_progress
         @game.in_progress?.should be_true
       end
     end
     describe "waiting?" do
       it "should be false if game state != :waiting" do
-        @game.state = :in_progress
+        @game.sudocoup_state = :in_progress
         @game.waiting?.should be_false
       end
       it "should return true if game state == :waiting" do
@@ -245,7 +245,7 @@ describe Sudocoup::Game do
         @game.ready?.should be_false
       end
       it "should return true if game state == :ready" do
-        @game.state = :ready
+        @game.sudocoup_state = :ready
         @game.ready?.should be_true
       end
     end
@@ -254,7 +254,7 @@ describe Sudocoup::Game do
         @game.over?.should be_false
       end
       it "should return true if game state == :ready" do
-        @game.state = :over
+        @game.sudocoup_state = :over
         @game.over?.should be_true
       end
     end

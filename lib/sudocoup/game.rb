@@ -3,7 +3,7 @@ module Sudocoup
     include Sudocoup::StateMachine
     has_states :waiting, :ready, :in_progress, :over
 
-    attr_accessor :board, :state, :moves, :size
+    attr_accessor :board, :moves, :size
     attr_reader :players
 
     def initialize(opts = {})
@@ -37,11 +37,11 @@ module Sudocoup
     end
 
     def status
-      case state
+      case sudocoup_state
       when :waiting
         "Waiting for more players"
       else
-        "Game #{state.to_s}"
+        "Game #{sudocoup_state.to_s}"
       end
     end
 

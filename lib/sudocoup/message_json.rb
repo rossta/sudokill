@@ -81,4 +81,16 @@ module Sudocoup
       { :state => json_string(@state), :message => json_string(@status) }
     end
   end
+  
+  class CommandJSON < MessageJSON
+    def initialize(command)
+      @command = command
+    end
+    def action
+      "COMMAND"
+    end
+    def json_args
+      { :command => json_string(@command) }
+    end
+  end
 end

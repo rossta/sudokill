@@ -326,34 +326,23 @@ describe Sudocoup::Game do
       end
     end
 
-    describe "send_players" do
-      it "should send given message to all players in game" do
-        game = Sudocoup::Game.new
-        player_1 = mock(Sudocoup::Client::Socket, :number => 1, :send => nil)
-        player_2 = mock(Sudocoup::Client::Socket, :number => 2, :send => nil)
-        game.join_game(player_1)
-        game.join_game(player_2)
-        player_1.should_receive(:send).with("foobar")
-        player_2.should_receive(:send).with("foobar")
-        game.send_players("foobar")
-      end
-    end
-
-    describe "request_next_move" do
+    describe "next_player_request" do
       before(:each) do
         @player_1.has_turn!
       end
       it "should set next player as current player" do
-        @game.request_next_move("ADD|1 2 3 4 5 6 7 8 9")
+        @game.next_player_request
         @game.current_player.should == @player_2
       end
       it "should send given message to next player" do
         @player_2.should_receive(:send_data).with("ADD|1 2 3 4 5 6 7 8 9\r\n")
-        @game.request_next_move("ADD|1 2 3 4 5 6 7 8 9")
+        @game.next_player_request do |player|
+          player.send("ADD|1 2 3 4 5 6 7 8 9")
+        end
       end
       it "should start player_2 timer" do
         @player_2.should_receive(:start_timer!)
-        @game.request_next_move("ADD|1 2 3 4 5 6 7 8 9")
+        @game.next_player_request
       end
     end
   end

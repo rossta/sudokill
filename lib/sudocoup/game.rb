@@ -95,13 +95,9 @@ module Sudocoup
       player.has_turn!
     end
 
-    def send_players(msg)
-      @players.each { |player| player.send(msg) }
-    end
-
-    def request_next_move(msg)
+    def next_player_request
       next_player!
-      current_player.send msg
+      yield current_player if block_given?
       current_player.start_timer!
     end
 

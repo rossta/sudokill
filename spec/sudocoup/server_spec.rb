@@ -28,7 +28,7 @@ describe Sudocoup::Server do
     it "should return action and given message as json" do
       game     = mock(Sudocoup::Game, :state => :ready)
       Sudocoup::Game.stub!(:new).and_return(game)
-      
+
       json_s = subject.status_json("Game is starting!");
       json = JSON.parse(json_s)
       json["action"].should == "STATUS"
@@ -206,10 +206,12 @@ describe Sudocoup::Server do
       subject.time_left?(player).should be_false
     end
   end
-  
+
   describe "end_game_and_start_new" do
     before(:each) do
-      @game     = mock(Sudocoup::Game, :send_players => nil, :available? => false, :state => :in_progress, :waiting! => nil, :over! => nil)
+      @player   = mock(Sudocoup::Client::Socket, :send => nil)
+      @game     = mock(Sudocoup::Game, :players => [@player],
+        :available? => false, :state => :in_progress, :waiting! => nil, :over! => nil)
       @new_game = mock(Sudocoup::Game, :available? => true, :ready? => false, :join_game => true)
       @channel  = mock(EM::Channel, :push => nil)
       Sudocoup::Game.stub!(:new).and_return(@game)
@@ -221,7 +223,7 @@ describe Sudocoup::Server do
       @server.end_game_and_start_new("Game stopped")
     end
     it "should send game over message to players" do
-      @game.should_receive(:send_players).with(/GAME OVER/)
+      @player.should_receive(:send).with(/GAME OVER/)
       @server.end_game_and_start_new("Game stopped")
     end
     it "should initialize new game" do
@@ -246,7 +248,7 @@ describe Sudocoup::Server do
       end
     end
   end
-  
+
   describe "announce_player" do
     before(:each) do
       @player   = mock(Sudocoup::Client::Socket, :name => "Player 1", :to_json => "Player 1", :send => nil)
@@ -269,14 +271,14 @@ describe Sudocoup::Server do
       @server.announce_player @player
     end
   end
-  
+
   describe "remove_player" do
     before(:each) do
       @player_1 = mock(Sudocoup::Client::Socket, :name => "Player 1", :to_json => "Player 1", :send => nil)
       @player_2 = mock(Sudocoup::Client::Socket, :name => "Player 2", :to_json => "Player 2", :send => nil)
       @player_3 = mock(Sudocoup::Client::Socket, :name => "Player 3", :to_json => "Player 3", :send => nil)
-      @game     = mock(Sudocoup::Game, 
-        :players => [], :in_progress? => false, :available? => false, :over? => false, :ready? => false, :state => :in_progress, :over! => nil)
+      @game     = mock(Sudocoup::Game,
+        :players => [@player_1, @player_2], :in_progress? => false, :available? => false, :over? => false, :ready? => false, :state => :in_progress, :over! => nil)
       @channel  = mock(EM::Channel, :push => nil)
       Sudocoup::Game.stub!(:new).and_return(@game)
       @server = Sudocoup::Server.new
@@ -286,7 +288,7 @@ describe Sudocoup::Server do
       it "should end game and start new" do
         @game.stub!(:players).and_return([@player_1, @player_2])
         @game.should_receive(:in_progress?).and_return(true)
-        @game.should_receive(:send_players).with(/GAME OVER/)
+        @player_2.should_receive(:send).with(/GAME OVER/)
         @server.remove_player @player_1
       end
     end
@@ -323,4 +325,18 @@ describe Sudocoup::Server do
       end
     end
   end
+
+  describe "send_players" do
+    it "should send given message to all players in game" do
+      player_1 = mock(Sudocoup::Client::Socket, :send => nil)
+      player_2 = mock(Sudocoup::Client::Socket, :send => nil)
+      game     = mock(Sudocoup::Game, :players => [player_1, player_2])
+      Sudocoup::Game.stub!(:new).and_return(game)
+      @server = Sudocoup::Server.new
+      player_1.should_receive(:send).with("foobar")
+      player_2.should_receive(:send).with("foobar")
+      @server.send_players("foobar")
+    end
+  end
+
 end

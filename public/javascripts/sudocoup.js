@@ -490,6 +490,7 @@ Sudocoup = (function() {
       $(game.selector).append(self.$connectForm).append(self.$status);
       self.$connectForm.addClass("websocket welcome").addClass(Settings.mode);
       self.$connectForm.find('input[name=host]').val(self.location.hostname());
+      self.$connectForm.find('input[name=port]').val(Settings.websocketPort);
 
       self.$connectForm.submit(function(){
           var $this = $(this),
@@ -620,7 +621,8 @@ Sudocoup = (function() {
     colors: {
       "player1":"#FFDD44",
       "player2":"#00FF66"
-    }
+    },
+    websocketPort: '48080'
   },
 
   Location = function() {

@@ -615,9 +615,10 @@ Sudocoup = (function() {
     }
   }),
 
+    // humans: (/humans/.exec(window.location.href)),
   Settings = {
     mode: 'normal',
-    humans: (/humans/.exec(window.location.href)),
+    humans: true,
     colors: {
       "player1":"#FFDD44",
       "player2":"#00FF66"

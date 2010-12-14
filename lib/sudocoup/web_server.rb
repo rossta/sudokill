@@ -8,7 +8,7 @@ module Sudocoup
     set :public, Proc.new { File.join(root, "public") }
     set :server, %w[thin mongrel webrick]
 
-    get  %r{/sudocoup|/} do
+    get  %r{/sudocoup|sudokill|/} do
       return File.open("public/index.html")
     end
 

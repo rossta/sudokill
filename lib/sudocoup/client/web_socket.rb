@@ -17,7 +17,11 @@ module Sudocoup
         if line = data.slice!(/(.+)\r?\n/)
           line = line.chomp
           case line
+          when /GET.*HTTP/
+            log "New player connecting...", SUDOKOUP
           when /NEW CONNECTION/
+            cmd, name = line.split(PIPE)
+            @name = name
             @app.new_visitor(self)
           when /PLAY/
             @app.play_game.succeed
@@ -28,11 +32,16 @@ module Sudocoup
             @app.announce_player(self)
           when /LEAVE/
             @app.remove_player(self)
+          when /OPPONENT\|/
+            cmd, name = line.split(PIPE)
+            @app.connect_opponent(name, self)
           when /MOVE\|\d \d \d/
             if has_turn?
               cmd, move = line.split(PIPE)
               @app.request_add_move.succeed(self, move)
             end
+          else
+            @app.broadcast line, name
           end
           log line, logger_name
         end
@@ -53,7 +62,12 @@ module Sudocoup
       def close
         send("Server disconnected", SUDOKOUP)
       end
-      
+
+      def unbind
+        super
+        @app.remove_visitor(self)
+      end
+
       protected
 
       def ensure_app

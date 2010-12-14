@@ -66,7 +66,8 @@ describe Sudocoup::Client::WebSocket do
 
   describe "unbind" do
     it "should remove player from app" do
-      @app.should_receive(:remove_player).with(@player)
+      @app.should_receive(:remove_player).with(@player).once.ordered
+      @app.should_receive(:remove_visitor).with(@player).once.ordered
       @player.unbind
     end
   end

@@ -4,7 +4,7 @@ require "rake"
 namespace :sudocoup do
   namespace :game do
     task :default do
-      system "script/server"
+      system "WEB=1 script/server"
     end
     task :production do
       system "LOG=1 script/server 0.0.0.0 44444 48080 &"

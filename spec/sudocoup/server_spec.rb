@@ -97,7 +97,7 @@ describe Sudocoup::Server do
 
   describe "new_visitor" do
     it "should send appropriate json" do
-      visitor = mock(Sudocoup::Client::WebSocket, :send => nil)
+      visitor = mock(Sudocoup::Client::WebSocket, :send => nil, :name => "Websocket Visitor")
       visitor.should_receive(:send).with(subject.board_json).once.ordered
       visitor.should_receive(:send).with(subject.player_json).once.ordered
       visitor.should_receive(:send).with(subject.queue_json).once.ordered

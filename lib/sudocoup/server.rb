@@ -33,7 +33,7 @@ module Sudocoup
         EventMachine::start_server @host, @port, Client::Socket, :app => self do |player|
           new_player player
         end
-        
+
         EventMachine.add_periodic_timer(0.25) {
           if @game.in_progress?
             if !time_left?(@game.current_player)
@@ -45,28 +45,7 @@ module Sudocoup
 
         EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => self,
           :debug => @debug, :logging => true do |ws|
-            ws.onopen    {
-
-              ws.sid = @channel.subscribe { |msg| ws.send msg }
-
-              ws.onmessage { |msg|
-                if msg =~ /NEW CONNECTION/
-                  type, name = msg.split(PIPE)
-                  ws.name = name.chomp
-                  broadcast "#{ws.name} just joined the game room", SUDOKOUP
-                  ws.send status_json "Welcome to Sudocoup, #{ws.name}"
-                else
-                  broadcast msg, ws.name
-                end
-              }
-
-              ws.onclose   {
-                msg = "#{ws.name} just left the game room"
-                log msg, ws.logger_name
-                broadcast msg, SUDOKOUP
-                ws.send "Bye!"
-              }
-            }
+            ws.onopen { ws.sid = @channel.subscribe { |msg| ws.send msg } }
         end
 
         log_server_started
@@ -151,9 +130,20 @@ module Sudocoup
     end
 
     def new_visitor(visitor)
+      visitor.send status_json("Welcome to Sudocoup, #{visitor.name}")
       visitor.send board_json
       visitor.send player_json
       visitor.send queue_json
+      msg = "#{visitor.name} just joined the game room"
+      broadcast msg, SUDOKOUP
+      log msg, SUDOKOUP
+    end
+
+    def remove_visitor(visitor)
+      visitor.send "Bye!"
+      msg = "#{visitor.name} just left the game room"
+      broadcast msg, SUDOKOUP
+      log msg, SUDOKOUP
     end
 
     def remove_player(player)
@@ -170,10 +160,10 @@ module Sudocoup
       elsif @queue.delete(player)
         broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
       else
-        log "#{player.name} left but wasn't in game or on deck"
       end
       broadcast player_json
       broadcast queue_json
+      log "#{player.name} disconnected", SUDOKOUP
     end
 
     def join_game(player)
@@ -216,6 +206,7 @@ module Sudocoup
     def end_game(msg)
       @game.over!
       send_players game_over_message(msg)
+      broadcast msg
       broadcast status_json(msg)
       new_game
     end
@@ -239,6 +230,24 @@ module Sudocoup
 
     def send_player_message(player, msg)
       player.send_command msg
+    end
+
+    def connect_opponent(name, visitor)
+      id = rand(100)
+      case name.downcase.to_sym
+      when :naive
+        EM.connect(@host, @port, Player::Naive, :name => name)
+      when :easy, :medium, :hard
+        fork do
+          system("cd bin/Vincent/; java Sudokill_#{name} #{host_name(@host)} #{@port} #{name}#{id}")
+        end
+      when :simon
+        fork do
+          system("cd bin/Simon/; java Main")
+        end
+      else
+        visitor.send("Didn't recognize opponent, #{name}", SUDOKOUP)
+      end
     end
 
     def board_json

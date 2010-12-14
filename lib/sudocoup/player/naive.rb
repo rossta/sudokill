@@ -88,7 +88,7 @@ module Sudocoup
             log "last move #{@last_move.join(' ')}"
           when /^GAME OVER/
             close_connection_after_writing
-            @stop.call
+            @stop.call if @stop
           end
         end
       end

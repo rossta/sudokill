@@ -20,6 +20,10 @@ module Sudocoup
       @moves = []
     end
 
+    def has_player?(player)
+      @players.include?(player)
+    end
+
     def full?
       @players.size == @size
     end

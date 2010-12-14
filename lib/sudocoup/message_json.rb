@@ -93,4 +93,16 @@ module Sudocoup
       { :command => json_string(@command) }
     end
   end
+  
+  class GameOverJSON < MessageJSON
+    def initialize(players)
+      @players = players
+    end
+    def action
+      "GAMEOVER"
+    end
+    def json_args
+      { :players => "[#{@players.map(&:to_json).join(",")}]" }
+    end
+  end
 end

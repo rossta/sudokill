@@ -2,123 +2,8 @@ require 'spec_helper'
 require 'json'
 
 describe Sudocoup::Server do
-  def mock_player(attrs = {})
-    mock(Sudocoup::Client::Socket, {
-      :number => 1,
-      :current_time => 0,
-      :name => "Player",
-      :reset => nil,
-      :send_command =>nil,
-      :send => nil,
-      :to_json => %Q|{"number":1}|
-    }.merge(attrs))
-  end
-
   before(:each) do
     @pipe = "|"
-  end
-  describe "move_json" do
-    it "should return action, move, and status as json object" do
-      json_s = subject.move_json("1 2 3", :ok)
-      json = JSON.parse(json_s)
-      json["action"].should == "UPDATE"
-      json["value"].should == [1,2,3]
-      json["status"].should == "ok"
-    end
-  end
-  describe "board_json" do
-    it "should return action, move, and status as json object" do
-      board = mock(Sudocoup::Board, :to_json => "[[1,2,3],[4,5,6],[7,8,9]]", :build => nil)
-      Sudocoup::Board.stub!(:new).and_return(board)
-      json_s = subject.board_json
-      json = JSON.parse(json_s)
-      json["action"].should == "CREATE"
-      json["values"].should == [[1,2,3],[4,5,6],[7,8,9]]
-    end
-  end
-  describe "status_json" do
-    it "should return action and given message as json" do
-      game     = mock(Sudocoup::Game, :sudocoup_state => :ready)
-      Sudocoup::Game.stub!(:new).and_return(game)
-
-      json_s = subject.status_json("Game is starting!");
-      json = JSON.parse(json_s)
-      json["action"].should == "STATUS"
-      json["message"].should == "Game is starting!"
-      json["state"].should == "ready"
-    end
-  end
-  describe "player_json" do
-    before(:each) do
-      @player_1 = mock_player(:number => 1, :current_time => 14, :name => "Player 1", :to_json => %Q|{"number":1}|)
-      @player_2 = mock_player(:number => 2, :current_time => 25, :name => "Player 2", :to_json => %Q|{"number":2}|)
-      @game     = mock(Sudocoup::Game, :players => [@player_1, @player_2])
-      Sudocoup::Game.stub!(:new).and_return(@game)
-      @server   = Sudocoup::Server.new(:max_time => 120)
-    end
-    it "should return TIME message with player ids and times" do
-# {
-#   players: [
-#     {
-#       number: 1,
-#       time: {
-#         current: 14,
-#         max: 120
-#       },
-#       name: 'Player 1',
-#       moves: 3
-#     },
-#     {
-#       number: 2,
-#       time: {
-#         current: 25,
-#         max: 120
-#       },
-#       name: 'Player 2',
-#       moves: 2
-#     }
-#   ]
-# }
-      json_s = @server.player_json
-      json = JSON.parse(json_s)
-      json['action'].should == 'SCORE'
-      players = json['players']
-      players.size.should == 2
-      player_1_json = players.shift
-      player_1_json['number'].should == 1
-    end
-  end
-  describe "queue_json" do
-    before(:each) do
-      @player_1 = mock_player(:number => nil, :current_time => 0, :name => "Player 1", :to_json => %Q|{"name":"Player 1"}|)
-      @player_2 = mock_player(:number => nil, :current_time => 0, :name => "Player 2", :to_json => %Q|{"name":"Player 2"}|)
-      @game     = mock(Sudocoup::Game)
-      Sudocoup::Game.stub!(:new).and_return(@game)
-      @server   = Sudocoup::Server.new(:max_time => 120)
-      @server.queue << @player_1
-      @server.queue << @player_2
-    end
-    it "should return TIME message with player ids and times" do
-# {
-#   players: [
-#     {
-#       name: 'Player 1'
-#     },
-#     {
-#       name: 'Player 2'
-#     }
-#   ]
-# }
-      json_s = @server.queue_json
-      json = JSON.parse(json_s)
-      json['action'].should == 'QUEUE'
-      players = json['players']
-      players.size.should == 2
-      player_1_json = players.shift
-      player_2_json = players.shift
-      player_1_json['name'].should == "Player 1"
-      player_2_json['name'].should == "Player 2"
-    end
   end
   describe "start_message" do
     it "should return START | player number | board json" do
@@ -246,7 +131,7 @@ describe Sudocoup::Server do
       @player   = mock_player
       @game     = mock(Sudocoup::Game, :players => [@player],
         :available? => false, :sudocoup_state => :in_progress, :waiting! => nil, :over! => nil)
-      @new_game = mock(Sudocoup::Game, :available? => true, :ready? => false, :join_game => true)
+      @new_game = mock(Sudocoup::Game, :available? => true, :ready? => false, :join_game => true, :has_player? => true)
       @channel  = mock(EM::Channel, :push => nil)
       Sudocoup::Game.stub!(:new).and_return(@game)
       EM::Channel.stub!(:new).and_return(@channel)
@@ -297,6 +182,7 @@ describe Sudocoup::Server do
     end
     it "should broadcast player json and in game message if player is in game" do
       @game.stub!(:players).and_return([@player])
+      @game.should_receive(:has_player?).and_return(true)
       @channel.should_receive(:push).once.with(/Player 1 is now in the game/).ordered
       @channel.should_receive(:push).once.with(/SCORE/).ordered
       @channel.should_receive(:push).once.with(/QUEUE/).ordered
@@ -304,6 +190,7 @@ describe Sudocoup::Server do
     end
     it "should broadcast queue json and on deck message if player is in queue" do
       @server.join_queue(@player)
+      @game.should_receive(:has_player?).and_return(false)
       @channel.should_receive(:push).once.with(/Player 1 is now waiting/).ordered
       @channel.should_receive(:push).once.with(/SCORE/).ordered
       @channel.should_receive(:push).once.with(/QUEUE/).ordered
@@ -316,29 +203,37 @@ describe Sudocoup::Server do
       @player_1 = mock_player(:name => "Player 1")
       @player_2 = mock_player(:name => "Player 2")
       @player_3 = mock_player(:name => "Player 3")
-      @game     = mock(Sudocoup::Game,
-        :players => [@player_1, @player_2], :in_progress? => false, :available? => false, :over? => false, :ready? => false, :sudocoup_state => :in_progress, :over! => nil)
+      @game     = mock(Sudocoup::Game, :players => [@player_1, @player_2], 
+        :sudocoup_state => :waiting, :available? => false, :ready? => false)
       @channel  = mock(EM::Channel, :push => nil)
       Sudocoup::Game.stub!(:new).and_return(@game)
       @server = Sudocoup::Server.new
       @server.channel = @channel
     end
     describe "from game in progress" do
+      before(:each) do
+        @game.stub!(:sudocoup_state).and_return(:in_progress)
+        @game.stub!(:over!)
+        @new_game = mock(Sudocoup::Game, :available? => true)
+        Sudocoup::Game.should_receive(:new).and_return(@new_game)
+      end
       it "should end game and start new" do
-        @game.stub!(:players).and_return([@player_1, @player_2])
-        @game.should_receive(:in_progress?).and_return(true)
+        @game.should_receive(:over!).once.ordered
+        @new_game.should_receive(:available?).once.ordered
+        @server.remove_player @player_1
+      end
+      it "should tell remaining player game is over" do
         @player_2.should_receive(:send_command).with(/GAME OVER/)
         @server.remove_player @player_1
       end
     end
-    describe "from game not started" do
+    describe "from game waiting" do
       before(:each) do
         @server.join_queue @player_3
-        @game.stub!(:players).and_return([@player_1, @player_3])
-        @game.stub!(:in_progress?).and_return(false)
-        @game.stub!(:over?).and_return(false)
-        @game.stub!(:join_game).and_return(true)
+        @game.stub!(:sudocoup_state).and_return(:waiting)
         @game.stub!(:waiting!).and_return(true)
+        @game.stub!(:join_game)
+        @game.stub!(:has_player?).and_return(true)
       end
       it "should add one player from queue and keep other player" do
         @game.should_receive(:join_game).with(@player_3)
@@ -351,19 +246,29 @@ describe Sudocoup::Server do
         @server.remove_player @player_1
       end
       it "should not end game and set it to waiting" do
-        @game.should_receive(:in_progress?).and_return(false)
-        @game.should_receive(:over?).and_return(false)
-        @game.should_receive(:waiting!).and_return(true)
         @player_1.should_not_receive(:send_command).with(/GAME OVER/)
         @player_2.should_not_receive(:send_command).with(/GAME OVER/)
+        @server.remove_player @player_1
+      end
+    end
+    describe "from game ready" do
+      before(:each) do
+        @server.join_queue @player_3
+        @game.stub!(:sudocoup_state).and_return(:ready)
+        @game.stub!(:ready?).and_return(true)
+        @game.stub!(:has_player?).and_return(true)
+      end
+      it "should set game to waiting add one player from queue and keep other player" do
+        @game.should_receive(:waiting!).once.ordered
+        @game.should_receive(:join_game).with(@player_3).once.ordered
         @server.remove_player @player_1
       end
     end
     describe "from queue" do
       it "should broadcast player left queue" do
         @server.join_queue @player_3
-        @channel.should_receive(:push).with(/QUEUE/).once.ordered
         @channel.should_receive(:push).with(/Player 3 left the On Deck circle/).once.ordered
+        @channel.should_receive(:push).with(/QUEUE/).once.ordered
         @server.remove_player @player_3
       end
     end

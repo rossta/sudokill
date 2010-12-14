@@ -101,3 +101,15 @@ def send_handshake(response)
     given.handshake.lines.sort == format_response(response).lines.sort
   end
 end
+
+def mock_player(attrs = {})
+  mock(Sudocoup::Client::Socket, {
+    :number => 1,
+    :current_time => 0,
+    :name => "Player",
+    :reset => nil,
+    :send_command =>nil,
+    :send => nil,
+    :to_json => %Q|{"number":1}|
+  }.merge(attrs))
+end

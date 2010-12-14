@@ -5,9 +5,7 @@ handle player disconnect during game (specs)
 handle leave queue (specs)
 when player quits, don't start new game if game hasn't started yet
 refactor reject/violation messaging
-refactor server json/broadcast msgs
-specs for game board js
-start new game when ended prematurely
+broadcast game over json
 
 HUMAN PLAYER
 enter game queue as human

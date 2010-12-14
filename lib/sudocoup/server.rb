@@ -87,8 +87,6 @@ module Sudocoup
     def play_game
       defer = EM::DefaultDeferrable.new
       defer.callback {
-        new_game if @game.over?
-
         if @game.players.any? && @game.ready?
           broadcast board_json
           broadcast status_json("New game about to begin!")
@@ -159,24 +157,22 @@ module Sudocoup
 
     def remove_player(player)
       if @game.players.delete(player)
-        if @game.in_progress?
+        case @game.sudocoup_state
+        when :in_progress
           end_game("#{player.name} left the game")
-        elsif !@game.over? && @queue.any?
-          @game.waiting!
-          add_player_from_queue
-        else
-          @game.waiting!
-          broadcast player_json
-          broadcast queue_json
-          log "#{player.name} left game but no new player was added"
+          return
+        when :waiting, :ready
+          @game.waiting!        if @game.ready?
+          add_player_from_queue if @queue.any?
         end
+        broadcast "#{player.name} left the game", SUDOKOUP
       elsif @queue.delete(player)
-        broadcast player_json
-        broadcast queue_json
         broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
       else
         log "#{player.name} left but wasn't in game or on deck"
       end
+      broadcast player_json
+      broadcast queue_json
     end
 
     def join_game(player)
@@ -195,7 +191,7 @@ module Sudocoup
     end
 
     def announce_player(player)
-      if @game.players.include? player
+      if @game.has_player? player
         broadcast("#{player.name} is now in the game", SUDOKOUP)
       elsif @queue.include? player
         broadcast("#{player.name} is now waiting On Deck", SUDOKOUP)
@@ -219,6 +215,7 @@ module Sudocoup
       @game.over!
       send_players game_over_message(msg)
       broadcast status_json(msg)
+      new_game
     end
 
     def new_game
@@ -260,6 +257,10 @@ module Sudocoup
 
     def status_json(message)
       StatusJSON.to_json(@game.sudocoup_state, message)
+    end
+
+    def game_over_json
+      GameOverJSON.to_json(players)
     end
 
     def start_message(player)

@@ -206,6 +206,17 @@ describe Sudocoup::Game do
     end
   end
   describe "states" do
+    describe "has_player?" do
+      before(:each) do
+        @game.join_game :player_1
+      end
+      it "should return true if has player" do
+        @game.has_player?(:player_1).should be_true
+      end
+      it "should return true if has player" do
+        @game.has_player?(:player_2).should be_false
+      end
+    end
     describe "available?" do
       it "should be true if waiting and player size < num players" do
         @game.waiting!

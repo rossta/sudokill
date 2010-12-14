@@ -40,8 +40,8 @@ describe("Sudocoup", function() {
     it("should update the board", function() {
       sudocoup = Sudocoup.setup('sudocoup');
       spyOn(sudocoup.board, "update");
-      sudocoup.update(0, 0, 9, 1);
-      expect(sudocoup.board.update).toHaveBeenCalledWith(0, 0, 9, 1);
+      sudocoup.update(0, 0, 9, 1, "ok");
+      expect(sudocoup.board.update).toHaveBeenCalledWith(0, 0, 9, 1, "ok");
     });
   });
   describe("create", function() {
@@ -61,11 +61,11 @@ describe("Sudocoup", function() {
     });
     describe("{ action: UPDATE }", function() {
       it("should update game board with given values", function() {
-        var json = "{\"action\":\"UPDATE\",\"value\":[1, 2, 3, 1]}";
+        var json = "{\"action\":\"UPDATE\",\"status\":\"ok\",\"value\":[1, 2, 3, 1]}";
         sudocoup = Sudocoup.setup('sudocoup');
         spyOn(sudocoup.board, "update");
         sudocoup.dispatch(json);
-        expect(sudocoup.board.update).toHaveBeenCalledWith(1, 2, 3, 1);
+        expect(sudocoup.board.update).toHaveBeenCalledWith(1, 2, 3, 1, "ok");
       });
     });
     describe("{ action: CREATE }", function() {

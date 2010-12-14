@@ -71,10 +71,10 @@ Sudocoup = (function() {
       this.client.send(msg);
     },
 
-    update: function(row_i, col_i, val, num) {
+    update: function(row_i, col_i, val, num, status) {
       var self = this;
-      self.log("UPDATE", row_i, col_i, val, num);
-      self.board.update(row_i, col_i, val, num);
+      self.log("UPDATE", row_i, col_i, val, num, status);
+      self.board.update(row_i, col_i, val, num, status);
       return self;
     },
 
@@ -112,7 +112,7 @@ Sudocoup = (function() {
         switch (json.action) {
           case "UPDATE":
             value = json.value;
-            self.update(value[0], value[1], value[2], value[3]);
+            self.update(value[0], value[1], value[2], value[3], json.status);
             break;
           case "CREATE":
             self.create(json.values);
@@ -160,7 +160,7 @@ Sudocoup = (function() {
       opts = opts || {};
       var self = this;
       self.opts           = opts;
-      self.hilite         = "#222222";
+      self.hilite         = "#333333";
       self.none           = "none";
       self.transparent    = "transparent";
       self.black          = "#000000";
@@ -199,7 +199,7 @@ Sudocoup = (function() {
     isValid: function(val) {
       return _(this.valids).include(parseFloat(val));
     },
-    update: function(row_i, col_i, val, num) {
+    update: function(row_i, col_i, val, num, status) {
       var self    = this,
           rtext   = self.numberSquares[row_i][col_i],
           rsquare = self.backgroundSquares[row_i][col_i],
@@ -229,6 +229,7 @@ Sudocoup = (function() {
       });
       rsquare.animate({fill:Raphael.getColor()},300, function() {
         var bgcolor = Settings.colors["player" + num] || Raphael.getColor();
+        if (status == "violation") bgcolor = "red";
         rtext.attr({text: val, fill: black});
         rsquare.animate({fill:bgcolor}, 300);
       });

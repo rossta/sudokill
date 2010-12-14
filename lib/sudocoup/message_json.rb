@@ -32,8 +32,8 @@ module Sudocoup
   end
   
   class MoveJSON < MessageJSON
-    def initialize(move_s,status)
-      @move   = Move.new(*move_s.split)
+    def initialize(move,status)
+      @move   = move
       @status = status
     end
     def action

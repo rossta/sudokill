@@ -16,4 +16,14 @@ describe Sudocoup::Move do
       move.to_json.should == "[4, 5, 6]"
     end
   end
+  
+  describe "self.build" do
+    it "should return new move with player number" do
+      move = Sudocoup::Move.build("1 2 3", 1)
+      move.row.should == 1
+      move.col.should == 2
+      move.val.should == 3
+      move.num.should == 1
+    end
+  end
 end

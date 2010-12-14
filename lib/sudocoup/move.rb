@@ -1,10 +1,16 @@
 module Sudocoup
   class Move
-    attr_reader :row, :col, :val
-    def initialize(row, col, val)
+    attr_reader :row, :col, :val, :num
+
+    def self.build(move_s, num)
+      new(*(move_s.split + [num]).map(&:to_i))
+    end
+
+    def initialize(row, col, val, num = nil)
       @row = row
       @col = col
       @val = val
+      @num = num
     end
 
     def to_json
@@ -12,7 +18,7 @@ module Sudocoup
     end
 
     def to_coord
-      [row, col, val]
+      [row, col, val, num].compact
     end
   end
 end

@@ -123,9 +123,10 @@ module Sudocoup
       defer = EM::DefaultDeferrable.new
       defer.callback { |player, move|
         status, msg = @game.add_player_move(player, move)
+        played_move = Move.build(move, player.number)
         case status
         when :ok
-          broadcast move_json(move, status.to_s)
+          broadcast move_json(played_move, status.to_s)
           broadcast msg, SUDOKOUP
           send_players(move)
           sleep 1.0
@@ -134,7 +135,7 @@ module Sudocoup
           send_player_message(player, reject_message(msg))
           broadcast msg, SUDOKOUP
         when :violation
-          broadcast move_json(move, status.to_s)
+          broadcast move_json(played_move, status.to_s)
           end_game(msg)
         end
       }

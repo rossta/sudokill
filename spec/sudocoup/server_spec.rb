@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'json'
 
 describe Sudocoup::Server do
   before(:each) do

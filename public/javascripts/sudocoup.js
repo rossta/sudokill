@@ -71,10 +71,10 @@ Sudocoup = (function() {
       this.client.send(msg);
     },
 
-    update: function(i, j, value) {
+    update: function(row_i, col_i, val, num) {
       var self = this;
-      self.log("UPDATE", i, j, value);
-      self.board.update(i, j, value);
+      self.log("UPDATE", row_i, col_i, val, num);
+      self.board.update(row_i, col_i, val, num);
       return self;
     },
 
@@ -112,7 +112,7 @@ Sudocoup = (function() {
         switch (json.action) {
           case "UPDATE":
             value = json.value;
-            self.update(value[0], value[1], value[2]);
+            self.update(value[0], value[1], value[2], value[3]);
             break;
           case "CREATE":
             self.create(json.values);
@@ -188,7 +188,6 @@ Sudocoup = (function() {
         var val = self.$val.val();
         if (self.isValid(val)) {
           self.$sudocoup.trigger("send_message", ["MOVE", [row, col, val].join(" ")].join("|"));
-          // self.backgroundSquares[parseInt(row,10)][parseInt(col,10)].attr({fill:Raphael.getColor()});
           self.$val.hide();
         }
         return false;
@@ -200,30 +199,38 @@ Sudocoup = (function() {
     isValid: function(val) {
       return _(this.valids).include(parseFloat(val));
     },
-    update: function(i, j, number){
-      var self = this,
-          rtext = self.numberSquares[i][j],
-          rsquare = self.backgroundSquares[i][j],
-          hilite = self.hilite,
+    update: function(row_i, col_i, val, num) {
+      var self    = this,
+          rtext   = self.numberSquares[row_i][col_i],
+          rsquare = self.backgroundSquares[row_i][col_i],
+          hilite  = self.hilite,
           transparent = self.transparent,
-          none = self.none,
-          black = self.black;
+          none    = self.none,
+          black   = self.black;
+          
       _(self.backgroundSquares).each(function(row, k) {
-        _(row).each(function(sq){
-          if (i==k) {
-            sq.attr({fill:hilite});
-          } else {
-            sq.attr({fill:black});
+        var valText;
+        _(row).each(function(sq, l) {
+          valText = self.numberSquares[k][l].attr("text");
+          if (!parseInt(valText, 10)) {
+            if (row_i==k) {
+              sq.attr({fill:hilite});
+            } else {
+              sq.attr({fill:black});
+            }
           }
         });
-        row[j].attr({fill:hilite});
+        valText = self.numberSquares[k][col_i].attr("text");
+        if (!parseInt(valText, 10)) row[col_i].attr({fill:hilite});
       });
-      _(self.backgroundSquares[i]).each(function(sq) {
-        sq.attr({fill:hilite});
+      _(self.backgroundSquares[row_i]).each(function(sq, j) {
+        var valText = self.numberSquares[row_i][j].attr("text");
+        if (!parseInt(valText, 10)) sq.attr({fill:hilite});
       });
       rsquare.animate({fill:Raphael.getColor()},300, function() {
-        rtext.attr({text: number});
-        rsquare.animate({fill:black}, 300);
+        var bgcolor = Settings.colors["player" + num] || Raphael.getColor();
+        rtext.attr({text: val, fill: black});
+        rsquare.animate({fill:bgcolor}, 300);
       });
       return rtext;
     },
@@ -304,8 +311,7 @@ Sudocoup = (function() {
           text = r.text(cx, cy, Math.floor(Math.random()*9) + 1).attr({
             fill: bcolor,
             "text-anchor": "middle",
-            "font-size": "32px",
-            "color": "white"
+            "font-size": "32px"
           });
 
           self.numberSquares[i][j] = text;
@@ -607,7 +613,11 @@ Sudocoup = (function() {
 
   Settings = {
     mode: 'normal',
-    humans: (/humans/.exec(window.location.href))
+    humans: (/humans/.exec(window.location.href)),
+    colors: {
+      "player1":"#FFDD44",
+      "player2":"#00FF66"
+    }
   },
 
   Location = function() {

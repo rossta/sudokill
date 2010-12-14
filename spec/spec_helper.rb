@@ -1,6 +1,7 @@
 require File.dirname(__FILE__) + '/../lib/sudocoup'
 Sudocoup::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
 
+require 'json'
 require 'pp'
 require 'em-http'
 

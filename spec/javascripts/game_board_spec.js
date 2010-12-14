@@ -11,7 +11,7 @@ describe("Sudocoup.GameBoard", function() {
   describe("constructor", function() {
     it("should assign instance variables", function() {
       board = new Sudocoup.GameBoard("game_board", "#sudocoup");
-      expect(board.hilite).toEqual("#222222");
+      expect(board.hilite).toEqual("#333333");
       expect(board.black).toEqual("#000000");
       expect(board.transparent).toEqual("transparent");
       expect(board.domId).toEqual("game_board");

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Sudocoup::MessageJSON do
   describe "move_json" do
     it "should return action, move, and status as json object" do
-      json_s = Sudocoup::MoveJSON.to_json("1 2 3", :ok)
+      json_s = Sudocoup::MoveJSON.to_json(mock(Sudocoup::Move, :to_json => "[1, 2, 3]"), :ok)
       json = JSON.parse(json_s)
       json["action"].should == "UPDATE"
       json["value"].should == [1,2,3]

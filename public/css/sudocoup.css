@@ -100,7 +100,7 @@ form.game_board input { display:none;}
 #score_board .player { background-color: "none"; padding:5px;}
 #score_board .player.name { font-size:1.2em;}
 #score_board .has_turn { color: black;}
-#score_board .player.has_turn { background-color: #00F0FD;}
+#score_board .player.has_turn   { background-color: #00F0FD;}
 #score_board .player_1.has_turn { background-color: #FFDD44;}
 #score_board .player_2.has_turn { background-color: #00FF66;}
 

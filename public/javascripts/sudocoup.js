@@ -390,7 +390,9 @@ Sudocoup = (function() {
 
         $("<div />").appendTo($player).addClass("name").text(player["name"]);
         $("<div />").appendTo($player).addClass("current_time").text("Time: " + player["current_time"]);
-        $("<div />").appendTo($player).addClass("max_time").addClass("hidden").text(player["max_time"]);
+        if (player["max_time"]) {
+          $("<div />").appendTo($player).addClass("max_time").addClass("hidden").text(player["max_time"]);
+        }
         $("<div />").appendTo($player).addClass("moves").text("Moves: " + player["moves"]);
         if (player["has_turn"]) {
           $player.addClass("has_turn");

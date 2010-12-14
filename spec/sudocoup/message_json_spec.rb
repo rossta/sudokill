@@ -29,9 +29,11 @@ describe Sudocoup::MessageJSON do
     end
   end
   describe "player_json" do
+    before(:each) do
+      @player_1 = mock_player(:number => 1, :current_time => 14, :name => "Player 1", :to_json => %Q|{"number":1}|)
+      @player_2 = mock_player(:number => 2, :current_time => 25, :name => "Player 2", :to_json => %Q|{"number":2}|)
+    end
     it "should return TIME message with player ids and times" do
-      player_1 = mock_player(:number => 1, :current_time => 14, :name => "Player 1", :to_json => %Q|{"number":1}|)
-      player_2 = mock_player(:number => 2, :current_time => 25, :name => "Player 2", :to_json => %Q|{"number":2}|)
       max_time = 120
 # {
 #   players: [
@@ -55,13 +57,18 @@ describe Sudocoup::MessageJSON do
 #     }
 #   ]
 # }
-      json_s = Sudocoup::PlayerJSON.to_json([player_1, player_2], max_time)
+      json_s = Sudocoup::PlayerJSON.to_json([@player_1, @player_2], max_time)
       json = JSON.parse(json_s)
       json['action'].should == 'SCORE'
       players = json['players']
       players.size.should == 2
       player_1_json = players.shift
       player_1_json['number'].should == 1
+    end
+    it "should omit max time if nil" do
+      json_s = Sudocoup::PlayerJSON.to_json([@player_1, @player_2])
+      json = JSON.parse(json_s)
+      json['action'].should == 'SCORE'
     end
   end
   describe "queue_json" do

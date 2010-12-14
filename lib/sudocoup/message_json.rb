@@ -45,7 +45,7 @@ module Sudocoup
   end
   
   class PlayerJSON < MessageJSON
-    def initialize(players, max_time)
+    def initialize(players, max_time = nil)
       @players = players
       @max_time = max_time
     end
@@ -53,7 +53,10 @@ module Sudocoup
       "SCORE"
     end
     def json_args
-      { :players => "[#{@players.map(&:to_json).join(",")}]", :max_time => @max_time }
+      {}.tap do |args|
+        args[:players] = "[#{@players.map(&:to_json).join(",")}]"
+        args[:max_time] = @max_time unless @max_time.nil?
+      end
     end
   end
   

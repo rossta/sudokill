@@ -246,7 +246,7 @@ module Sudocoup
           system("cd bin/Simon/; java Main")
         end
       else
-        visitor.send("Didn't recognize opponent, #{name}", SUDOKOUP)
+        visitor.send("Didn't recognize opponent, #{name}")
       end
     end
 

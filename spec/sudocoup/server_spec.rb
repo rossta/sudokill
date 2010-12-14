@@ -107,25 +107,25 @@ describe Sudocoup::Server do
 
   describe "time_left?" do
     before(:each) do
-      subject.max_time = 120
+      @server = Sudocoup::Server.new(:max_time => 120)
     end
     it "should return true if player time is less than max time" do
       player = mock_player(:current_time => 60)
-      subject.time_left?(player).should be_true
+      @server.time_left?(player).should be_true
     end
 
     it "should return true if player time is equal to max time" do
       player = mock_player(:current_time => 120)
-      subject.time_left?(player).should be_true
+      @server.time_left?(player).should be_true
     end
 
     it "should return false if player time is more than max time" do
       player = mock_player(:current_time => 121)
-      subject.time_left?(player).should be_false
+      @server.time_left?(player).should be_false
     end
     it "should return true if no max time" do
-      subject.max_time = nil
-      subject.time_left?(mock_player(:current_time => 121)).should be_true
+      server = Sudocoup::Server.new
+      server.time_left?(mock_player(:current_time => 121)).should be_true
     end
   end
 

@@ -20,7 +20,7 @@ module Sudocoup
 
       @game     = Game.new(:size => @opts[:size], :config => @opts[:config])
       @queue    = []
-      @max_time = opts[:max_time]
+      @max_time = (opts[:max_time]).to_i if opts[:max_time]
     end
 
     def start

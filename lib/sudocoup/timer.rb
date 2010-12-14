@@ -40,9 +40,9 @@ module Sudocoup
       @total_time = 0
     end
 
-    def max_time
-      120 # TODO add as option to app
-    end
+    # def max_time
+    #   120 # TODO add as option to app
+    # end
 
   end
 end

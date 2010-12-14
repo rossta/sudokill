@@ -20,7 +20,7 @@ module Sudocoup
 
       @game     = Game.new(:size => @opts[:size], :config => @opts[:config])
       @queue    = []
-      @max_time = opts[:max_time] || 120
+      @max_time = opts[:max_time]
     end
 
     def start
@@ -33,7 +33,7 @@ module Sudocoup
         EventMachine::start_server @host, @port, Client::Socket, :app => self do |player|
           new_player player
         end
-
+        
         EventMachine.add_periodic_timer(0.25) {
           if @game.in_progress?
             if !time_left?(@game.current_player)
@@ -209,6 +209,7 @@ module Sudocoup
     end
 
     def time_left?(player)
+      return true if max_time.nil?
       player.current_time <= max_time
     end
 

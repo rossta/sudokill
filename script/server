@@ -26,5 +26,6 @@ Sudocoup::Server.start(
   :port => port, 
   :ws_port => ws_port,
   :config => Sudocoup::CONFIG_2,
-  :size => 2
+  :size => 2,
+  :max_time => false
 )

@@ -123,6 +123,10 @@ describe Sudocoup::Server do
       player = mock_player(:current_time => 121)
       subject.time_left?(player).should be_false
     end
+    it "should return true if no max time" do
+      subject.max_time = nil
+      subject.time_left?(mock_player(:current_time => 121)).should be_true
+    end
   end
 
   describe "game_states" do

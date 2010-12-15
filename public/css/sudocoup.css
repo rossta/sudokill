@@ -89,6 +89,9 @@ form.game_board input { display:none;}
   width: 48px;
 }
 
+form.messager { position:relative;}
+form.messager select { position:absolute; top: 40px; left:0;}
+
 /* score board */
 #score_board { margin:2em auto 1em; }
 #score_board .header { color:#AAA; padding: 5px;}

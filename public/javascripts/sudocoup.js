@@ -207,7 +207,7 @@ Sudocoup = (function() {
           transparent = self.transparent,
           none    = self.none,
           black   = self.black;
-          
+
       _(self.backgroundSquares).each(function(row, k) {
         var valText;
         _(row).each(function(sq, l) {
@@ -434,18 +434,28 @@ Sudocoup = (function() {
 
   Messager = Base.extend({
     constructor: function(selector) {
-      var self = this;
+      var self = this, opponentSelect;
       self.$selector  = $(selector);
       self.$msg       = $("<div />");
       self.$pane      = $("<div />");
-      self.$form      = $("<form></form>");
+      self.$form      = $("<form class='messager'></form>");
       self.$input     = $("<input type='text' name='message' placeholder='Say anything...' />");
+      opponentSelect  = "<select name='opponent'>";
+      opponentSelect += "<option value=''>Choose an Opponent</option>";
+      opponentSelect += "<option value='OPPONENT|Easy'>Vincent - Easy</option>";
+      opponentSelect += "<option value='OPPONENT|Medium'>Vincent - Medium</option>";
+      opponentSelect += "<option value='OPPONENT|Hard'>Vincent - Hard</option>";
+      opponentSelect += "<option value='OPPONENT|Simon'>Simon - Main</option>";
+      opponentSelect += "</select>";
+
+      self.$select     = $(opponentSelect);
 
       self.$msg.attr("id", "msg").appendTo(selector);
       self.$pane.addClass("pane").appendTo(self.$msg);
 
       self.$form.appendTo(self.$msg);
       self.$input.attr("id", "msg_field").appendTo(self.$form);
+      self.$select.appendTo(self.$form);
 
       self.$form.submit(function() {
         var $this   = $(this),
@@ -453,6 +463,11 @@ Sudocoup = (function() {
 
         self.send(message);
         self.$input.val("");
+        return false;
+      });
+      self.$select.change(function() {
+        var val = $(this).val();
+        if (val != "" || val != null) self.send(val);
         return false;
       });
     },

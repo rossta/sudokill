@@ -55,6 +55,8 @@ public class Sudokill_Easy {
 	        }
 	        else if (fromServer.equals("READY"))
 	        	System.out.println("Server is ready");
+	        else if (fromServer.equals("WAIT"))
+	        	System.out.println("Waiting in queue");
 	        else
 	        	updateLastMove(fromServer);
 	    }
@@ -155,6 +157,8 @@ public class Sudokill_Easy {
 
 	public static Move findMove(State state) {
 		ArrayList<Move> temporary = findValidMoves(state);
+		if(temporary.isEmpty())
+			return new Move(0,0,0);
 		int index = (int)(Math.random()*temporary.size());
 		Move temp = temporary.get(index);
 		System.out.println(temporary.size());

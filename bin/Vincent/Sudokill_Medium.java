@@ -58,6 +58,8 @@ public class Sudokill_Medium {
 	        }
 	        else if (fromServer.equals("READY"))
 	        	System.out.println("Server is ready");
+	        else if (fromServer.equals("WAIT"))
+	        	System.out.println("Waiting in queue");
 	        else
 	        	updateLastMove(fromServer);
 	    }

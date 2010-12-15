@@ -159,7 +159,6 @@ module Sudocoup
         broadcast "#{player.name} left the game", SUDOKOUP
       elsif @queue.delete(player)
         broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
-      else
       end
       broadcast player_json
       broadcast queue_json
@@ -238,13 +237,15 @@ module Sudocoup
       when :naive
         EM.connect(@host, @port, Player::Naive, :name => name)
       when :easy, :medium, :hard
-        fork do
+        pid = fork do
           system("cd bin/Vincent/; java Sudokill_#{name} #{host_name(@host)} #{@port} #{name}#{id}")
         end
+        Process.detach pid
       when :simon
-        fork do
+        pid = fork do
           system("cd bin/Simon/; java Main")
         end
+        Process.detach pid
       else
         visitor.send("Didn't recognize opponent, #{name}")
       end

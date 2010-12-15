@@ -60,7 +60,7 @@ module Sudocoup
       end
 
       def close
-        send("Server disconnected", SUDOKOUP)
+        send("Server disconnected")
       end
 
       def unbind

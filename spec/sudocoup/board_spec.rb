@@ -17,6 +17,24 @@ describe Sudocoup::Board do
 TXT
   end
 
+  describe "self.from_file" do
+    it "should enter values from rows in text file" do
+      board = Sudocoup::Board.from_file("data/1.sud")
+      (0..8).each do |row_i|
+        (0..8).each do |col_i|
+          (1..9).should include(board[row_i][col_i])
+        end
+      end
+    end
+    it "should replace nums with zeros based on percent fill" do
+      board = Sudocoup::Board.from_file("data/1.sud", 0.25) # fill only 25% of the board
+      values = board.rows.flatten
+      expected_size = (values.size * 0.25).ceil
+      values.delete(0)
+      values.size.should == expected_size
+    end
+  end
+
   describe "build_from_string" do
 
     it "should load CONFIG_1 rows" do
@@ -28,7 +46,6 @@ TXT
           board[i][j].should == value.to_i
         end
       end
-
     end
 
   end
@@ -155,7 +172,7 @@ MSG
         # 1 0 0 0 9 0 0 0 0
         # 0 0 0 7 0 5 9 0 0
         # 5 3 9 0 0 0 8 0 2
-        
+
         # Finish
         # 7 6 5 1 3 8 2 9 4
         # 4 9 1 2 7 6 5 8 3
@@ -170,7 +187,7 @@ MSG
         # Start
         # row 1: 0 0 1 2 0 6 0 0 0
         # col 1: 0 0 0 0 0 2 0 0 3
-        
+
         it "should return true" do
           # fill in row 1 except col 1
           @board[1][0] = 4
@@ -186,10 +203,10 @@ MSG
           @board.add_move(4, 1, 5).should be_true
           @board.add_move(6, 1, 7).should be_true
           @board.add_move(7, 1, 4).should be_true
-          
+
           # fill in final spot in row 1 col 1
           @board.add_move(1, 1, 9).should be_true
-          
+
           # new col and row move
           @board.add_move(2, 2, 3).should be_true
           @board.error.should be_nil
@@ -277,7 +294,7 @@ MSG
       end
     end
   end
-  
+
   describe "columns" do
     it "should map rows to columns" do
       board = Sudocoup::Board.new
@@ -292,7 +309,7 @@ MSG
         [6, 4, 8, 7, 2, 5, 9, 3, 1],
         [5, 3, 9, 6, 1, 4, 8, 7, 2]
       ]
-      
+
       board.columns.should == [[7, 4, 2, 9, 8, 3, 1, 6, 5], [6, 9, 8, 1, 5, 2, 7, 4, 3], [5, 1, 3, 4, 7, 6, 2, 8, 9], [1, 2, 4, 5, 3, 9, 8, 7, 6], [3, 7, 5, 8, 6, 4, 9, 2, 1], [8, 6, 9, 7, 2, 1, 3, 5, 4], [2, 5, 6, 3, 1, 7, 4, 9, 8], [9, 8, 1, 2, 4, 5, 6, 3, 7], [4, 3, 7, 6, 9, 8, 5, 1, 2]]
     end
   end

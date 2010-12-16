@@ -6,13 +6,34 @@ module Sudocoup
 
     attr_accessor :rows, :error
 
+    def self.from_file(file_name, percent_fill = nil)
+      data = File.open(file_name, "r").readlines.join.chomp
+      board = new.build_from_string(data)
+      if percent_fill
+        values      = board.rows.flatten
+        zero_count  = values.size - (values.size * percent_fill)
+        zero_count.to_i.times do
+          row_i = rand(9)
+          col_i = rand(9)
+          val   = board[row_i][col_i]
+          while val.zero?
+            row_i = rand(9)
+            col_i = rand(9)
+            val   = board[row_i][col_i]
+          end
+          board[row_i][col_i] = 0
+        end
+      end
+      board
+    end
+
     def initialize
       @moves = []
     end
 
     def build_from_string(string = CONFIG_1)
       @rows = string.split("\n").map(&:split).map { |row| row.map!(&:to_i) }
-      @rows
+      self
     end
     alias_method :build, :build_from_string
 

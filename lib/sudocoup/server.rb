@@ -232,23 +232,27 @@ module Sudocoup
     end
 
     def connect_opponent(name, visitor)
-      id = rand(100)
+      player_name = "#{name}#{rand(100)}"
       case name.downcase.to_sym
       when :naive
         EM.connect(@host, @port, Player::Naive, :name => name)
       when :easy, :medium, :hard
         pid = fork do
-          system("cd bin/Vincent/; java Sudokill_#{name} #{host_name(@host)} #{@port} #{name}#{id}")
+          system("cd bin/Vincent/; java Sudokill_#{name} #{host_name(@host)} #{@port} #{player_name}")
         end
-        Process.detach pid
+      when :angjoo
+        pid = fork do
+          system("cd bin/Angjoo/; java -jar angjooPlayer.jar #{host_name(@host)} #{@port} #{player_name}")
+        end
       when :simon
         pid = fork do
           system("cd bin/Simon/; java Main")
         end
-        Process.detach pid
       else
         visitor.send("Didn't recognize opponent, #{name}")
       end
+      Process.detach pid unless pid.nil?
+      pid
     end
 
     def board_json

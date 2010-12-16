@@ -445,7 +445,8 @@ Sudocoup = (function() {
       opponentSelect += "<option value='OPPONENT|Easy'>Vincent - Easy</option>";
       opponentSelect += "<option value='OPPONENT|Medium'>Vincent - Medium</option>";
       opponentSelect += "<option value='OPPONENT|Hard'>Vincent - Hard</option>";
-      opponentSelect += "<option value='OPPONENT|Simon'>Simon - Main</option>";
+      opponentSelect += "<option value='OPPONENT|Simon'>Simon</option>";
+      opponentSelect += "<option value='OPPONENT|Angjoo'>Angjoo</option>";
       opponentSelect += "</select>";
 
       self.$select     = $(opponentSelect);

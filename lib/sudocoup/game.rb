@@ -7,16 +7,15 @@ module Sudocoup
     attr_reader :players
 
     def initialize(opts = {})
-      @size   = opts[:size] || 2
-      @config = opts[:config] || CONFIG_1
+      @size = opts[:size] || 2
+      @file = opts[:file] || "data/1.sud"
       reset
     end
 
     def reset
       waiting!
       @players = []
-      @board = Board.new
-      @board.build(@config)
+      @board = Board.from_file(@file, 0.25)
       @moves = []
     end
 

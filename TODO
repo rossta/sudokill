@@ -3,22 +3,15 @@ declare winner,loser, num moves
 start new game with players from queue (specs)
 handle player disconnect during game (specs)
 handle leave queue (specs)
-when player quits, don't start new game if game hasn't started yet
 refactor reject/violation messaging
-broadcast game over json
 
 HUMAN PLAYER
-enter game queue as human
-handle JOIN, LEAVE and move messages from human player
 extract common socket/websocket player methods
 
 VIEW
-update interface state when game ends
-win logic
 graphic timers
-chrome
 display game over state
 
 BUGS
-stop/play button disappears on disconnect/reconnect
-moving and removing players then PLAY
+stop game needs to kill java processes
+board numbers sometimes get Raphael.color() black

@@ -22,9 +22,9 @@ if ENV['WEB']
 end
 
 Sudocoup::Server.start(
-  :host => host, 
-  :port => port, 
+  :host => host,
+  :port => port,
   :ws_port => ws_port,
-  :config => Sudocoup::CONFIG_2,
+  :file => "data/1.sud",
   :size => 2
 )

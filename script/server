@@ -5,9 +5,10 @@ $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
 require 'sudocoup'
 
-host    = ARGV.shift
-port    = ARGV.shift
-ws_port = ARGV.shift
+host      = ARGV.shift || '0.0.0.0'
+port      = ARGV.shift || 44444
+http_port = ARGV.shift || 45678
+ws_port   = ARGV.shift || 8080
 
 if ENV["LOG"]
   log = "log/sudocoup.log"
@@ -17,7 +18,7 @@ end
 
 if ENV['WEB']
   fork do
-    Sudocoup::WebServer.run!
+    Sudocoup::WebServer.run!(:bind => http_port, :ws_port => ws_port)
   end
 end
 

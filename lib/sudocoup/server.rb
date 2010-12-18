@@ -34,6 +34,11 @@ module Sudocoup
           new_player player
         end
 
+        EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => self,
+          :debug => @debug, :logging => true do |ws|
+            ws.onopen { ws.sid = @channel.subscribe { |msg| ws.send msg } }
+        end
+
         EventMachine.add_periodic_timer(0.25) {
           if @game.in_progress?
             if !time_left?(@game.current_player)
@@ -42,11 +47,6 @@ module Sudocoup
             broadcast(player_json) if players.any?
           end
         }
-
-        EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => self,
-          :debug => @debug, :logging => true do |ws|
-            ws.onopen { ws.sid = @channel.subscribe { |msg| ws.send msg } }
-        end
 
         log_server_started
       end

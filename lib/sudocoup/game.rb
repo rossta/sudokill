@@ -15,7 +15,7 @@ module Sudocoup
     def reset
       waiting!
       @players = []
-      @board = Board.from_file(@file, 0.25)
+      @board = Board.from_file(@file, 0.33)
       @moves = []
     end
 

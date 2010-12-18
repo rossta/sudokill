@@ -1,3 +1,4 @@
+require "erb"
 require 'sinatra/base'
 
 module Sudocoup
@@ -8,8 +9,12 @@ module Sudocoup
     set :public, Proc.new { File.join(root, "public") }
     set :server, %w[thin mongrel webrick]
 
+    # get  %r{/sudocoup|sudokill|/} do
+    #   return File.open("public/index.html")
+    # end
     get  %r{/sudocoup|sudokill|/} do
-      return File.open("public/index.html")
+      puts "WS port: #{settings.ws_port}"
+      erb :index
     end
 
   end

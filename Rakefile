@@ -20,6 +20,10 @@ namespace :sudocoup do
     end
   end
   task :web => "sudocoup:web:default"
+  
+  task :production do
+    system "LOG=1 WEB=1 script/server 0.0.0.0 44444 48080"
+  end
 end
 task :sudocoup => "sudocoup:game:default"
 

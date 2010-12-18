@@ -1,0 +1,13 @@
+--- 
+production: 
+  port: 
+    websocket: 48080
+    http: 45678
+    socket: 44444
+  host: 0.0.0.0
+development: 
+  port: 
+    websocket: 8080
+    http: 5678
+    socket: 4444
+  host: 0.0.0.0

@@ -1,0 +1,26 @@
+#! /usr/bin/env ruby
+
+require 'yaml'
+
+config = {
+  "development" => {
+    "host" => "0.0.0.0",
+    "port" => {
+      "socket" => 4444,
+      "websocket" => 8080,
+      "http" => 5678
+    }
+  },
+  "production" => {
+    "host" => "0.0.0.0",
+    "port" => {
+      "socket" => 44444,
+      "websocket" => 48080,
+      "http" => 45678
+    }
+  }
+}
+
+File.open( 'config/server.yml', 'w' ) do |out|
+   YAML.dump(config, out)
+end

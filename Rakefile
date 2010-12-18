@@ -2,29 +2,50 @@ require "rubygems"
 require "rake"
 
 namespace :sudocoup do
+  def start(script, env, opts = {})
+    require 'yaml'
+    config = YAML.load_file('config/server.yml')[env.to_s]
+    command = []
+    command << ["LOG=1"] if opts[:background]
+    command << ["WEB=1"] if opts[:web]
+    command << ["script/#{script.to_s}"]
+    command << config['host']
+    command << config['port']['socket']
+    command << config['port']['websocket']
+    command << config['port']['http'] if opts[:web]
+    command << '&' if opts[:background]
+    command.join(" ")
+  end
+
   namespace :game do
-    task :default do
-      system "script/server"
+    task :development do
+      system start(:server, :development)
     end
     task :production do
-      system "LOG=1 script/server 0.0.0.0 44444 48080 &"
+      system start(:server, :production, :background => true)
     end
   end
-  task :game => "sudocoup:game:default"
+  task :game => "sudocoup:game:development"
 
   namespace :web do
-    task :default do
-      system "script/web"
+    task :development do
+      system start(:web, :development)
     end
     task :production do
-      system "LOG=1 script/web 0.0.0.0 45678 48080 &"
+      system start(:web, :production, :background => true)
     end
   end
-  task :web => "sudocoup:web:default"
+  task :web => "sudocoup:web:development"
 
   task :production do
-    system "LOG=1 WEB=1 script/server 0.0.0.0 44444 48080 45678 &"
+    system start(:server, :production, :background => true, :web => true)
   end
+
+  task :stop do
+    system 'ps ax|grep "ruby script/web"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
+    system 'ps ax|grep "ruby script/server"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
+  end
+
 end
 
 begin

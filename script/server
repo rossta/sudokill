@@ -7,8 +7,8 @@ require 'sudocoup'
 
 host      = ARGV.shift || '0.0.0.0'
 port      = ARGV.shift || 44444
-http_port = ARGV.shift || 45678
 ws_port   = ARGV.shift || 8080
+http_port = ARGV.shift || 45678
 
 if ENV["LOG"]
   log = "log/sudocoup.log"
@@ -17,15 +17,12 @@ if ENV["LOG"]
 end
 
 if ENV['WEB']
-  fork do
-    Sudocoup::WebServer.run!(:bind => http_port, :ws_port => ws_port)
-  end
+  system "LOG=1 script/web #{host} #{http_port} #{ws_port} &"
 end
 
 Sudocoup::Server.start(
   :host => host,
   :port => port,
   :ws_port => ws_port,
-  :file => "data/1.sud",
   :size => 2
 )

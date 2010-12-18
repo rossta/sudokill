@@ -3,12 +3,12 @@ module Sudocoup
     include Sudocoup::StateMachine
     has_states :waiting, :ready, :in_progress, :over
 
-    attr_accessor :board, :moves, :size
+    attr_accessor :board, :moves, :size, :file
     attr_reader :players
 
     def initialize(opts = {})
       @size = opts[:size] || 2
-      @file = opts[:file] || "data/1.sud"
+      @file = opts[:file] || sudoku_file
       reset
     end
 
@@ -109,6 +109,12 @@ module Sudocoup
       "#{previous_player.name} WINS! #{player.name} ran out of time!"
     end
 
+    protected
+
+    def sudoku_file
+      files = Dir.glob("data/*.sud")
+      files[rand(files.size)]
+    end
   end
 
 end

@@ -2,15 +2,19 @@ require 'spec_helper'
 
 describe Sudocoup::Game do
   before(:each) do
+    Sudocoup::Board.stub!(:from_file)
     @game = Sudocoup::Game.new
   end
   describe "initialize" do
     it "should build a board" do
       board = mock(Sudocoup::Board)
-      Sudocoup::Board.should_receive(:new).and_return(board)
-      board.should_receive(:build)
+      Sudocoup::Board.should_receive(:from_file).with(@game.file, 0.33).and_return(board)
       game = Sudocoup::Game.new
       game.board.should == board
+    end
+    it "should pick a .sud file from the data directory" do
+      filenames = Dir.glob('data/*.sud')
+      filenames.should include(@game.file)
     end
   end
 
@@ -18,8 +22,7 @@ describe Sudocoup::Game do
     it "should rebuild board" do
       game = Sudocoup::Game.new
       board = mock(Sudocoup::Board)
-      Sudocoup::Board.should_receive(:new).and_return(board)
-      board.should_receive(:build)
+      Sudocoup::Board.should_receive(:from_file).and_return(board)
       game.reset
       game.board.should == board
     end

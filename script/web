@@ -6,10 +6,9 @@ $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 require "rubygems"
 require 'sudocoup/web_server'
 
-host    = ARGV.shift || '0.0.0.0'
-port    = ARGV.shift || 45678
-ws_port = ARGV.shift || 8080
-
+host      = ARGV.shift || '0.0.0.0'
+ws_port   = ARGV.shift || 8080
+http_port = ARGV.shift || 4567
 
 if ENV["LOG"]
   log = File.new("log/sinatra.log", "a+")
@@ -19,4 +18,4 @@ if ENV["LOG"]
 end
 
 # ruby lib/sudocoup/web_server.rb [-h] [-x] [-e production] [-o linserv1.cims.nyu.edu] [-p 45678] [-s HANDLER]
-Sudocoup::WebServer.run!(:bind => host, :port => port, :ws_port => ws_port)
+Sudocoup::WebServer.run!(:bind => host, :port => http_port, :ws_port => ws_port)

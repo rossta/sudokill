@@ -8,7 +8,7 @@ config = {
     "port" => {
       "socket" => 4444,
       "websocket" => 8080,
-      "http" => 5678
+      "http" => 4567
     }
   },
   "production" => {

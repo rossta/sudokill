@@ -6,9 +6,9 @@ $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 require 'sudocoup'
 
 host      = ARGV.shift || '0.0.0.0'
-port      = ARGV.shift || 44444
+port      = ARGV.shift || 4444
 ws_port   = ARGV.shift || 8080
-http_port = ARGV.shift || 45678
+http_port = ARGV.shift || 4567
 
 if ENV["LOG"]
   log = "log/sudocoup.log"

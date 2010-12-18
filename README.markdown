@@ -87,34 +87,35 @@ For best performance, use a browser that supports HTML5 websockets
 
 Optional command line parameters
 
-	$ ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
+	$ ruby script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT]
 	// default host: localhost
-	// default port: 44444
+	// default socket port: 4444
 	// default websocket port: 8080
 
-	$ ruby script/web [HOST] [PORT]
+	$ ruby script/web [HOST] [WEBSOCKET_PORT] [HTTP_PORT]
 	// default host: localhost
-	// default port: 45678
+	// default websocket port: 8080
+	// default http port: 4567
 
 	//or run both web and game server together with thin and enable WEB env:
-	$ WEB=1 ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
+	$ WEB=1 ruby script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT] [HTTP_PORT]
 	//bash
 
-	$ setenv WEB 1; ruby script/server [HOST] [PORT] [WEBSOCKET_PORT]
+	$ setenv WEB 1; ruby script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT] [HTTP_PORT]
 	//tcsh
 
-	$ ruby script/play NAME [HOST] [PORT]
+	$ ruby script/play NAME [HOST] [SOCKET_PORT]
 
 ### At NYU ###
 
-The game server is currently available on linserv1.cims.nyu.edu, port 44444.
+The game server is currently available on linserv1.cims.nyu.edu, socket port 44444
 
 	$ ruby script/play NAME linserv1.cims.nyu.edu 44444
 
 To view, visit the [Sudocoup game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:
 
 	host: linserv1.cims.nyu.edu
-	port: 48080
+	websocket port: 48080
 
 ## Server Protocol ##
 

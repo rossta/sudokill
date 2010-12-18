@@ -8,6 +8,6 @@ production:
 development: 
   port: 
     websocket: 8080
-    http: 5678
+    http: 4567
     socket: 4444
   host: 0.0.0.0

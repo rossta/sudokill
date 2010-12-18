@@ -10,7 +10,7 @@ namespace :sudocoup do
     command << ["WEB=1"] if opts[:web]
     command << ["script/#{script.to_s}"]
     command << config['host']
-    command << config['port']['socket']
+    command << config['port']['socket'] unless opts[:web] == :only
     command << config['port']['websocket']
     command << config['port']['http'] if opts[:web]
     command << '&' if opts[:background]
@@ -29,16 +29,19 @@ namespace :sudocoup do
 
   namespace :web do
     task :development do
-      system start(:web, :development)
+      system start(:web, :development, :web => :only, :background => true)
     end
     task :production do
-      system start(:web, :production, :background => true)
+      system start(:web, :production, :background => true, :web => :only)
     end
   end
   task :web => "sudocoup:web:development"
 
+  task :development => "sudocoup:game:development"
+
   task :production do
-    system start(:server, :production, :background => true, :web => true)
+    Rake::Task["sudocoup:game:production"].execute
+    Rake::Task["sudocoup:web:production"].execute
   end
 
   task :stop do
@@ -47,6 +50,7 @@ namespace :sudocoup do
   end
 
 end
+task :sudocoup => "sudocoup:development"
 
 begin
   require 'jasmine'

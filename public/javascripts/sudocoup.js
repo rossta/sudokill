@@ -236,17 +236,19 @@ Sudocoup = (function() {
       return rtext;
     },
     create: function(values) {
-      var self = this;
+      var self = this, start = 0.01, bcolor;
       for(var i=0;i<values.length;i++) {
         var row = values[i];
         for(var j=0;j<row.length;j++) {
-          var value = row[j];
-          var square = self.numberSquares[i][j];
+          var value = row[j],
+              square = self.numberSquares[i][j],
+              bcolor = "hsb(" + start + ", 1, 1)";
           if (value > 0) {
-            square.attr({text:value});
+            square.attr({text:value, fill:bcolor});
           } else {
             square.attr({text:" "});
           }
+          start += 0.01;
         }
       }
       self.squares.animate({fill:Raphael.getColor()}, 300, function() {
@@ -270,7 +272,6 @@ Sudocoup = (function() {
           gDim = 3 * dim,
           start = 0.01,
           strokeColor = 'green',
-          color = "hsb(" + start + ", 1, .5)",
           bcolor = "hsb(" + start + ", 1, 1)",
           group, square, text, x, y, cx, cy, path;
 

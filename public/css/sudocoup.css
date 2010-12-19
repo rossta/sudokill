@@ -41,7 +41,7 @@ input {font-family: Georgia, Times, serif;}
 }
 #msg.visible { display:table; }
 #msg p { margin: 0 0 1em;}
-#msg input { border:1px solid #999; padding:5px;width:80%;}
+#msg input.message { border:1px solid #999; padding:5px;width:80%;}
 
 form.websocket { text-align:center; }
 form.websocket input.name { font-size:1.5em; }
@@ -90,7 +90,7 @@ form.game_board input { display:none;}
 }
 
 form.messager { position:relative;}
-form.messager select { position:absolute; top: 40px; left:0;}
+form.messager div.game_options { position:absolute; top: 40px; left:0;}
 
 /* score board */
 #score_board { margin:2em auto 1em; }

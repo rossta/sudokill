@@ -440,7 +440,7 @@ Sudocoup = (function() {
       self.$msg       = $("<div />");
       self.$pane      = $("<div />");
       self.$form      = $("<form class='messager'></form>");
-      self.$input     = $("<input type='text' name='message' placeholder='Say anything...' />");
+      self.$input     = $("<input type='text' name='message' class='message' placeholder='Say anything...' />");
       opponentSelect  = "<select name='opponent'>";
       opponentSelect += "<option value=''>Choose an Opponent</option>";
       opponentSelect += "<option value='OPPONENT|Easy'>Vincent - Easy</option>";
@@ -457,21 +457,65 @@ Sudocoup = (function() {
 
       self.$form.appendTo(self.$msg);
       self.$input.attr("id", "msg_field").appendTo(self.$form);
-      self.$select.appendTo(self.$form);
+
+      var $gameOptions = $("<div />");
+      $gameOptions.addClass("game_options");
+      self.$form.append($gameOptions);
+      
+      $gameOptions.append(self.$select);
+      if (Settings.humans) $gameOptions.append("<input type='button' name='join' value='Join game' class='join' />");
+      $gameOptions.append("<input type='button' name='play' value='Play' class='play' />");
 
       self.$form.submit(function() {
-        var $this   = $(this),
-            message = self.$input.val();
+          var $this   = $(this),
+              message = self.$input.val();
 
-        self.send(message);
-        self.$input.val("");
-        return false;
+          self.send(message);
+          self.$input.val("");
+          return false;
+        }).
+        delegate("select[name=opponent]", "change", function() {
+          var val = $(this).val();
+          if (val != "" || val != null) {
+            self.send(val);
+            $(this).val(null);
+          }
+          return false;
+        }).
+        delegate("input.play", "click", function(){
+          self.send("PLAY");
+          self.showStopButton();
+          return false;
+        }).
+        delegate("input.stop", "click", function(){
+          self.send("STOP");
+          self.showPlayButton();
+          return false;
+        }).
+        delegate("input.join", "click", function(){
+          self.send("JOIN");
+          self.showLeaveButton();
+          return false;
+        }).
+        delegate("input.leave", "click", function(){
+          self.send("LEAVE");
+          self.showJoinButton();
+          return false;
+        })
+        ;
+
+      // TODO call game.listen instead
+      $("#sudocoup").bind("game_state", function(e, state) {
+        switch (state) {
+          case "in_progress":
+            self.showStopButton();
+            break;
+          default:
+            self.showPlayButton();
+            break;
+        }
       });
-      self.$select.change(function() {
-        var val = $(this).val();
-        if (val != "" || val != null) self.send(val);
-        return false;
-      });
+
     },
 
     print: function() {
@@ -492,6 +536,21 @@ Sudocoup = (function() {
 
     show: function() {
       this.$msg.addClass("visible");
+    },
+
+    showStopButton: function() {
+      return this.$form.find("input.play").removeClass("play").addClass("stop").val("Stop");
+    },
+
+    showPlayButton: function() {
+      return this.$form.find("input.stop").removeClass("stop").addClass("play").val("Play");
+    },
+
+    showLeaveButton: function() {
+      return this.$form.find("input.join").removeClass("join").addClass("leave").val("Leave game");
+    },
+    showJoinButton: function() {
+      return this.$form.find("input.leave").removeClass("leave").addClass("join").val("Join game");
     }
 
   }),
@@ -521,8 +580,6 @@ Sudocoup = (function() {
         bind("connected", function(){
           $(this).find("input.submit").attr("value", "Disconnect");
           self.$connectForm.removeClass("welcome").addClass("connected");
-          if (!Settings.humans) { self.$connectForm.find("input.join").hide();}
-          else { self.showJoinButton(); }
           self.status("Connected");
         }).
         bind("disconnected", function() {
@@ -534,26 +591,6 @@ Sudocoup = (function() {
           self.close();
           return false;
         }).
-        delegate("input.play", "click", function(){
-          self.send("PLAY");
-          self.showStopButton();
-          return false;
-        }).
-        delegate("input.stop", "click", function(){
-          self.send("STOP");
-          self.showPlayButton();
-          return false;
-        }).
-        delegate("input.join", "click", function(){
-          self.send("JOIN");
-          self.showLeaveButton();
-          return false;
-        }).
-        delegate("input.leave", "click", function(){
-          self.send("LEAVE");
-          self.showJoinButton();
-          return false;
-        }).
         delegate("a.toggle", "click", function() {
           var text = $(this).text();
           text = text == "Options" ? "Hide" : "Options";
@@ -561,17 +598,6 @@ Sudocoup = (function() {
           $(this).parents("form").find(".optional").toggle();
           return false;
         });
-
-      self.game.listen("game_state", function(e, state) {
-        switch (state) {
-          case "in_progress":
-            self.showStopButton();
-            break;
-          default:
-            self.showPlayButton();
-            break;
-        }
-      });
     },
     showLeaveButton: function() {
       return this.$connectForm.find("input.join").removeClass("join").addClass("leave").val("Leave game");
@@ -677,8 +703,6 @@ Sudocoup = (function() {
         $opts.append("<label for='s_port' class='port'>Port</label>");
         $opts.append("<input id='s_port' type='text' name='port' class='port' />");
 
-    $connectForm.append("<input type='button' name='join' value='Join game' class='join' />");
-    $connectForm.append("<input type='button' name='play' value='Play' class='play' />");
     $connectForm.append("<input type='submit' name='connection' value='Connect' class='submit' />");
     return $connectForm;
   },

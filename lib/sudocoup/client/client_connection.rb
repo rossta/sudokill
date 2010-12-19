@@ -20,7 +20,7 @@ module Sudocoup
 
       def unbind
         super
-        @app.remove_player(self)
+        @app.call :remove_player, :player => self
       end
 
       def enter_game(number)

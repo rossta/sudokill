@@ -37,7 +37,7 @@ TXT
 
   describe "build_from_string" do
 
-    it "should load CONFIG_1 rows" do
+    it "should load rows" do
       board = Sudocoup::Board.new
       board.build_from_string(@rows)
       values = @rows.split("\n").map(&:split)
@@ -76,13 +76,19 @@ MSG
         rows = @board.to_msg.split(@pipe).map { |row| row.split(" ").map(&:to_i) }
         rows.first.should == [7, 0, 5, 0, 0, 0, 2, 9, 4]
       end
+      it "should be a 9 row list of 9 pipe-delimited number strings" do
+        rows = @board.to_msg.split(@pipe)
+        9.times do
+          rows.shift.should =~ /^\d \d \d \d \d \d \d \d \d$/
+        end
+      end
     end
   end
 
   describe "add_move" do
     before(:each) do
       @board = Sudocoup::Board.new
-      @board.build
+      @board.build(@rows)
     end
     describe "first move, space unoccupied" do
       it "should return true" do
@@ -280,7 +286,7 @@ MSG
   describe "available?" do
     before(:each) do
       @board = Sudocoup::Board.new
-      @board.build
+      @board.build(@rows)
     end
     describe "valid value" do
       it "should return true if no previous value" do

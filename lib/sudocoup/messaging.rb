@@ -1,4 +1,23 @@
 module Sudocoup
+
+  class MessagePipe
+    def self.format(chunks)
+      chunks.join(PIPE)
+    end
+    def self.start(player, game)
+      format ["START", player.number, game.size, game.board.to_msg]
+    end
+    def self.reject(reason)
+      format ["REJECT", reason]
+    end
+    def self.game_over(reason)
+      format ["GAME OVER", reason]
+    end
+    def self.add_move(game)
+      format ["ADD", game.board.to_msg]
+    end
+  end
+  
   class MessageJSON
     def self.to_json(*args)
       new(*args).to_json

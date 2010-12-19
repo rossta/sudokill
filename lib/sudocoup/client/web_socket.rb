@@ -22,23 +22,23 @@ module Sudocoup
           when /NEW CONNECTION/
             cmd, name = line.split(PIPE)
             @name = name
-            @app.new_visitor(self)
+            @app.call :new_visitor, :visitor => self
           when /PLAY/
-            @app.play_game.succeed
+            @app.call :play_game
           when /STOP/
-            @app.stop_game.succeed
+            @app.call :stop_game
           when /JOIN/
-            @app.new_player(self)
-            @app.announce_player(self)
+            @app.call :new_player, :player => self
+            @app.call :announce_player, :player => self
           when /LEAVE/
-            @app.remove_player(self)
+            @app.call :remove_player, :player => self
           when /OPPONENT\|/
             cmd, name = line.split(PIPE)
-            @app.connect_opponent(name, self)
+            @app.call :connect_opponent, :name => name, :visitor => self
           when /MOVE\|\d \d \d/
             if has_turn?
               cmd, move = line.split(PIPE)
-              @app.request_add_move.succeed(self, move)
+              @app.call :request_add_move, :player => self, :move => move
             end
           else
             @app.broadcast line, name
@@ -65,7 +65,7 @@ module Sudocoup
 
       def unbind
         super
-        @app.remove_visitor(self)
+        @app.call :remove_visitor, :visitor => self
       end
 
       protected

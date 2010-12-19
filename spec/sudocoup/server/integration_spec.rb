@@ -10,9 +10,11 @@ describe Sudocoup::Server do
       EM.run {
         server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345)
         server.start
+        controller = server.controller
+
         socket = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket.onopen = lambda {
-          server.players.size.should == 1
+          controller.players.size.should == 1
           socket.data.last.chomp.should == "READY"
           EM.stop
         }
@@ -22,12 +24,14 @@ describe Sudocoup::Server do
       EM.run {
         server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345)
         server.start
+        controller = server.controller
+
         socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_3 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_3.onopen = lambda {
-          server.players.size.should == 2
-          server.queue.size.should == 1
+          controller.players.size.should == 2
+          controller.queue.size.should == 1
           socket_3.data.last.chomp.should == "WAIT"
           EM.stop
         }
@@ -41,7 +45,7 @@ describe Sudocoup::Server do
         server.start
         EventMachine.add_timer(0.1) {
           http = EventMachine::HttpRequest.new('ws://127.0.0.1:56789/').get :timeout => 0
-          http.callback { server.play_game.succeed }
+          http.callback { server.trigger :play_game }
 
           http.stream { |msg|
             json = JSON.parse(msg)
@@ -65,7 +69,7 @@ describe Sudocoup::Server do
         # Websocket client
         EventMachine.add_timer(0.1) {
           http = EventMachine::HttpRequest.new('ws://127.0.0.1:56789/').get :timeout => 0
-          http.callback { server.play_game.succeed }
+          http.callback { server.trigger :play_game }
 
           http.stream { |msg|
             json = JSON.parse(msg)
@@ -77,11 +81,11 @@ describe Sudocoup::Server do
                 (0..9).should include(val)
               end
             end
-            http.stream { |msg| 
+            http.stream { |msg|
               json = JSON.parse(msg)
               json['action'].should == "STATUS"
               json['message'].should == "New game about to begin!"
-              http.stream { |msg| 
+              http.stream { |msg|
                 json = JSON.parse(msg)
                 json['action'].should == "STATUS"
                 json['message'].should == "Client's turn!"
@@ -102,7 +106,7 @@ describe Sudocoup::Server do
         socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
 
         socket_2.onopen = lambda {
-          server.play_game.succeed
+          server.trigger :play_game
         }
         socket_1.onmessage = lambda { |msg|
           first = msg.split("\r\n").first.split(@pipe)
@@ -134,7 +138,7 @@ describe Sudocoup::Server do
         socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
 
         socket_2.onopen = lambda {
-          server.play_game.succeed
+          server.trigger :play_game
         }
         socket_1.onmessage = lambda { |msg|
           message = msg.split("\r\n")[1].split(@pipe)
@@ -149,18 +153,23 @@ describe Sudocoup::Server do
   end
   describe "request_add_move" do
     describe "status: ok" do
+      before(:each) do
+        board = Sudocoup::Board.new.build(Sudocoup::CONFIG_1)
+        Sudocoup::Board.stub!(:from_file).and_return(board)
+      end
       it "should add move to board" do
         EM.run {
           server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
           server.start
+          controller = server.controller
 
           # Two players join game
           socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
           socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
 
           socket_2.onopen = lambda {
-            server.play_game.succeed
-            server.request_add_move.succeed(server.game.players.first, "0 1 6")
+            server.trigger :play_game
+            server.trigger :request_add_move, :player => controller.players.first, :move => "0 1 6"
           }
           socket_2.onmessage = lambda { |msg|
             # first: START..., second: 0 1 6 (move), third: ADD...
@@ -179,6 +188,7 @@ describe Sudocoup::Server do
         EM.run {
           server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
           server.start
+          controller = server.controller
 
           # Two players join game
           socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
@@ -188,8 +198,8 @@ describe Sudocoup::Server do
           EventMachine.add_timer(0.1) {
             http = EventMachine::HttpRequest.new('ws://127.0.0.1:56789/').get :timeout => 0
             http.callback {
-              server.play_game.succeed
-              server.request_add_move.succeed(server.game.players.first, "0 1 6")
+              server.trigger :play_game
+              server.trigger :request_add_move, :player => controller.players.first, :move => "0 1 6"
             }
 
             http.stream { |msg|
@@ -213,14 +223,15 @@ describe Sudocoup::Server do
       EM.run {
         server = Sudocoup::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789, :max_time => 120)
         server.start
+        controller = server.controller
 
         # Two players join game
         socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
 
         socket_2.onopen = lambda {
-          server.players.first.total_time = 121
-          server.play_game.succeed
+          controller.players.first.total_time = 121
+          server.trigger :play_game
           sleep 1.1
         }
         socket_1.onmessage = lambda { |msg|

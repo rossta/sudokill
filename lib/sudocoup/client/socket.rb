@@ -27,11 +27,11 @@ module Sudocoup
           when :send
             send response
           when :new_connection
-            @app.announce_player(self)
+            @app.call :announce_player, :player => self
           when :move
-            @app.request_add_move.succeed(self, response)
+            @app.call :request_add_move, :player => self, :move => response
           when :play
-            @app.play_game.succeed
+            @app.call :play_game
             @app.broadcast response
           when :close
             send response
@@ -55,6 +55,10 @@ module Sudocoup
       
       def logger_name
         "SK[#{name}]"
+      end
+      
+      def time_left?(max_time = nil)
+        max_time.nil? || current_time <= max_time
       end
 
       protected

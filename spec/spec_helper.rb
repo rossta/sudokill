@@ -111,6 +111,7 @@ def mock_player(attrs = {})
     :reset => nil,
     :send_command =>nil,
     :send => nil,
+    :time_left? => true,
     :to_json => %Q|{"number":1}|
   }.merge(attrs))
 end

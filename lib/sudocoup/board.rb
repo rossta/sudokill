@@ -31,7 +31,7 @@ module Sudocoup
       @moves = []
     end
 
-    def build_from_string(string = CONFIG_1)
+    def build_from_string(string)
       @rows = string.split("\n").map(&:split).map { |row| row.map!(&:to_i) }
       self
     end

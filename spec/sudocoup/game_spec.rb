@@ -8,7 +8,7 @@ describe Sudocoup::Game do
   describe "initialize" do
     it "should build a board" do
       board = mock(Sudocoup::Board)
-      Sudocoup::Board.should_receive(:from_file).with(@game.file, 0.33).and_return(board)
+      Sudocoup::Board.should_receive(:from_file).and_return(board)
       game = Sudocoup::Game.new
       game.board.should == board
     end

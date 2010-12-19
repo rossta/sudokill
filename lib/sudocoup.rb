@@ -8,7 +8,7 @@ require "addressable/uri"
 require "em-websocket"
 
 
-%w[ state_machine timer server board move dispatch logger game web_server message_json ].each { |file| require "sudocoup/#{file}" }
+%w[ state_machine timer server controller board move dispatch logger game web_server messaging ].each { |file| require "sudocoup/#{file}" }
 
 %w[ client_connection socket web_socket ].each { |file| require "sudocoup/client/#{file}" }
 
@@ -42,4 +42,5 @@ end
 def log(message, name = "Server")
   Sudocoup::Logger.log "%-10s>> #{message}" % name
 end
+
 

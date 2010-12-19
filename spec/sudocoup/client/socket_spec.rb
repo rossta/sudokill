@@ -6,9 +6,7 @@ describe Sudocoup::Client::Socket do
     @dispatch = mock(Sudocoup::Dispatch, :name => "Rossta")
     Sudocoup::Dispatch.stub!(:new).and_return(@dispatch)
     @player = Sudocoup::Client::Socket.new({})
-    @app    = mock(Sudocoup::Server,
-      :remove_player => nil
-    )
+    @app    = mock(Sudocoup::Controller)
     @player.app = @app
   end
   
@@ -155,8 +153,32 @@ describe Sudocoup::Client::Socket do
 
   describe "unbind" do
     it "should remove player from app" do
-      @app.should_receive(:remove_player).with(@player)
+      @app.should_receive(:call).with(:remove_player, :player => @player)
       @player.unbind
+    end
+  end
+  
+  describe "time_left?" do
+    before(:each) do
+      @max_time = 120
+    end
+    it "should return true if player time is less than max time" do
+      @player.total_time = 60
+      @player.time_left?(@max_time).should be_true
+    end
+
+    it "should return true if player time is equal to max time" do
+      @player.total_time = 120
+      @player.time_left?(@max_time).should be_true
+    end
+
+    it "should return false if player time is more than max time" do
+      @player.total_time = 121
+      @player.time_left?(@max_time).should be_false
+    end
+    it "should return true if no max time" do
+      @player.total_time = 121
+      @player.time_left?.should be_true
     end
   end
 

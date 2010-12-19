@@ -9,6 +9,14 @@ module Sudocoup
       @max_time = (opts[:max_time]).to_i if opts[:max_time]
     end
 
+    def host
+      @opts[:host]
+    end
+    
+    def port
+      @opts[:port]
+    end
+
     def players
       @game.players
     end
@@ -87,7 +95,7 @@ module Sudocoup
           SRC
         end
       end
-      delegate_to_controller :game, :broadcast, :queue, :players, :max_time, :send_players, :call
+      delegate_to_controller :game, :broadcast, :queue, :players, :max_time, :send_players, :host, :port, :call
 
       def defer(&block)
         deferable = EM::DefaultDeferrable.new
@@ -120,7 +128,7 @@ module Sudocoup
         visitor.send StatusJSON.to_json(game.sudocoup_state, "Welcome to Sudocoup, #{visitor.name}")
         visitor.send BoardJSON.to_json(game.board)
         visitor.send PlayerJSON.to_json(players, max_time)
-        visitor.send QueueJSON.to_json(players)
+        visitor.send QueueJSON.to_json(queue)
         msg = "#{visitor.name} just joined the game room"
         broadcast msg, SUDOKOUP
         log msg, SUDOKOUP
@@ -162,7 +170,7 @@ module Sudocoup
           broadcast("#{player.name} left the On Deck circle", SUDOKOUP)
         end
         broadcast PlayerJSON.to_json(players, max_time)
-        broadcast QueueJSON.to_json(players)
+        broadcast QueueJSON.to_json(queue)
         log "#{player.name} disconnected", SUDOKOUP
       end
     end
@@ -175,7 +183,7 @@ module Sudocoup
           broadcast("#{player.name} is now waiting On Deck", SUDOKOUP)
         end
         broadcast PlayerJSON.to_json(players, max_time)
-        broadcast QueueJSON.to_json(players)
+        broadcast QueueJSON.to_json(queue)
       end
     end
 
@@ -255,9 +263,14 @@ module Sudocoup
     end
 
     class PlayGameCommand < Command
+      def board_density
+        @density || 0.33
+      end
+
       def call
         defer do
           if game.players.any? && game.ready?
+            game.rebuild board_density
             broadcast BoardJSON.to_json(game.board)
             broadcast StatusJSON.to_json(game.sudocoup_state, "New game about to begin!")
             game.play! do |player|
@@ -277,14 +290,14 @@ module Sudocoup
           player_name = "#{name}#{rand(100)}"
           case name.downcase.to_sym
           when :naive
-            EM.connect(@host, @port, Player::Naive, :name => name)
+            EM.connect(host, port, Player::Naive, :name => name)
           when :easy, :medium, :hard
             pid = fork do
-              system("cd bin/Vincent/; java Sudokill_#{name} #{host_name(@host)} #{@port} #{player_name}")
+              system("cd bin/Vincent/; java Sudokill_#{name} #{host} #{port} #{player_name}")
             end
           when :angjoo
             pid = fork do
-              system("cd bin/Angjoo/; java -jar angjooPlayer.jar #{host_name(@host)} #{@port} #{player_name}")
+              system("cd bin/Angjoo/; java -jar angjooPlayer.jar #{host} #{port} #{player_name}")
             end
           when :simon
             pid = fork do

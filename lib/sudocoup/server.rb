@@ -17,7 +17,7 @@ module Sudocoup
       @ws_port  = (opts.delete(:ws_port) || 8080).to_i
       @opts     = opts
 
-      @controller = Controller.new(opts)
+      @controller = Controller.new(opts.merge(:host => @host, :port => @port))
     end
 
     def start

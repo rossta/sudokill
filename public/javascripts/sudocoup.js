@@ -461,10 +461,11 @@ Sudocoup = (function() {
       var $gameOptions = $("<div />");
       $gameOptions.addClass("game_options");
       self.$form.append($gameOptions);
-      
+
       $gameOptions.append(self.$select);
       if (Settings.humans) $gameOptions.append("<input type='button' name='join' value='Join game' class='join' />");
       $gameOptions.append("<input type='button' name='play' value='Play' class='play' />");
+      $gameOptions.append("<div class='slider'><label for='density'>Density</label><input name='density' type='range' min='0' max='100' value='33' /><span class='density_val'></span><span>&#37;</span></div>");
 
       self.$form.submit(function() {
           var $this   = $(this),
@@ -483,7 +484,7 @@ Sudocoup = (function() {
           return false;
         }).
         delegate("input.play", "click", function(){
-          self.send("PLAY");
+          self.send("PLAY|" + self.$form.find("input[name=density]").val());
           self.showStopButton();
           return false;
         }).
@@ -501,6 +502,9 @@ Sudocoup = (function() {
           self.send("LEAVE");
           self.showJoinButton();
           return false;
+        }).
+        delegate("input[name=density]", "change", function() {
+          self.$form.find("span.density_val").text($(this).val());
         })
         ;
 
@@ -516,6 +520,7 @@ Sudocoup = (function() {
         }
       });
 
+      self.$form.find("input[name=density]").change();
     },
 
     print: function() {

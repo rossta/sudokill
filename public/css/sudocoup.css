@@ -91,6 +91,12 @@ form.game_board input { display:none;}
 
 form.messager { position:relative;}
 form.messager div.game_options { position:absolute; top: 40px; left:0;}
+div.slider { background-color: #e6e6e6;}
+div.slider label { color: black;
+  font-family:sans-serif;
+  font-size: 0.75em;
+  line-height: 1.25em;
+}
 
 /* score board */
 #score_board { margin:2em auto 1em; }

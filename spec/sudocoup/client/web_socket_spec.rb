@@ -32,8 +32,8 @@ describe Sudocoup::Client::WebSocket do
     end
     describe "PLAY" do
       it "should trigger play game callback" do
-        @app.should_receive(:call).with(:play_game)
-        @player.receive_data("PLAY\r\n")
+        @app.should_receive(:call).with(:play_game, { :density => 0.33 })
+        @player.receive_data("PLAY|33\r\n")
       end
     end
     describe "JOIN" do

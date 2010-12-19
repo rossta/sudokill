@@ -268,6 +268,27 @@ describe Sudocoup::Controller do
           @controller.call :new_game
         end
       end
+      
+      describe "play_game" do
+        class FakeDeferrable
+          def callback(&block)
+            @block = block
+          end
+          def succeed
+            @block.call
+          end
+        end
+        before(:each) do
+          Sudocoup::Controller::RequestNextPlayerMoveCommand.stub!(:new).and_return(mock(Sudocoup::Controller::Command, :call => nil))
+          EM::DefaultDeferrable.stub!(:new).and_return(FakeDeferrable.new)
+          @game.stub!(:ready? => true, :status => nil, :board => mock(Sudocoup::Board), 
+            :play! => true, :next_player_request => nil, :current_player => nil, :players => [mock_player])
+        end
+        it "should build game board with given density" do
+          @game.should_receive(:rebuild).with(0.50)
+          @controller.call :play_game, :density => 0.50
+        end
+      end
     end
     
   end

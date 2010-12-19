@@ -89,9 +89,9 @@ describe("Sudocoup.Messager", function() {
       });
     });
     describe("play", function() {
-      it("should send PLAY message when play button clicked", function() {
+      it("should send PLAY message with density when play button clicked", function() {
         $("input.play").click();
-        expect(sendMessage).toHaveBeenCalledWith("PLAY");
+        expect(sendMessage).toHaveBeenCalledWith("PLAY|33");
       });
       it("should change input value and class to 'stop'", function() {
         var $button = $("input.play");

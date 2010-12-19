@@ -24,7 +24,8 @@ module Sudocoup
             @name = name
             @app.call :new_visitor, :visitor => self
           when /PLAY/
-            @app.call :play_game
+            cmd, density = line.split(PIPE)
+            @app.call :play_game, :density => (density.to_f/100)
           when /STOP/
             @app.call :stop_game
           when /JOIN/

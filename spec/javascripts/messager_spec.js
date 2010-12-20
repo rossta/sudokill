@@ -122,6 +122,13 @@ describe("Sudocoup.Messager", function() {
       });
     });
 
+    describe("switch", function() {
+      it("should send SWITCH message when stop button clicked", function() {
+        $("input.switch").click();
+        expect(sendMessage).toHaveBeenCalledWith("SWITCH");
+      });
+    });
+
     describe("join_game", function() {
       it("should send JOIN message when join button clicked", function() {
         var $button = $("input.join");

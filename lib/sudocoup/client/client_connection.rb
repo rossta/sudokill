@@ -21,6 +21,7 @@ module Sudocoup
       def unbind
         super
         @app.call :remove_player, :player => self
+        log "#{name} disconnected", SUDOKOUP
       end
 
       def enter_game(number)

@@ -26,11 +26,11 @@ module Sudocoup
         trap("TERM") { stop }
         trap("INT")  { stop }
 
-        controller.channel  = EM::Channel.new
-
-        EventMachine::start_server @host, @port, Client::Socket, :app => controller do |player|
-          controller.call :new_player, :player => player
+        Sudocoup::Controller.controllers.each do |app|
+          app.channel = EM::Channel.new
         end
+
+        EventMachine::start_server @host, @port, Client::Socket, :app => controller
 
         EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => controller,
           :debug => @debug, :logging => true do |ws|

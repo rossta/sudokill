@@ -27,6 +27,8 @@ module Sudocoup
           when :send
             send response
           when :new_connection
+            @app = Controller.select_controller(name)
+            @app.call :new_player, :player => self
             @app.call :announce_player, :player => self
           when :move
             @app.call :request_add_move, :player => self, :move => response
@@ -52,11 +54,11 @@ module Sudocoup
       def name
         @name ||= @dispatch.name
       end
-      
+
       def logger_name
         "SK[#{name}]"
       end
-      
+
       def time_left?(max_time = nil)
         max_time.nil? || current_time <= max_time
       end

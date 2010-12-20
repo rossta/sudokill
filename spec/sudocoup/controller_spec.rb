@@ -35,6 +35,19 @@ describe Sudocoup::Controller do
       Sudocoup::Controller.next_controller(:controller_1).should == :controller_2
     end
   end
+
+  describe "self.select_controller" do
+    it "return choose controller in list expecting given name if possible" do
+      controller_1 = Sudocoup::Controller.new
+      controller_2 = Sudocoup::Controller.new
+      
+      controller_2.expecting_players << "Fooby"
+      Sudocoup::Controller.controllers = [controller_1, controller_2]
+
+      Sudocoup::Controller.select_controller("Fooby").should == controller_2
+      Sudocoup::Controller.select_controller("Nooby").should == controller_1
+    end
+  end
   
   describe "subscribe" do
     it "should subscribe visitor to channel and assign subscriber id" do
@@ -351,6 +364,7 @@ describe Sudocoup::Controller do
           Sudocoup::Controller.stub!(:next_controller).with(@controller).and_return(next_controller)
           @channel.should_receive(:unsubscribe).with(1)
           next_controller.should_receive(:subscribe)
+          next_controller.should_receive(:call).with(:new_visitor, :visitor => player)
           player.should_receive(:app=).with(next_controller)
           @controller.call :switch_controller, :visitor => player
         end

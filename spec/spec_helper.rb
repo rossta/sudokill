@@ -22,15 +22,23 @@ class FakeSocketClient < EventMachine::Connection
     @data = []
   end
 
+  def post_init
+    send_data("Rossta\r\n")
+  end
+
   def receive_data(data)
     log "RECEIVE DATA #{data}"
     @data << data
     if @state == :new
-      @onopen.call if @onopen
-      @state = :open
+      call_onopen
     else
       @onmessage.call(data) if @onmessage
     end
+  end
+
+  def call_onopen
+    @onopen.call if @onopen
+    @state = :open
   end
 
   def unbind

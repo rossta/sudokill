@@ -3,6 +3,7 @@ require 'json'
 
 describe Sudocoup::Server do
   before(:each) do
+    Sudocoup::Controller.controllers = []
     @pipe = "|"
   end
   describe "connection on open join game" do
@@ -88,7 +89,7 @@ describe Sudocoup::Server do
               http.stream { |msg|
                 json = JSON.parse(msg)
                 json['action'].should == "STATUS"
-                json['message'].should == "Client's turn!"
+                json['message'].should == "Rossta's turn!"
               }
             }
             EventMachine.stop

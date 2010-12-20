@@ -14,13 +14,17 @@ module Sudocoup
     def self.controllers=(controllers)
       @@controllers = controllers
     end
-    
+
     def self.next_controller(controller)
       return unless index = @@controllers.index(controller)
       @@controllers[index - 1]
     end
 
-    attr_accessor :game, :queue, :max_time, :channel, :host, :port
+    def self.select_controller(name)
+      @@controllers.detect { |app| app.expecting_players.include?(name) } || @@controllers.first
+    end
+
+    attr_accessor :game, :queue, :max_time, :channel, :host, :port, :expecting_players
     def initialize(opts = {})
       @host   = opts[:host]
       @port   = opts[:port]
@@ -28,6 +32,7 @@ module Sudocoup
       @size   = opts[:size]
       @queue  = []
       @max_time = (opts[:max_time]).to_i if opts[:max_time]
+      @expecting_players = []
       initialize_game
     end
 
@@ -113,7 +118,8 @@ module Sudocoup
           SRC
         end
       end
-      delegate_to_controller :game, :broadcast, :queue, :players, :max_time, :send_players, :host, :port, :call, :channel
+      delegate_to_controller :game, :broadcast, :queue, :players, :max_time,
+        :send_players, :host, :port, :call, :channel, :expecting_players
 
       def defer(&block)
         deferable = EM::DefaultDeferrable.new
@@ -189,7 +195,6 @@ module Sudocoup
         end
         broadcast PlayerJSON.to_json(players, max_time)
         broadcast QueueJSON.to_json(queue)
-        log "#{player.name} disconnected", SUDOKOUP
       end
     end
 
@@ -320,6 +325,8 @@ module Sudocoup
             visitor.send("Didn't recognize opponent, #{name}")
           end
           Process.detach pid unless pid.nil?
+          expecting_players << player_name
+          log "Forked pid: #{pid}"
           pid
         end
       end
@@ -331,6 +338,9 @@ module Sudocoup
         new_app = Controller.next_controller(controller)
         visitor.app = new_app
         new_app.subscribe(visitor)
+
+        new_app.call :new_visitor, :visitor => visitor
+        visitor.send "#{SUDOKOUP}: You just switched to a new game"
       end
 
     end

@@ -462,6 +462,7 @@ Sudocoup = (function() {
       $gameOptions.addClass("game_options");
       self.$form.append($gameOptions);
 
+      $gameOptions.append("<input type='button' name='switch' value='Switch game' class='switch' />");
       $gameOptions.append(self.$select);
       if (Settings.humans) $gameOptions.append("<input type='button' name='join' value='Join game' class='join' />");
       $gameOptions.append("<input type='button' name='play' value='Play' class='play' />");
@@ -501,6 +502,10 @@ Sudocoup = (function() {
         delegate("input.leave", "click", function(){
           self.send("LEAVE");
           self.showJoinButton();
+          return false;
+        }).
+        delegate("input.switch", "click", function(){
+          self.send("SWITCH");
           return false;
         }).
         delegate("input[name=density]", "change", function() {

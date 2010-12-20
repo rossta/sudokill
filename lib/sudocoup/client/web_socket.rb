@@ -34,7 +34,6 @@ module Sudocoup
           when /LEAVE/
             @app.call :remove_player, :player => self
           when /OPPONENT\|/
-            
             cmd, name = line.split(PIPE)
             @app.call :connect_opponent, :name => name, :visitor => self
           when /MOVE\|\d \d \d/

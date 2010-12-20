@@ -75,7 +75,7 @@ module Sudocoup
         new(controller, args).call
       end
 
-      def delegate_call(*args)
+      def call_command (*args)
         controller.call(*args)
       end
 
@@ -132,9 +132,9 @@ module Sudocoup
     class NewPlayerCommand < Command
       def call
         if game.available?
-          delegate_call :join_game, :player => player
+          call_command :join_game, :player => player
         else
-          delegate_call :join_queue, :player => player
+          call_command :join_queue, :player => player
         end
       end
     end
@@ -153,11 +153,11 @@ module Sudocoup
         if game.players.delete(player)
           case game.sudocoup_state
           when :in_progress
-            delegate_call :end_game, :msg => "#{player.name} left the game"
+            call_command :end_game, :msg => "#{player.name} left the game"
             return
           when :waiting, :ready
             game.waiting!        if game.ready?
-            AddPlayerFromQueueCommand.call(controller) if queue.any?
+            call_command :add_player_from_queue if queue.any?
           end
           broadcast "#{player.name} left the game", SUDOKOUP
         elsif queue.delete(player)
@@ -184,8 +184,8 @@ module Sudocoup
     class AddPlayerFromQueueCommand < Command
       def call
         player = queue.shift
-        JoinGameCommand.call(controller, :player => player)
-        AnnouncePlayerCommand.call(controller, :player => player)
+        call_command :join_game, :player => player
+        call_command :announce_player, :player => player
       end
     end
 
@@ -195,7 +195,7 @@ module Sudocoup
         send_players MessagePipe.game_over(msg)
         broadcast msg
         broadcast StatusJSON.to_json(game.sudocoup_state, msg)
-        NewGameCommand.call(controller)
+        call_command :new_game
       end
     end
 
@@ -203,7 +203,7 @@ module Sudocoup
       def call
         controller.initialize_game
         while game.available? && queue.any?
-          AddPlayerFromQueueCommand.call(controller)
+          call_command :add_player_from_queue
         end
       end
     end
@@ -219,13 +219,13 @@ module Sudocoup
           broadcast msg, SUDOKOUP
           send_players(move)
           sleep 1.0
-          delegate_call :request_next_player_move
+          call_command :request_next_player_move
         when :reject
           player.send_command MessagePipe.reject(msg)
           broadcast msg, SUDOKOUP
         when :violation
           broadcast MoveJSON.to_json(played_move, status.to_s)
-          delegate_call :end_game, :msg => msg
+          call_command :end_game, :msg => msg
         end
       end
     end
@@ -248,7 +248,7 @@ module Sudocoup
         # TODO test
         defer do
           if game.in_progress?
-            delegate_call :end_game, :msg => "Game stopped!"
+            call_command :end_game, :msg => "Game stopped!"
           else
             broadcast StatusJSON.to_json(game.sudocoup_state, game.status)
           end
@@ -270,7 +270,7 @@ module Sudocoup
             game.play! do |player|
               player.send_command MessagePipe.start(player, game)
             end
-            delegate_call :request_next_player_move
+            call_command :request_next_player_move
           else
             broadcast StatusJSON.to_json(game.sudocoup_state, game.status)
           end

@@ -445,6 +445,7 @@ Sudokill = (function() {
       opponentSelect += "<option value=''>Choose an Opponent</option>";
       opponentSelect += "<option value='OPPONENT|Angjoo'>Angjoo</option>";
       opponentSelect += "<option value='OPPONENT|Rachit'>Rachit</option>";
+      opponentSelect += "<option value='OPPONENT|Salome'>Salome</option>";
       opponentSelect += "<option value='OPPONENT|Vincent_Easy'>Vincent - Easy</option>";
       opponentSelect += "<option value='OPPONENT|Vincent_Medium'>Vincent - Medium</option>";
       opponentSelect += "<option value='OPPONENT|Vincent_Hard'>Vincent - Hard</option>";

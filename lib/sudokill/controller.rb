@@ -321,6 +321,8 @@ module Sudokill
             pid = SystemCommand.call("cd bin/#{name}/; java SudokillPlayer #{host} #{port} #{player_name}")
           when :angjoo
             pid = SystemCommand.call("cd bin/#{name}/; java -jar angjooPlayer.jar #{host} #{port} #{player_name}")
+          when :salome
+            pid = SystemCommand.call("cd bin/#{name}/; java -jar sudocoup.jar #{host} #{port} #{player_name}")
           else
             visitor.send("Didn't recognize opponent, #{name}")
           end

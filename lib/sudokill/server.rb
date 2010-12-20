@@ -16,11 +16,12 @@ module Sudokill
       @ws_host  = '0.0.0.0'
       @ws_port  = (opts.delete(:ws_port) || 8080).to_i
       @opts     = opts
-
-      @controller   = Controller.create!(opts.merge(:host => @host, :port => @port))
-      controller_2  = Controller.create!(opts.merge(:host => @host, :port => @port))
-      controller_3  = Controller.create!(opts.merge(:host => @host, :port => @port))
-      controller_4  = Controller.create!(opts.merge(:host => @host, :port => @port))
+      
+      instances = (@opts[:instances] || 4).to_i
+      instances.times do
+        Controller.create!(opts.merge(:host => @host, :port => @port))
+      end
+      @controller = Controller.controllers.first
     end
 
     def start

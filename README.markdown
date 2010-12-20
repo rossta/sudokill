@@ -1,4 +1,4 @@
-# Sudocoup #
+# Sudokill #
 
 Competitive Sudoku backed by EventMachine and HTML5 Websockets.
 [Rules of the game](http://www.cs.nyu.edu/courses/fall10/G22.2965-001/sudokill.html)
@@ -9,7 +9,7 @@ Competitive Sudoku backed by EventMachine and HTML5 Websockets.
 
 Download or clone:
 
-	$ git clone git://github.com/rosskaff/sudocoup.git
+	$ git clone git://github.com/rosskaff/sudokill.git
 
 ### Dependencies ###
 
@@ -112,7 +112,7 @@ The game server is currently available on linserv1.cims.nyu.edu, socket port 444
 
 	$ ruby script/play NAME linserv1.cims.nyu.edu 44444
 
-To view, visit the [Sudocoup game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:
+To view, visit the [Sudokill game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:
 
 	host: linserv1.cims.nyu.edu
 	websocket port: 48080

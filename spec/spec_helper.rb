@@ -1,5 +1,5 @@
-require File.dirname(__FILE__) + '/../lib/sudocoup'
-Sudocoup::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
+require File.dirname(__FILE__) + '/../lib/sudokill'
+Sudokill::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
 
 require 'json'
 require 'pp'
@@ -121,7 +121,7 @@ def send_handshake(response)
 end
 
 def mock_player(attrs = {})
-  mock(Sudocoup::Client::Socket, {
+  mock(Sudokill::Client::Socket, {
     :number => 1,
     :current_time => 0,
     :name => "Player",

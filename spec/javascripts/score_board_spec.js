@@ -1,6 +1,6 @@
-describe("Sudocoup.ScoreBoard", function() {
+describe("Sudokill.ScoreBoard", function() {
   var createScoreBoard = function() {
-    return new Sudocoup.ScoreBoard("score_board", "#sudocoup");
+    return new Sudokill.ScoreBoard("score_board", "#sudokill");
   };
 
   beforeEach(fixture);
@@ -8,8 +8,8 @@ describe("Sudocoup.ScoreBoard", function() {
 
   describe("constructor", function() {
     it("should append div with given dom id to game container", function() {
-      var board = new Sudocoup.ScoreBoard("score_board", "#sudocoup");
-      var $game = $("#sudocoup");
+      var board = new Sudokill.ScoreBoard("score_board", "#sudokill");
+      var $game = $("#sudokill");
       var $board = $("#score_board");
       expect($game).toHaveSelector("#score_board");
 

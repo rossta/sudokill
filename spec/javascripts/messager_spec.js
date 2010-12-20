@@ -1,4 +1,4 @@
-describe("Sudocoup.Messager", function() {
+describe("Sudokill.Messager", function() {
 
   beforeEach(fixture);
   afterEach(removeFixture);
@@ -7,7 +7,7 @@ describe("Sudocoup.Messager", function() {
     it("should print to console.log", function() {
       if (!window.console) window.console = { log: function() {} };
       spyOn(window.console, "log");
-      var messager = new Sudocoup.Messager('#sudocoup');
+      var messager = new Sudokill.Messager('#sudokill');
       messager.log("Hello!");
       expect(window.console.log).toHaveBeenCalledWith("Hello!");
     });
@@ -15,14 +15,14 @@ describe("Sudocoup.Messager", function() {
 
   describe("print", function() {
     it("should print to the message pane", function() {
-      var messager = new Sudocoup.Messager('#sudocoup');
+      var messager = new Sudokill.Messager('#sudokill');
       messager.print("I know that's right!");
       var output = $("#msg .pane");
       expect(output.length).toEqual(1);
       expect(output.text()).toEqual("I know that's right!");
     });
     it("should append additional messages to pane", function() {
-      var messager = new Sudocoup.Messager('#sudocoup');
+      var messager = new Sudokill.Messager('#sudokill');
       messager.print("That's awesome!");
       messager.print("I know that's right!");
       var paragraphs = $("#msg .pane p");
@@ -34,9 +34,9 @@ describe("Sudocoup.Messager", function() {
 
   describe("send", function() {
     it("should trigger send message event with text", function() {
-      var messager = new Sudocoup.Messager('#sudocoup');
+      var messager = new Sudokill.Messager('#sudokill');
       var spy = jasmine.createSpy();
-      $("#sudocoup").bind("send_message", function(e, text){
+      $("#sudokill").bind("send_message", function(e, text){
         spy(text);
       });
       messager.send("What a game!");
@@ -47,14 +47,14 @@ describe("Sudocoup.Messager", function() {
   describe("show", function() {
     var messager, humans;
     beforeEach(function() {
-      humans = Sudocoup.Settings.humans;
+      humans = Sudokill.Settings.humans;
     });
     afterEach(function() {
-      Sudocoup.Settings.humans = humans;
+      Sudokill.Settings.humans = humans;
     });
 
     it("should be add visible class", function() {
-      messager = new Sudocoup.Messager('#sudocoup');
+      messager = new Sudokill.Messager('#sudokill');
       var msgDiv = messager.$msg;
       messager.show();
       expect(msgDiv).toHaveLength(1);
@@ -62,8 +62,8 @@ describe("Sudocoup.Messager", function() {
     });
 
     it("should not add join button while human settings are false", function() {
-      Sudocoup.Settings.humans = false;
-      messager = new Sudocoup.Messager('#sudocoup');
+      Sudokill.Settings.humans = false;
+      messager = new Sudokill.Messager('#sudokill');
       var $button = $("input.join");
       expect($button).toHaveLength(0);
     });
@@ -73,10 +73,10 @@ describe("Sudocoup.Messager", function() {
   describe("events", function() {
     var messager, callback;
     spyOnSend = function(callback) {
-      return $("#sudocoup").bind("send_message", function(e, text){ callback(text); });
+      return $("#sudokill").bind("send_message", function(e, text){ callback(text); });
     };
     beforeEach(function() {
-      messager = new Sudocoup.Messager("#sudocoup");
+      messager = new Sudokill.Messager("#sudokill");
       sendMessage = jasmine.createSpy("send message callback");
       spyOnSend(sendMessage);
     });
@@ -173,28 +173,28 @@ describe("Sudocoup.Messager", function() {
       });
       it("should display play button when game is over", function() {
         $("input.play").removeClass("play").addClass("stop").val("Stop");
-        $("#sudocoup").trigger("game_state", "over");
+        $("#sudokill").trigger("game_state", "over");
         expect($form).not.toHaveSelector("input.stop");
         expect($form).toHaveSelector("input.play");
         expect($form.find("input.play").val()).toEqual("Play");
       });
       it("should display play button when game is waiting", function() {
         $("input.play").removeClass("play").addClass("stop").val("Stop");
-        $("#sudocoup").trigger("game_state", "waiting");
+        $("#sudokill").trigger("game_state", "waiting");
         expect($form).not.toHaveSelector("input.stop");
         expect($form).toHaveSelector("input.play");
         expect($form.find("input.play").val()).toEqual("Play");
       });
       it("should display play button when game is ready", function() {
         $("input.play").removeClass("play").addClass("stop").val("Stop");
-        $("#sudocoup").trigger("game_state", "ready");
+        $("#sudokill").trigger("game_state", "ready");
         expect($form).not.toHaveSelector("input.stop");
         expect($form).toHaveSelector("input.play");
         expect($form.find("input.play").val()).toEqual("Play");
       });
       it("should display stop button when game is in progress", function() {
         $("input.play").removeClass("stop").addClass("play").val("Play");
-        $("#sudocoup").trigger("game_state", "in_progress");
+        $("#sudokill").trigger("game_state", "in_progress");
         expect($form).not.toHaveSelector("input.play");
         expect($form).toHaveSelector("input.stop");
         expect($form.find("input.stop").val()).toEqual("Stop");

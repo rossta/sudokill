@@ -4,7 +4,7 @@ lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
 require "rubygems"
-require 'sudocoup/web_server'
+require 'sudokill/web_server'
 
 host      = ARGV.shift || '0.0.0.0'
 ws_port   = ARGV.shift || 8080
@@ -17,5 +17,5 @@ if ENV["LOG"]
   STDERR.reopen(log)
 end
 
-# ruby lib/sudocoup/web_server.rb [-h] [-x] [-e production] [-o linserv1.cims.nyu.edu] [-p 45678] [-s HANDLER]
-Sudocoup::WebServer.run!(:bind => host, :port => http_port, :ws_port => ws_port)
+# ruby lib/sudokill/web_server.rb [-h] [-x] [-e production] [-o linserv1.cims.nyu.edu] [-p 45678] [-s HANDLER]
+Sudokill::WebServer.run!(:bind => host, :port => http_port, :ws_port => ws_port)

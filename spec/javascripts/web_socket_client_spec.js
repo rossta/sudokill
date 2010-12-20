@@ -1,6 +1,6 @@
 describe("WebSocketClient", function() {
   var game = {
-    selector: '#sudocoup',
+    selector: '#sudokill',
     log: function() {},
     print: function() {},
     dispatch: function() {},
@@ -16,7 +16,7 @@ describe("WebSocketClient", function() {
     return methods;
   },
   createClient = function() {
-    return new Sudocoup.WebSocketClient(game);
+    return new Sudokill.WebSocketClient(game);
   };
 
   beforeEach(function() {
@@ -24,30 +24,30 @@ describe("WebSocketClient", function() {
   });
   describe("constructor", function() {
     it("should append the jquery form: $connectForm", function() {
-      var client = new Sudocoup.WebSocketClient(game);
+      var client = new Sudokill.WebSocketClient(game);
       expect(client.$connectForm).toEqual(jasmine.any($));
       expect(client.$connectForm).toHaveClass("websocket");
       expect(client.$connectForm).toHaveClass("welcome");
     });
     it("should add mode class to form", function() {
-      var original = Sudocoup.Settings.mode;
-      var client1 = new Sudocoup.WebSocketClient(game);
+      var original = Sudokill.Settings.mode;
+      var client1 = new Sudokill.WebSocketClient(game);
       expect(client1.$connectForm).toHaveClass("normal");
       expect(client1.$connectForm).not.toHaveClass("simple");
 
-      Sudocoup.Settings.mode = "simple";
-      var client2 = new Sudocoup.WebSocketClient(game);
+      Sudokill.Settings.mode = "simple";
+      var client2 = new Sudokill.WebSocketClient(game);
       expect(client2.$connectForm).toHaveClass("simple");
       expect(client2.$connectForm).not.toHaveClass("normal");
-      Sudocoup.Settings.mode = original;
+      Sudokill.Settings.mode = original;
     });
     it("should append form to game selector", function() {
-      var client = new Sudocoup.WebSocketClient(game);
+      var client = new Sudokill.WebSocketClient(game);
       var $game = $(game.selector);
       expect($game).toHaveSelector('form.websocket');
     });
     it("should inputs and labels to form", function() {
-      var client = new Sudocoup.WebSocketClient(game);
+      var client = new Sudokill.WebSocketClient(game);
       var $form = $('form.websocket');
       expect($form).toHaveSelector('input[name=name]');
       expect($form).toHaveSelector('input[name=host]');
@@ -58,8 +58,8 @@ describe("WebSocketClient", function() {
       expect($form).toHaveSelector('label.port');
     });
     it('should initialize host value to hostname', function() {
-      var client = new Sudocoup.WebSocketClient(game), websocket;
-      var hostname = new Sudocoup.Location().hostname();
+      var client = new Sudokill.WebSocketClient(game), websocket;
+      var hostname = new Sudokill.Location().hostname();
       var $host = $('input[name=host]');
       expect($host.val()).toEqual(hostname);
     });
@@ -71,7 +71,7 @@ describe("WebSocketClient", function() {
 
       beforeEach(function() {
         spyOn(game, "listen").andCallFake(function(event, callback) {
-          return $("#sudocoup").bind(event, callback);
+          return $("#sudokill").bind(event, callback);
         });
         client = createClient();
         websocket = client.connect();

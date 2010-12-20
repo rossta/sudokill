@@ -7,13 +7,13 @@ try {
 }
 
 var fixture = function() {
-  return $("<div></div>").attr("id","sudocoup").css({
+  return $("<div></div>").attr("id","sudokill").css({
     position:"absolute",left:"-3000px",top:"0px"
   }).appendTo("body");
 },
 
 removeFixture = function() {
-  return $("#sudocoup").remove();
+  return $("#sudokill").remove();
 };
 
 beforeEach(function() {

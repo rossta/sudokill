@@ -1,7 +1,7 @@
 require "rubygems"
 require "rake"
 
-namespace :sudocoup do
+namespace :sudokill do
   def start(script, env, opts = {})
     require 'yaml'
     config = YAML.load_file('config/server.yml')[env.to_s]
@@ -25,7 +25,7 @@ namespace :sudocoup do
       system start(:server, :production, :background => true)
     end
   end
-  task :game => "sudocoup:game:development"
+  task :game => "sudokill:game:development"
 
   namespace :web do
     task :development do
@@ -35,13 +35,13 @@ namespace :sudocoup do
       system start(:web, :production, :background => true, :web => :only)
     end
   end
-  task :web => "sudocoup:web:development"
+  task :web => "sudokill:web:development"
 
-  task :development => "sudocoup:game:development"
+  task :development => "sudokill:game:development"
 
   task :production do
-    Rake::Task["sudocoup:game:production"].execute
-    Rake::Task["sudocoup:web:production"].execute
+    Rake::Task["sudokill:game:production"].execute
+    Rake::Task["sudokill:web:production"].execute
   end
 
   task :stop do
@@ -50,7 +50,7 @@ namespace :sudocoup do
   end
 
 end
-task :sudocoup => "sudocoup:development"
+task :sudokill => "sudokill:development"
 
 begin
   require 'jasmine'

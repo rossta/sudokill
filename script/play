@@ -9,11 +9,11 @@ host = ARGV.shift || "0.0.0.0"
 port = (ARGV.shift || 44444).to_i
 
 if ENV['PLAYER'] == "naive"
-  require 'sudocoup'
-  Sudocoup::Player::Naive.play!(name, host, port)
+  require 'sudokill'
+  Sudokill::Player::Naive.play!(name, host, port)
 else
   require 'rubygems'
   require 'eventmachine'
-  require 'sudocoup/player/echo'
-  Sudocoup::Player::Echo.play!(name, host, port)
+  require 'sudokill/player/echo'
+  Sudokill::Player::Echo.play!(name, host, port)
 end

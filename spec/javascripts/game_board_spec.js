@@ -1,6 +1,6 @@
-describe("Sudocoup.GameBoard", function() {
+describe("Sudokill.GameBoard", function() {
   var createGameBoard = function() {
-    return new Sudocoup.GameBoard("game_board", "#sudocoup");
+    return new Sudokill.GameBoard("game_board", "#sudokill");
   },
 
   board;
@@ -10,7 +10,7 @@ describe("Sudocoup.GameBoard", function() {
 
   describe("constructor", function() {
     it("should assign instance variables", function() {
-      board = new Sudocoup.GameBoard("game_board", "#sudocoup");
+      board = new Sudokill.GameBoard("game_board", "#sudokill");
       expect(board.hilite).toEqual("#333333");
       expect(board.black).toEqual("#000000");
       expect(board.transparent).toEqual("transparent");
@@ -19,16 +19,16 @@ describe("Sudocoup.GameBoard", function() {
       expect(board.dim).toEqual(50);
       expect(board.numberSquares).toEqual(jasmine.any(Array));
       expect(board.backgroundSquares).toEqual(jasmine.any(Array));
-      expect(board.$sudocoup.selector).toEqual("#sudocoup");
+      expect(board.$sudokill.selector).toEqual("#sudokill");
       expect(board.valids).toEqual([1,2,3,4,5,6,7,8,9]);
     });
     it("should append #game_board to container", function() {
-      board = new Sudocoup.GameBoard("game_board", "#sudocoup");
-      var $sudocoup = $("#sudocoup");
-      expect($sudocoup).toHaveSelector("#game_board");
+      board = new Sudokill.GameBoard("game_board", "#sudokill");
+      var $sudokill = $("#sudokill");
+      expect($sudokill).toHaveSelector("#game_board");
     });
     it("should build array of 9x9 rows for number squares and text squares", function() {
-      board = new Sudocoup.GameBoard("game_board", "#sudocoup");
+      board = new Sudokill.GameBoard("game_board", "#sudokill");
       expect(board.numberSquares).toHaveLength(9);
       for(i=0;i<9;i++) {
         expect(board.numberSquares[i]).toHaveLength(9);
@@ -36,7 +36,7 @@ describe("Sudocoup.GameBoard", function() {
       }
     });
     it("should append form for row, col, val input", function() {
-      board = new Sudocoup.GameBoard("game_board", "#sudocoup");
+      board = new Sudokill.GameBoard("game_board", "#sudokill");
       var $form = $("form.game_board");
       expect($form).toHaveSelector("input[name*=row]");
       expect($form).toHaveSelector("input[name*=col]");
@@ -52,17 +52,17 @@ describe("Sudocoup.GameBoard", function() {
       $("input[name*=row]").val("1");
       $("input[name*=col]").val("2");
       $("input[name*=val]").val("3");
-      spyOn(board.$sudocoup, "trigger");
+      spyOn(board.$sudokill, "trigger");
       board.$form.submit();
-      expect(board.$sudocoup.trigger).toHaveBeenCalledWith("send_message", "MOVE|1 2 3");
+      expect(board.$sudokill.trigger).toHaveBeenCalledWith("send_message", "MOVE|1 2 3");
     });
     it("should not trigger send message if value not valid", function() {
       $("input[name*=row]").val("1");
       $("input[name*=col]").val("2");
       $("input[name*=val]").val("0");
-      spyOn(board.$sudocoup, "trigger");
+      spyOn(board.$sudokill, "trigger");
       board.$form.submit();
-      expect(board.$sudocoup.trigger).not.toHaveBeenCalled();
+      expect(board.$sudokill.trigger).not.toHaveBeenCalled();
     });
   });
 

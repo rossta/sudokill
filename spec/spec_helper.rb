@@ -5,6 +5,15 @@ require 'json'
 require 'pp'
 require 'em-http'
 
+class FakeDeferrable
+  def callback(&block)
+    @block = block
+  end
+  def succeed
+    @block.call
+  end
+end
+
 class FakeSocketClient < EventMachine::Connection
   attr_writer :onopen, :onclose, :onmessage
   attr_reader :data

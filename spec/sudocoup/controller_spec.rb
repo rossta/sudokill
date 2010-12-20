@@ -5,6 +5,7 @@ describe Sudocoup::Controller do
     @pipe = "|"
     @game       = mock(Sudocoup::Game)
     Sudocoup::Game.stub!(:new).and_return(@game)
+    EM::DefaultDeferrable.stub!(:new).and_return(FakeDeferrable.new)
 
     @controller = Sudocoup::Controller.new
 
@@ -270,17 +271,8 @@ describe Sudocoup::Controller do
       end
       
       describe "play_game" do
-        class FakeDeferrable
-          def callback(&block)
-            @block = block
-          end
-          def succeed
-            @block.call
-          end
-        end
         before(:each) do
           Sudocoup::Controller::RequestNextPlayerMoveCommand.stub!(:new).and_return(mock(Sudocoup::Controller::Command, :call => nil))
-          EM::DefaultDeferrable.stub!(:new).and_return(FakeDeferrable.new)
           @game.stub!(:ready? => true, :status => nil, :board => mock(Sudocoup::Board), 
             :play! => true, :next_player_request => nil, :current_player => nil, :players => [mock_player])
         end
@@ -289,7 +281,34 @@ describe Sudocoup::Controller do
           @controller.call :play_game, :density => 0.50
         end
       end
+      
+      describe "connect_opponent" do
+        before(:each) do
+          Sudocoup::Controller::SystemCommand.stub!(:call => 21212)
+          @controller.opts[:host] = '0.0.0.0'
+          @controller.opts[:port] = 1234
+        end
+        it "should make system call for Vincent_Easy" do
+          Sudocoup::Controller::SystemCommand.should_receive(:call).with(/cd bin\/Vincent\/; java Sudokill_Easy 0.0.0.0 1234 Vincent_Easy/)
+          @controller.call :connect_opponent, :name => "Vincent_Easy", :visitor => mock_player
+        end
+        it "should make system call for Vincent_Medium" do
+          Sudocoup::Controller::SystemCommand.should_receive(:call).with(/cd bin\/Vincent\/; java Sudokill_Medium 0.0.0.0 1234 Vincent_Medium/)
+          @controller.call :connect_opponent, :name => "Vincent_Medium", :visitor => mock_player
+        end
+        it "should make system call for Vincent_Hard" do
+          Sudocoup::Controller::SystemCommand.should_receive(:call).with(/cd bin\/Vincent\/; java Sudokill_Hard 0.0.0.0 1234 Vincent_Hard/)
+          @controller.call :connect_opponent, :name => "Vincent_Hard", :visitor => mock_player
+        end
+        it "should make system call for Rachit" do
+          Sudocoup::Controller::SystemCommand.should_receive(:call).with(/cd bin\/Rachit\/; java SudokillPlayer 0.0.0.0 1234 Rachit/)
+          @controller.call :connect_opponent, :name => "Rachit", :visitor => mock_player
+        end
+        it "should make system call for Angjoo" do
+          Sudocoup::Controller::SystemCommand.should_receive(:call).with(/cd bin\/Angjoo\/; java -jar angjooPlayer.jar 0.0.0.0 1234 Angjoo/)
+          @controller.call :connect_opponent, :name => "Angjoo", :visitor => mock_player
+        end
+      end
     end
-    
   end
 end

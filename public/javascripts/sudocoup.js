@@ -443,11 +443,11 @@ Sudocoup = (function() {
       self.$input     = $("<input type='text' name='message' class='message' placeholder='Say anything...' />");
       opponentSelect  = "<select name='opponent'>";
       opponentSelect += "<option value=''>Choose an Opponent</option>";
-      opponentSelect += "<option value='OPPONENT|Easy'>Vincent - Easy</option>";
-      opponentSelect += "<option value='OPPONENT|Medium'>Vincent - Medium</option>";
-      opponentSelect += "<option value='OPPONENT|Hard'>Vincent - Hard</option>";
-      opponentSelect += "<option value='OPPONENT|Simon'>Simon</option>";
       opponentSelect += "<option value='OPPONENT|Angjoo'>Angjoo</option>";
+      opponentSelect += "<option value='OPPONENT|Rachit'>Rachit</option>";
+      opponentSelect += "<option value='OPPONENT|Vincent_Easy'>Vincent - Easy</option>";
+      opponentSelect += "<option value='OPPONENT|Vincent_Medium'>Vincent - Medium</option>";
+      opponentSelect += "<option value='OPPONENT|Vincent_Hard'>Vincent - Hard</option>";
       opponentSelect += "</select>";
 
       self.$select     = $(opponentSelect);

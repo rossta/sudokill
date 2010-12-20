@@ -1,6 +1,6 @@
 module Sudocoup
   class Controller
-    attr_accessor :game, :queue, :max_time, :channel
+    attr_accessor :game, :queue, :max_time, :channel, :opts
     def initialize(opts = {})
       @opts = opts
       initialize_game
@@ -12,7 +12,7 @@ module Sudocoup
     def host
       @opts[:host]
     end
-    
+
     def port
       @opts[:port]
     end
@@ -291,24 +291,28 @@ module Sudocoup
           case name.downcase.to_sym
           when :naive
             EM.connect(host, port, Player::Naive, :name => name)
-          when :easy, :medium, :hard
-            pid = fork do
-              system("cd bin/Vincent/; java Sudokill_#{name} #{host} #{port} #{player_name}")
-            end
+          when :vincent_easy, :vincent_medium, :vincent_hard
+            first_name, strategy = name.split("_")
+            pid = SystemCommand.call("cd bin/#{first_name}/; java Sudokill_#{strategy} #{host} #{port} #{player_name}")
+          when :rachit
+            pid = SystemCommand.call("cd bin/#{name}/; java SudokillPlayer #{host} #{port} #{player_name}")
           when :angjoo
-            pid = fork do
-              system("cd bin/Angjoo/; java -jar angjooPlayer.jar #{host} #{port} #{player_name}")
-            end
-          when :simon
-            pid = fork do
-              system("cd bin/Simon/; java Main")
-            end
+            pid = SystemCommand.call("cd bin/#{name}/; java -jar angjooPlayer.jar #{host} #{port} #{player_name}")
           else
             visitor.send("Didn't recognize opponent, #{name}")
           end
           Process.detach pid unless pid.nil?
           pid
         end
+      end
+    end
+
+    class SystemCommand
+      def self.call(cmd)
+        pid = fork do
+          system(cmd)
+        end
+        pid
       end
     end
 

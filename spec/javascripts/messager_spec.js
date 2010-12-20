@@ -83,8 +83,8 @@ describe("Sudocoup.Messager", function() {
     describe("select opponent", function() {
       it("should send opponent request", function() {
         var $select = $("select[name=opponent]");
-        $select.val('OPPONENT|Easy').change();
-        expect(sendMessage).toHaveBeenCalledWith('OPPONENT|Easy');
+        $select.val('OPPONENT|Vincent_Easy').change();
+        expect(sendMessage).toHaveBeenCalledWith('OPPONENT|Vincent_Easy');
         expect($select.val()).toBeFalsy();
       });
     });

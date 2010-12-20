@@ -16,7 +16,7 @@ module Sudokill
       @ws_host  = '0.0.0.0'
       @ws_port  = (opts.delete(:ws_port) || 8080).to_i
       @opts     = opts
-      
+
       instances = (@opts[:instances] || 4).to_i
       instances.times do
         Controller.create!(opts.merge(:host => @host, :port => @port))

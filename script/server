@@ -10,6 +10,7 @@ port      = ARGV.shift || 4444
 ws_port   = ARGV.shift || 8080
 http_port = ARGV.shift || 4567
 env       = ARGV.shift || "development"
+instances = ARGV.shift || 2
 
 Sudokill.env = env.to_sym
 
@@ -27,5 +28,6 @@ Sudokill::Server.start(
   :host => host,
   :port => port,
   :ws_port => ws_port,
-  :size => 2
+  :size => 2,
+  :instances => instances
 )

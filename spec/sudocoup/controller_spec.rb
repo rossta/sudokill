@@ -9,9 +9,42 @@ describe Sudocoup::Controller do
 
     @controller = Sudocoup::Controller.new
 
-    @channel  = mock(EM::Channel, :push => nil)
+    @channel  = mock(EM::Channel, :push => nil, :unsubscribe => nil)
     @controller.channel = @channel
+    Sudocoup::Controller.controllers = []
   end
+
+  describe "self.create!" do
+    it "should create a new controller" do
+      controller = Sudocoup::Controller.create!
+      controller.should be_a(Sudocoup::Controller)
+    end
+
+    it "should add to controller instance list" do
+      Sudocoup::Controller.controllers.should be_empty
+
+      controller = Sudocoup::Controller.create!
+      Sudocoup::Controller.controllers.size.should == 1
+      Sudocoup::Controller.controllers.first.should == controller
+    end
+  end
+  
+  describe "self.next_controller" do
+    it "return next controller in list" do
+      Sudocoup::Controller.controllers = [:controller_1, :controller_2]
+      Sudocoup::Controller.next_controller(:controller_1).should == :controller_2
+    end
+  end
+  
+  describe "subscribe" do
+    it "should subscribe visitor to channel and assign subscriber id" do
+      player = mock_player
+      @channel.should_receive(:subscribe).and_return(1)
+      player.should_receive(:sid=).with(1)
+      @controller.subscribe(player)
+    end
+  end
+
   describe "close" do
     before(:each) do
       @player = mock_player
@@ -65,7 +98,7 @@ describe Sudocoup::Controller do
   end
 
   describe "commands" do
-    
+
     describe "join_queue" do
       it "should add player to the queue and instruct WAIT" do
         player = mock_player
@@ -75,7 +108,7 @@ describe Sudocoup::Controller do
         @controller.queue.first.should == player
       end
     end
-    
+
     describe "join_game" do
       it "should ready player for game" do
         @player_1 = mock_player
@@ -86,7 +119,7 @@ describe Sudocoup::Controller do
         @controller.call :join_game, :player => @player_1
       end
     end
-    
+
     describe "new_player" do
       before(:each) do
         @player_1 = mock_player
@@ -121,7 +154,7 @@ describe Sudocoup::Controller do
         end
       end
     end
-    
+
     describe "new_visitor" do
       it "should send appropriate json" do
         @game.stub!(:sudocoup_state => :in_progress, :board => :board, :players => [])
@@ -136,7 +169,7 @@ describe Sudocoup::Controller do
         @controller.call :new_visitor, :visitor => visitor
       end
     end
-    
+
     describe "remove_player" do
       before(:each) do
         @player_1 = mock_player(:name => "Player 1")
@@ -207,7 +240,7 @@ describe Sudocoup::Controller do
         end
       end
     end
-    
+
     describe "announce_player" do
       before(:each) do
         @player   = mock_player(:name => "Player 1")
@@ -230,7 +263,7 @@ describe Sudocoup::Controller do
         @controller.call :announce_player, :player => @player
       end
     end
-    
+
     describe "game_states" do
       before(:each) do
         @player   = mock_player
@@ -269,11 +302,11 @@ describe Sudocoup::Controller do
           @controller.call :new_game
         end
       end
-      
+
       describe "play_game" do
         before(:each) do
           Sudocoup::Controller::RequestNextPlayerMoveCommand.stub!(:new).and_return(mock(Sudocoup::Controller::Command, :call => nil))
-          @game.stub!(:ready? => true, :status => nil, :board => mock(Sudocoup::Board), 
+          @game.stub!(:ready? => true, :status => nil, :board => mock(Sudocoup::Board),
             :play! => true, :next_player_request => nil, :current_player => nil, :players => [mock_player])
         end
         it "should build game board with given density" do
@@ -281,7 +314,7 @@ describe Sudocoup::Controller do
           @controller.call :play_game, :density => 0.50
         end
       end
-      
+
       describe "connect_opponent" do
         before(:each) do
           Sudocoup::Controller::SystemCommand.stub!(:call => 21212)
@@ -309,6 +342,20 @@ describe Sudocoup::Controller do
           @controller.call :connect_opponent, :name => "Angjoo", :visitor => mock_player
         end
       end
+
+      describe "switch_controller" do
+        it "should switch visitor to new controller and subscribe to new channel" do
+          new_channel     = mock(EM::Channel)
+          next_controller = mock(Sudocoup::Controller, :channel => new_channel)
+          player          = mock_player(:sid => 1)
+          Sudocoup::Controller.stub!(:next_controller).with(@controller).and_return(next_controller)
+          @channel.should_receive(:unsubscribe).with(1)
+          next_controller.should_receive(:subscribe)
+          player.should_receive(:app=).with(next_controller)
+          @controller.call :switch_controller, :visitor => player
+        end
+      end
+
     end
   end
 end

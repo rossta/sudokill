@@ -17,7 +17,8 @@ module Sudocoup
       @ws_port  = (opts.delete(:ws_port) || 8080).to_i
       @opts     = opts
 
-      @controller = Controller.new(opts.merge(:host => @host, :port => @port))
+      @controller   = Controller.create!(opts.merge(:host => @host, :port => @port))
+      @controller_2 = Controller.create!(opts.merge(:host => @host, :port => @port))
     end
 
     def start
@@ -28,15 +29,19 @@ module Sudocoup
         controller.channel  = EM::Channel.new
 
         EventMachine::start_server @host, @port, Client::Socket, :app => controller do |player|
-          @controller.call :new_player, :player => player
+          controller.call :new_player, :player => player
         end
 
         EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => controller,
           :debug => @debug, :logging => true do |ws|
-            ws.onopen { ws.sid = controller.channel.subscribe { |msg| ws.send msg } }
+            ws.onopen {
+              controller.subscribe(ws)
+            }
         end
 
-        EventMachine.add_periodic_timer(0.25) { controller.time_check }
+        EventMachine.add_periodic_timer(0.25) {
+          controller.time_check
+        }
 
         log_server_started
       end

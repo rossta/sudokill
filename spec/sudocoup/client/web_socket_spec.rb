@@ -55,6 +55,12 @@ describe Sudocoup::Client::WebSocket do
         @player.receive_data("NEW CONNECTION|Rossta\r\n")
       end
     end
+    describe "SWITCH" do
+      it "should request new app" do
+        @app.should_receive(:call).with(:switch_controller, :visitor => @player)
+        @player.receive_data("SWITCH\r\n")
+      end
+    end
   end
 
   describe "unbind" do
@@ -93,4 +99,5 @@ describe Sudocoup::Client::WebSocket do
       @player.moves.should be_empty
     end
   end
+  
 end

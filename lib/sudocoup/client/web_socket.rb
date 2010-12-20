@@ -28,6 +28,8 @@ module Sudocoup
             @app.call :play_game, :density => (density.to_f/100)
           when /STOP/
             @app.call :stop_game
+          when /SWITCH/
+            @app.call :switch_controller, :visitor => self
           when /JOIN/
             @app.call :new_player, :player => self
             @app.call :announce_player, :player => self

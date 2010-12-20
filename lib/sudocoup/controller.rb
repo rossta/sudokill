@@ -1,5 +1,25 @@
 module Sudocoup
   class Controller
+    @@controllers = []
+
+    def self.create!(opts = {})
+      @@controllers << new(opts)
+      @@controllers.last
+    end
+
+    def self.controllers
+      @@controllers
+    end
+
+    def self.controllers=(controllers)
+      @@controllers = controllers
+    end
+    
+    def self.next_controller(controller)
+      return unless index = @@controllers.index(controller)
+      @@controllers[index - 1]
+    end
+
     attr_accessor :game, :queue, :max_time, :channel, :host, :port
     def initialize(opts = {})
       @host   = opts[:host]
@@ -24,6 +44,10 @@ module Sudocoup
       return if @channel.nil?
       msg = "#{name}: #{msg}" unless name.nil?
       @channel.push msg
+    end
+
+    def subscribe(visitor)
+      visitor.sid = @channel.subscribe { |msg| visitor.send msg }
     end
 
     def send_players(msg)
@@ -89,7 +113,7 @@ module Sudocoup
           SRC
         end
       end
-      delegate_to_controller :game, :broadcast, :queue, :players, :max_time, :send_players, :host, :port, :call
+      delegate_to_controller :game, :broadcast, :queue, :players, :max_time, :send_players, :host, :port, :call, :channel
 
       def defer(&block)
         deferable = EM::DefaultDeferrable.new
@@ -299,6 +323,16 @@ module Sudocoup
           pid
         end
       end
+    end
+
+    class SwitchControllerCommand < Command
+      def call
+        channel.unsubscribe(visitor.sid)
+        new_app = Controller.next_controller(controller)
+        visitor.app = new_app
+        new_app.subscribe(visitor)
+      end
+
     end
 
     class SystemCommand

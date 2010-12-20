@@ -9,6 +9,9 @@ host      = ARGV.shift || '0.0.0.0'
 port      = ARGV.shift || 4444
 ws_port   = ARGV.shift || 8080
 http_port = ARGV.shift || 4567
+env       = ARGV.shift || "development"
+
+Sudokill.env = env.to_sym
 
 if ENV["LOG"]
   log = "log/sudokill.log"

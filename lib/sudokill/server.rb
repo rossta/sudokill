@@ -30,7 +30,9 @@ module Sudokill
           app.channel = EM::Channel.new
         end
 
-        EventMachine::start_server @host, @port, Client::Socket, :app => controller
+        EventMachine::start_server @host, @port, Client::Socket, :app => controller do |player|
+          player.send_command "WAIT" unless Sudokill.env == :test
+        end
 
         EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => controller,
           :debug => @debug, :logging => true do |ws|

@@ -13,6 +13,7 @@ namespace :sudokill do
     command << config['port']['socket'] unless opts[:web] == :only
     command << config['port']['websocket']
     command << config['port']['http'] if opts[:web]
+    command << env.to_s if env == :production
     command << '&' if opts[:background]
     command.join(" ")
   end

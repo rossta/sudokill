@@ -15,6 +15,13 @@ require "em-websocket"
 %w[ naive ].each { |file| require "sudokill/player/#{file}" }
 
 module Sudokill
+  @@env = :development
+  def self.env=(env)
+    @@env = env
+  end
+  def self.env
+    @@env
+  end
 CONFIG_1 = <<-TXT
 7 0 5 0 0 0 2 9 4
 0 0 1 2 0 6 0 0 0

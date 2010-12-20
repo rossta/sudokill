@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/../lib/sudokill'
 Sudokill::Logger.suppress_logging! unless ENV["SPEC_ENV"]=='debug'
+Sudokill.env = :test
 
 require 'json'
 require 'pp'

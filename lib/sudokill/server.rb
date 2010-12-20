@@ -18,7 +18,9 @@ module Sudokill
       @opts     = opts
 
       @controller   = Controller.create!(opts.merge(:host => @host, :port => @port))
-      @controller_2 = Controller.create!(opts.merge(:host => @host, :port => @port))
+      controller_2  = Controller.create!(opts.merge(:host => @host, :port => @port))
+      controller_3  = Controller.create!(opts.merge(:host => @host, :port => @port))
+      controller_4  = Controller.create!(opts.merge(:host => @host, :port => @port))
     end
 
     def start

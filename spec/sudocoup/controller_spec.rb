@@ -285,8 +285,8 @@ describe Sudocoup::Controller do
       describe "connect_opponent" do
         before(:each) do
           Sudocoup::Controller::SystemCommand.stub!(:call => 21212)
-          @controller.opts[:host] = '0.0.0.0'
-          @controller.opts[:port] = 1234
+          @controller.host = '0.0.0.0'
+          @controller.port = 1234
         end
         it "should make system call for Vincent_Easy" do
           Sudocoup::Controller::SystemCommand.should_receive(:call).with(/cd bin\/Vincent\/; java Sudokill_Easy 0.0.0.0 1234 Vincent_Easy/)

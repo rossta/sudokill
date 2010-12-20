@@ -1,20 +1,14 @@
 module Sudocoup
   class Controller
-    attr_accessor :game, :queue, :max_time, :channel, :opts
+    attr_accessor :game, :queue, :max_time, :channel, :host, :port
     def initialize(opts = {})
-      @opts = opts
-      initialize_game
-
+      @host   = opts[:host]
+      @port   = opts[:port]
+      @file   = opts[:file]
+      @size   = opts[:size]
       @queue  = []
       @max_time = (opts[:max_time]).to_i if opts[:max_time]
-    end
-
-    def host
-      @opts[:host]
-    end
-
-    def port
-      @opts[:port]
+      initialize_game
     end
 
     def players
@@ -40,9 +34,9 @@ module Sudocoup
       player.time_left?(max_time)
     end
 
-    def call(command, opts = {})
+    def call(command, args = {})
       command_class = self.class.const_get "#{command.to_s.split("_").map(&:capitalize).join}Command"
-      command_class.call(self, opts)
+      command_class.call(self, args)
     end
 
     def time_check
@@ -56,7 +50,7 @@ module Sudocoup
     end
 
     def initialize_game
-      @game = Game.new(:size => @opts[:size], :file => @opts[:file])
+      @game = Game.new(:size => @size, :file => @file)
     end
 
     protected
@@ -69,16 +63,16 @@ module Sudocoup
 
     class Command
       attr_reader :controller
-      def initialize(controller, opts = {})
+      def initialize(controller, args = {})
         @controller = controller
-        opts.each do |k,v|
+        args.each do |k,v|
           self.instance_variable_set("@#{k}", v)  ## create and initialize an instance variable for this key/value pair
           self.class.send(:define_method, k, proc{self.instance_variable_get("@#{k}")})  ## create the getter that returns the instance variable
         end
       end
 
-      def self.call(controller, opts = {})
-        new(controller, opts).call
+      def self.call(controller, args = {})
+        new(controller, args).call
       end
 
       def delegate_call(*args)
@@ -215,8 +209,8 @@ module Sudocoup
     end
 
     class RequestAddMoveCommand < Command
+      # TODO test
       def call
-        # TODO test
         status, msg = game.add_player_move(player, move)
         played_move = Move.build(move, player.number)
         case status
@@ -224,14 +218,14 @@ module Sudocoup
           broadcast MoveJSON.to_json(played_move, status.to_s)
           broadcast msg, SUDOKOUP
           send_players(move)
-          # sleep 1.0
+          sleep 1.0
           delegate_call :request_next_player_move
         when :reject
           player.send_command MessagePipe.reject(msg)
           broadcast msg, SUDOKOUP
         when :violation
           broadcast MoveJSON.to_json(played_move, status.to_s)
-          EndGameCommand.call(controller, msg)
+          delegate_call :end_game, :msg => msg
         end
       end
     end

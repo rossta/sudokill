@@ -18,7 +18,7 @@ module Sudokill
       @board = Board.from_file(@file, 0.33)
       @moves = []
     end
-    
+
     def rebuild(percent_fill = 0.33)
       @board = Board.from_file(sudoku_file, percent_fill)
     end

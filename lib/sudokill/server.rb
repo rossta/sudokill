@@ -32,7 +32,7 @@ module Sudokill
         Sudokill::Controller.controllers.each do |app|
           app.channel = EM::Channel.new
         end
-
+        
         EventMachine::start_server @host, @port, Client::Socket, :app => controller do |player|
           player.send_command "WAIT" unless Sudokill.env == :test
         end

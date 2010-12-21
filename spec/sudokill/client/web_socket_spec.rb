@@ -5,6 +5,7 @@ describe Sudokill::Client::WebSocket do
     @conn   = mock(EventMachine::Connection, :send_data => nil)
     @app    = mock(Sudokill::Controller, :call => nil)
     @player = Sudokill::Client::WebSocket.new({})
+    @player.name = "Rossta"
     @player.app   = @app
     @player.conn  = @conn
     def @player.send_data(data)
@@ -13,6 +14,10 @@ describe Sudokill::Client::WebSocket do
   end
 
   describe "receive_data" do
+    it "should strip html tags" do
+      @app.should_receive(:broadcast).with("alert('foo')", "Rossta")
+      @player.receive_data("<script>alert('foo')</script>\r\n");
+    end
     describe "MOVE" do
       it "should request add move callback if playing" do
         @player.has_turn!
@@ -99,5 +104,5 @@ describe Sudokill::Client::WebSocket do
       @player.moves.should be_empty
     end
   end
-  
+
 end

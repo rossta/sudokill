@@ -20,8 +20,8 @@ module Sudokill
           when /GET.*HTTP/
             log "New player connecting...", SUDOKILL
           when /NEW CONNECTION/
-            cmd, name = line.split(PIPE)
-            @name = name
+            cmd, given_name = line.split(PIPE)
+            @name = given_name
             @app.call :new_visitor, :visitor => self
           when /PLAY/
             cmd, density = line.split(PIPE)
@@ -36,15 +36,15 @@ module Sudokill
           when /LEAVE/
             @app.call :remove_player, :player => self
           when /OPPONENT\|/
-            cmd, name = line.split(PIPE)
-            @app.call :connect_opponent, :name => name, :visitor => self
+            cmd, given_name = line.split(PIPE)
+            @app.call :connect_opponent, :name => given_name, :visitor => self
           when /MOVE\|\d \d \d/
             if has_turn?
               cmd, move = line.split(PIPE)
               @app.call :request_add_move, :player => self, :move => move
             end
           else
-            @app.broadcast line, name
+            @app.broadcast line.gsub(/<\/?[^>]*>/, ""), display_name
           end
           log line, logger_name
         end
@@ -52,6 +52,10 @@ module Sudokill
 
       def name
         @name || 'WS Client'
+      end
+
+      def display_name
+        name
       end
 
       def logger_name

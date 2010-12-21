@@ -7,7 +7,6 @@ require "eventmachine"
 require "addressable/uri"
 require "em-websocket"
 
-
 %w[ state_machine timer server controller board move dispatch logger game web_server messaging ].each { |file| require "sudokill/#{file}" }
 
 %w[ client_connection socket web_socket ].each { |file| require "sudokill/client/#{file}" }
@@ -22,32 +21,24 @@ module Sudokill
   def self.env
     @@env
   end
-CONFIG_1 = <<-TXT
-7 0 5 0 0 0 2 9 4
-0 0 1 2 0 6 0 0 0
-0 0 0 0 0 0 0 0 7
-9 0 4 5 0 0 0 2 0
-0 0 7 3 6 2 1 0 0
-0 2 0 0 0 1 7 0 8
-1 0 0 0 9 0 0 0 0
-0 0 0 7 0 5 9 0 0
-5 3 9 0 0 0 8 0 2
-TXT
-CONFIG_2 = <<-TXT
-8 0 0 0 0 4 0 0 1
-0 0 0 0 0 0 0 0 0
-0 3 2 0 5 0 4 9 0
-0 0 5 0 0 8 3 0 0
-3 0 0 6 1 9 0 0 5
-0 0 1 3 0 0 6 0 0
-0 8 4 0 7 0 1 2 0
-0 0 0 0 0 0 0 0 0
-7 0 0 2 0 0 0 0 4
-TXT
+  def self.start!(script, env, opts = {})
+    require 'yaml'
+    config = YAML.load_file('config/server.yml')[env.to_s]
+    command = []
+    command << ["LOG=1"] if opts[:background]
+    command << ["WEB=1"] if opts[:web]
+    command << ["script/#{script.to_s}"]
+    command << config['host']
+    command << config['port']['socket'] unless opts[:web] == :only
+    command << config['port']['websocket']
+    command << config['port']['http'] if opts[:web]
+    command << env.to_s
+    command << config['instances']
+    command << '&' if opts[:background]
+    system command.join(" ")
+  end
 end
 
 def log(message, name = "Server")
   Sudokill::Logger.log "%-10s>> #{message}" % name
 end
-
-

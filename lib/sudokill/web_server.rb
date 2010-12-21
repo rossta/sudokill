@@ -9,13 +9,9 @@ module Sudokill
     set :public, Proc.new { File.join(root, "public") }
     set :server, %w[thin mongrel webrick]
 
-    # get  %r{/sudokill|/} do
-    #   return File.open("public/index.html")
-    # end
     get  %r{/sudokill|/} do
       puts "WS port: #{settings.ws_port}"
       erb :index
     end
-
   end
 end

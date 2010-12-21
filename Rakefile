@@ -2,39 +2,22 @@ require "rubygems"
 require "rake"
 
 namespace :sudokill do
-  def start(script, env, opts = {})
-    require 'yaml'
-    config = YAML.load_file('config/server.yml')[env.to_s]
-    command = []
-    command << ["LOG=1"] if opts[:background]
-    command << ["WEB=1"] if opts[:web]
-    command << ["script/#{script.to_s}"]
-    command << config['host']
-    command << config['port']['socket'] unless opts[:web] == :only
-    command << config['port']['websocket']
-    command << config['port']['http'] if opts[:web]
-    command << env.to_s
-    command << config['instances']
-    command << '&' if opts[:background]
-    command.join(" ")
-  end
-
   namespace :game do
     task :development do
-      system start(:server, :development)
+      Sudokill.start!(:server, :development)
     end
     task :production do
-      system start(:server, :production, :background => true)
+      Sudokill.start!(:server, :production, :background => true)
     end
   end
   task :game => "sudokill:game:development"
 
   namespace :web do
     task :development do
-      system start(:web, :development, :web => :only, :background => true)
+      Sudokill.start!(:web, :development, :web => :only, :background => true)
     end
     task :production do
-      system start(:web, :production, :background => true, :web => :only)
+      Sudokill.start!(:web, :production, :background => true, :web => :only)
     end
   end
   task :web => "sudokill:web:development"

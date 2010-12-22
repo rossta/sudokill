@@ -47,6 +47,11 @@ module Sudokill
         close_connection_after_writing
       end
 
+      def game_over!
+        super
+        close
+      end
+
       def send(text)
         send_data format(text)
       end

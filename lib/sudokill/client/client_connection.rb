@@ -28,6 +28,10 @@ module Sudokill
         @number = number
         playing!
       end
+      
+      def game_over!
+        waiting!
+      end
 
       def to_json
         attrs = [].tap do |arr|

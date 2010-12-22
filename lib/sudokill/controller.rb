@@ -220,8 +220,9 @@ module Sudokill
 
     class EndGameCommand < Command
       def call
-        game.over!
         send_players MessagePipe.game_over(msg)
+        game.over!
+        players.each { |player| player.game_over! }
         broadcast msg
         broadcast StatusJSON.to_json(game.sudokill_state, msg)
         call_command :new_game

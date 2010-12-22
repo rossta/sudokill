@@ -289,8 +289,9 @@ describe Sudokill::Controller do
           @game.should_receive(:over!)
           @controller.call :end_game, :msg => "Game stopped"
         end
-        it "should send game over message to players" do
+        it "should send game over message to players and call game over" do
           @player.should_receive(:send_command).with(/GAME OVER/)
+          @player.should_receive(:game_over!)
           @controller.call :end_game, :msg => "Game stopped"
         end
       end

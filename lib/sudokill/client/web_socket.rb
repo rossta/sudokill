@@ -74,6 +74,11 @@ module Sudokill
         super
         @app.call :remove_visitor, :visitor => self
       end
+      
+      def game_over!
+        super
+        send("Press 'Join game' to re-enter a game")
+      end
 
       protected
 

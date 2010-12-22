@@ -42,9 +42,10 @@ module Sudokill
 
   def self.run(opts = {})
     require 'yaml'
-    config = YAML.load_file('config/server.yml')[env.to_s]
+    config = YAML.load_file('config/server.yml')[opts[:env].to_s]
+    
     Sudokill::Server.start(
-      :env  => opts[env],
+      :env  => opts[:env],
       :host => config['host'],
       :port => config['port']['socket'],
       :ws_port => config['port']['websocket'],

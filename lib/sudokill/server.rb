@@ -11,7 +11,7 @@ module Sudokill
     attr_accessor :controller
 
     def initialize(opts = {})
-      @env        = (opts.delete(:env) || 'development').to_sym
+      @env        = (opts.delete(:env) || Sudokill.env).to_sym
       @host       = opts.delete(:host) || '0.0.0.0'
       @port       = (opts.delete(:port) || 44444).to_i
       @ws_host    = '0.0.0.0'
@@ -24,12 +24,9 @@ module Sudokill
         Controller.create!(opts.merge(:host => @host, :port => @port))
       end
       @controller = Controller.controllers.first
-
-      Sudokill.env = @env
     end
 
     def start
-      File.open('tmp/sudokill.pid', 'w') {|f| f.write Process.pid }
       EventMachine.run do
         trap("TERM") { stop }
         trap("INT")  { stop }
@@ -39,7 +36,7 @@ module Sudokill
         end
 
         EventMachine::start_server @host, @port, Client::Socket, :app => controller do |player|
-          player.send_command "WAIT" unless Sudokill.env == :test
+          player.send_command "WAIT" unless @env == :test
         end
 
         EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => controller,
@@ -63,7 +60,6 @@ module Sudokill
       log "Stopping server"
       controller.close
       EventMachine.stop
-      Process.kill 'TERM', File.read('tmp/sudokill.pid')
     end
 
     def trigger(method, *args)

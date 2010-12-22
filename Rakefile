@@ -6,34 +6,43 @@ $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 require "sudokill"
 
 namespace :sudokill do
-  namespace :game do
-    task :development do
-      Sudokill.run(:env => :development)
-    end
-    task :production do
-      log = File.new("log/sudokill.log", "a+")
-      log.sync = true
-      STDOUT.reopen(log)
-      STDERR.reopen(log)
+  namespace :production do
+    task :start do
+      pid = fork do
+        Signal.trap('HUP', 'IGNORE') # Don't die upon logout
 
-      Sudokill.run(:env => :production)
+        log = File.new("log/sudokill.log", "a+")
+        log.sync = true
+        STDOUT.reopen(log)
+        STDERR.reopen(log)
+
+        Sudokill.run(:env => :production)
+      end
+      File.open('tmp/production.pid', 'w') {|f| f.write pid }
+      Process.detach(pid)
+    end
+    task :stop do
+      pidfile ='tmp/production.pid'
+      pid     = File.read(pidfile) if File.exist?(pidfile)
+      if pid.nil?
+        puts "No pid found in #{pidfile}. Was the server running?"
+      else
+        Process.kill 'TERM', pid.to_i
+        File.delete(pidfile)
+      end
     end
   end
-  task :game => "sudokill:game:development"
-  task :development => "sudokill:game:development"
 
   task :production do
-    Rake::Task["sudokill:game:production"].execute
+    Rake::Task["sudokill:production:start"].execute
   end
 
-  task :stop do
-    system 'ps ax|grep "rackup"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
-    system 'ps ax|grep "ruby script/web"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
-    system 'ps ax|grep "ruby script/server"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
+  task :start do
+    Sudokill.run(:env => :development)
   end
 
 end
-task :sudokill => "sudokill:development"
+task :sudokill => "sudokill:start"
 
 begin
   require 'jasmine'

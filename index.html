@@ -1,24 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <link rel="stylesheet" href="public/css/sudokoup.css" type="text/css" media="screen" title="no title" charset="utf-8">
-    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js'></script>
-    <script src='public/js/underscore.js'></script>
-    <script src='public/js/swfobject.js'></script>
-    <script src='public/js/FABridge.js'></script>
-    <script src='public/js/web_socket.js'></script>
-    <script src='public/js/consolex.js'></script>
-    <script src='public/js/raphael.js'></script>
-    <script src='public/js/base.js'></script>
-    <script src='public/js/sudokoup.js'></script>
-    <script>
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+  <head> 
+    <title>Sudokill | Heuristics | CS NYU</title> 
+    <link rel="stylesheet" href="css/sudokill.css" type="text/css" media="screen" title="no title" charset="utf-8" /> 
+    <script src='javascripts/jquery.min.js'></script> 
+    <script src='javascripts/underscore.js'></script> 
+    <script src='javascripts/swfobject.js'></script> 
+    <script src='javascripts/FABridge.js'></script> 
+    <script src='javascripts/web_socket.js'></script> 
+    <script type="text/javascript" charset="utf-8"> 
+      WebSocket.__swfLocation = "/javascripts/WebSocketMain.swf";
+    </script> 
+    <script src='javascripts/raphael.js'></script> 
+    <script src='javascripts/base.js'></script> 
+    <script src='javascripts/sudokill.js'></script> 
+    <script> 
       $(function() {
-        Sudokoup.play("sudokoup");
+        Sudokill.Settings.port = '48080';
+        Sudokill.play("sudokill");
       });
-    </script>
-  </head>
-  <body>
-    <div id="sudokoup"></div>
-  </body>
+    </script> 
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon"/> 
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"/> 
+  </head> 
+  <body> 
+    <h1 class="title">Sudokill</h1> 
+    <div class="logo"></div> 
+    <div id="sudokill"></div> 
+  </body> 
 </html>

@@ -1,0 +1,123 @@
+body { background: black; color: white; font-family: Georgia, Times, serif;}
+input {font-family: Georgia, Times, serif;}
+.title  {
+  background: transparent url(images/title_sudokill.png) no-repeat center;
+  text-indent:-4000em; height:200px; width:612px; margin:2em auto 1em;
+}
+.logo   {
+  background: transparent url(images/logo_sudokill.png) no-repeat center;
+  height:67px; width:231px; display:none;
+}
+.border { border: 1px solid #666; }
+.table { display:table; }
+.row { display:table-row;}
+.cell   { display:table-cell; vertical-align:middle;}
+.cell_top { display:table-cell; vertical-align:top;}
+.optional { display:none; margin: 0.5em 0;}
+.hidden { display:none;}
+#game_board {
+  float:left;
+  margin:0 10px 10px;
+}
+#game_board .cell { width: 50px; height:50px; border:1px solid #666;}
+#websocket_status {
+  background: #F60;
+  display: block;
+  left: 45%;
+  padding: 0.25em 0.5em;
+  position: absolute;
+  top: 0px;
+}
+#score_board,
+#msg {
+  width: 400px;
+  color: #AAA;
+  border:2px solid #CCC;
+  border-radius:5px;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-spacing:5px;
+  margin:1em auto 1em;
+}
+#msg.visible { display:table; }
+#msg p { margin: 0 0 1em;}
+#msg input.message { border:1px solid #999; padding:5px;width:80%;}
+
+form.websocket { text-align:center; }
+form.websocket input.name { font-size:1.5em; }
+form.websocket label { color: #AAA;}
+form.websocket label.name {
+  display:block;
+  color: #AAA;
+  font-size: 20px;
+  margin-top: 0.5em;
+}
+form.websocket a.toggle {
+  display:block;
+  color: #999;
+  font-size: 12px;
+  margin: 0.5em 0;
+}
+form.websocket input.play,
+form.websocket input.stop,
+form.websocket input.join,
+form.websocket input.leave { display:none;}
+form.websocket.connected {
+  position:absolute;
+  top:1em;
+  right:1em;
+}
+form.websocket.connected .required,
+form.websocket.connected .optional { display:none; }
+form.websocket.connected input.play,
+form.websocket.connected input.join,
+form.websocket.connected input.stop,
+form.websocket.connected input.leave { display:inline; }
+
+form.game_board input { display:none;}
+#board_val {
+  background-color: #121212;
+  border: none;
+  color: white;
+  font-family: Helvetica, Arial;
+  font-size: 2em;
+  height: 48px;
+  line-height: 0.5em;
+  padding: 0px;
+  position: absolute;
+  text-align: center;
+  width: 48px;
+}
+
+form.messager { position:relative;}
+form.messager div.game_options { position:absolute; top: 40px; left:0;}
+div.slider { background-color: #666666; margin-top:5px;}
+div.slider label {
+  font-family:sans-serif;
+  font-size: 0.75em;
+  line-height: 1.25em;
+}
+
+/* score board */
+#score_board { margin:2em auto 1em; }
+#score_board .header { color:#AAA; padding: 5px;}
+#score_board #score,
+#score_board #queue,
+#msg .pane { overflow:auto; height: 11em; padding:5px;}
+#score_board #score { width: 205px; border-right:1px solid #AAA; padding-right:10px;}
+
+#score_board .player { background-color: "none"; padding:5px;}
+#score_board .player.name { font-size:1.2em;}
+#score_board .has_turn { color: black;}
+#score_board .player.has_turn   { background-color: #00F0FD;}
+#score_board .player_1.has_turn { background-color: #FFDD44;}
+#score_board .player_2.has_turn { background-color: #00FF66;}
+
+#game_status {
+  display:table;
+  margin:0 auto 1em;
+  padding:1em;
+  color:#B7FF4F;
+  text-align:center;
+}
+#game_status .msg { display:table-cell;}

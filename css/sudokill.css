@@ -1,11 +1,11 @@
 body { background: black; color: white; font-family: Georgia, Times, serif;}
 input {font-family: Georgia, Times, serif;}
 .title  {
-  background: transparent url(images/title_sudokill.png) no-repeat center;
+  background: transparent url(../images/title_sudokill.png) no-repeat center;
   text-indent:-4000em; height:200px; width:612px; margin:2em auto 1em;
 }
 .logo   {
-  background: transparent url(images/logo_sudokill.png) no-repeat center;
+  background: transparent url(../images/logo_sudokill.png) no-repeat center;
   height:67px; width:231px; display:none;
 }
 .border { border: 1px solid #666; }

@@ -576,7 +576,7 @@ Sudokill = (function() {
 
       $(game.selector).append(self.$connectForm).append(self.$status);
       self.$connectForm.addClass("websocket welcome").addClass(Settings.mode);
-      self.$connectForm.find('input[name=host]').val(self.location.hostname());
+      self.$connectForm.find('input[name=host]').val(Settings.host);
       self.$connectForm.find('input[name=port]').val(Settings.port);
 
       self.$connectForm.submit(function(){
@@ -669,6 +669,15 @@ Sudokill = (function() {
     }
   }),
 
+  Location = function() {
+    this.hostname = function() {
+      return window.location.hostname;
+    };
+    this.host = function() {
+      return window.location.host;
+    };
+  },
+
     // humans: (/humans/.exec(window.location.href)),
   Settings = {
     mode: 'normal',
@@ -677,16 +686,8 @@ Sudokill = (function() {
       "player1":"#FFDD44",
       "player2":"#00FF66"
     },
+    host: (new Location()).hostname(),
     port: '48080'
-  },
-
-  Location = function() {
-    this.hostname = function() {
-      return window.location.hostname;
-    };
-    this.host = function() {
-      return window.location.host;
-    };
   },
 
   userAgentName = function() {

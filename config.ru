@@ -8,5 +8,4 @@ require 'bundler'
 Bundler.require
 require 'sudokill'
 
-Sudokill.start!(:server, :production, :background => true)
-Sudokill.start!(:web, :production, :background => true, :web => :only)
+Sudokill.run(:env => :production)

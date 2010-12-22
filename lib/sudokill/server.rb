@@ -11,10 +11,12 @@ module Sudokill
     attr_accessor :controller
 
     def initialize(opts = {})
-      @host     = opts.delete(:host) || '0.0.0.0'
-      @port     = (opts.delete(:port) || 44444).to_i
-      @ws_host  = '0.0.0.0'
-      @ws_port  = (opts.delete(:ws_port) || 8080).to_i
+      @env        = (opts.delete(:env) || 'development').to_sym
+      @host       = opts.delete(:host) || '0.0.0.0'
+      @port       = (opts.delete(:port) || 44444).to_i
+      @ws_host    = '0.0.0.0'
+      @ws_port    = (opts.delete(:ws_port) || 8080).to_i
+      @http_port  = (opts.delete(:http_port) || 4567).to_i
       @opts     = opts
 
       instances = (@opts[:instances] || 4).to_i
@@ -22,9 +24,12 @@ module Sudokill
         Controller.create!(opts.merge(:host => @host, :port => @port))
       end
       @controller = Controller.controllers.first
+
+      Sudokill.env = @env
     end
 
     def start
+      File.open('tmp/sudokill.pid', 'w') {|f| f.write Process.pid }
       EventMachine.run do
         trap("TERM") { stop }
         trap("INT")  { stop }
@@ -32,7 +37,7 @@ module Sudokill
         Sudokill::Controller.controllers.each do |app|
           app.channel = EM::Channel.new
         end
-        
+
         EventMachine::start_server @host, @port, Client::Socket, :app => controller do |player|
           player.send_command "WAIT" unless Sudokill.env == :test
         end
@@ -48,6 +53,8 @@ module Sudokill
           controller.time_check
         }
 
+        WebServer.run!(:bind => @host, :port => @http_port, :ws_port => @ws_port, :environment => @env)
+
         log_server_started
       end
     end
@@ -56,6 +63,7 @@ module Sudokill
       log "Stopping server"
       controller.close
       EventMachine.stop
+      Process.kill 'TERM', File.read('tmp/sudokill.pid')
     end
 
     def trigger(method, *args)

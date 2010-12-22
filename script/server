@@ -12,22 +12,18 @@ http_port = ARGV.shift || 4567
 env       = ARGV.shift || "development"
 instances = ARGV.shift || 2
 
-Sudokill.env = env.to_sym
-
 if ENV["LOG"]
   log = "log/sudokill.log"
   file = File.open(log, "a")
   Sudokill::Logger.logger = Logger.new(log)
 end
 
-if ENV['WEB']
-  system "LOG=1 script/web #{host} #{http_port} #{ws_port} &"
-end
-
 Sudokill::Server.start(
+  :env => env,
   :host => host,
   :port => port,
   :ws_port => ws_port,
+  :http_port => http_port,
   :size => 2,
   :instances => instances
 )

@@ -8,32 +8,26 @@ require "sudokill"
 namespace :sudokill do
   namespace :game do
     task :development do
-      Sudokill.start!(:server, :development)
+      Sudokill.run(:env => :development)
     end
     task :production do
-      Sudokill.start!(:server, :production, :background => true)
+      log = File.new("log/sudokill.log", "a+")
+      log.sync = true
+      STDOUT.reopen(log)
+      STDERR.reopen(log)
+
+      Sudokill.run(:env => :production)
     end
   end
   task :game => "sudokill:game:development"
-
-  namespace :web do
-    task :development do
-      Sudokill.start!(:web, :development, :web => :only, :background => true)
-    end
-    task :production do
-      Sudokill.start!(:web, :production, :background => true, :web => :only)
-    end
-  end
-  task :web => "sudokill:web:development"
-
   task :development => "sudokill:game:development"
 
   task :production do
     Rake::Task["sudokill:game:production"].execute
-    Rake::Task["sudokill:web:production"].execute
   end
 
   task :stop do
+    system 'ps ax|grep "rackup"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
     system 'ps ax|grep "ruby script/web"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
     system 'ps ax|grep "ruby script/server"|grep -v grep|awk "{print \$1}"|xargs kill -s TERM'
   end

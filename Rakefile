@@ -1,6 +1,10 @@
 require "rubygems"
 require "rake"
 
+lib_path = File.expand_path(File.dirname(__FILE__)) + "/lib/"
+$LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
+require "sudokill"
+
 namespace :sudokill do
   namespace :game do
     task :development do

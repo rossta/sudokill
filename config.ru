@@ -5,8 +5,6 @@ $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
 require 'rubygems'
 require 'bundler'
-Bundler.require
+Bundler.require(:default)
 require 'sudokill'
 
-Sudokill.start!(:server, :production, :background => true)
-Sudokill.start!(:web, :production, :background => true, :web => :only)

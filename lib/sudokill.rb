@@ -18,10 +18,12 @@ module Sudokill
   def self.env=(env)
     @@env = env
   end
+
   def self.env
     @@env
   end
-  def self.start!(script, env, opts = {})
+
+  def self.run!(script, env, opts = {})
     require 'yaml'
     config = YAML.load_file('config/server.yml')[env.to_s]
     command = []
@@ -36,6 +38,21 @@ module Sudokill
     command << config['instances']
     command << '&' if opts[:background]
     system command.join(" ")
+  end
+
+  def self.run(opts = {})
+    require 'yaml'
+    config = YAML.load_file('config/server.yml')[opts[:env].to_s]
+    
+    Sudokill::Server.start(
+      :env  => opts[:env],
+      :host => config['host'],
+      :port => config['port']['socket'],
+      :ws_port => config['port']['websocket'],
+      :http_port => config['port']['http'],
+      :size => 2,
+      :instances => config['instances']
+    )
   end
 end
 

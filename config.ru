@@ -8,3 +8,4 @@ require 'bundler'
 Bundler.require(:default)
 require 'sudokill'
 
+Sudokill.run(:env => :production)

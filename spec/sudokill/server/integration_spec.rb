@@ -3,6 +3,7 @@ require 'json'
 
 describe Sudokill::Server do
   before(:each) do
+    Sudokill::WebServer.stub!(:run!)
     Sudokill::Controller.controllers = []
     @pipe = "|"
   end

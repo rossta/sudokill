@@ -467,7 +467,12 @@ Sudokill = (function() {
       $gameOptions.append(self.$select);
       if (Settings.humans) $gameOptions.append("<input type='button' name='join' value='Join game' class='join' />");
       $gameOptions.append("<input type='button' name='play' value='Play' class='play' />");
-      $gameOptions.append("<div class='slider'><label for='density'>Density</label><input name='density' type='range' min='0' max='100' value='33' /><span class='density_val'></span><span>&#37;</span></div>");
+
+      var $slider = $("<div />");
+      $slider.addClass("slider");
+      $slider.append("<label for='density'>Density</label><input name='density' type='range' min='0' max='100' value='33' /><span class='density_val'></span><span>&#37;</span>");
+      $slider.append("<input type='button' name='preview' value='Preview' class='preview' />");
+      $gameOptions.append($slider);
 
       self.$form.submit(function() {
           var $this   = $(this),
@@ -507,6 +512,10 @@ Sudokill = (function() {
         }).
         delegate("input.switch", "click", function(){
           self.send("SWITCH");
+          return false;
+        }).
+        delegate("input.preview", "click", function(){
+          self.send("PREVIEW|" + self.$form.find("input[name=density]").val());
           return false;
         }).
         delegate("input[name=density]", "change", function() {
@@ -576,7 +585,7 @@ Sudokill = (function() {
 
       $(game.selector).append(self.$connectForm).append(self.$status);
       self.$connectForm.addClass("websocket welcome").addClass(Settings.mode);
-      self.$connectForm.find('input[name=host]').val(Settings.host);
+      self.$connectForm.find('input[name=host]').val(self.location.hostname());
       self.$connectForm.find('input[name=port]').val(Settings.port);
 
       self.$connectForm.submit(function(){
@@ -609,18 +618,6 @@ Sudokill = (function() {
           $(this).parents("form").find(".optional").toggle();
           return false;
         });
-    },
-    showLeaveButton: function() {
-      return this.$connectForm.find("input.join").removeClass("join").addClass("leave").val("Leave game");
-    },
-    showJoinButton: function() {
-      return this.$connectForm.find("input.leave").removeClass("leave").addClass("join").val("Join game");
-    },
-    showPlayButton: function() {
-      return this.$connectForm.find("input.stop").removeClass("stop").addClass("play").val("Play");
-    },
-    showStopButton: function() {
-      return this.$connectForm.find("input.play").removeClass("play").addClass("stop").val("Stop");
     },
     connect: function(name, host, port) {
       var self = this,
@@ -669,15 +666,6 @@ Sudokill = (function() {
     }
   }),
 
-  Location = function() {
-    this.hostname = function() {
-      return window.location.hostname;
-    };
-    this.host = function() {
-      return window.location.host;
-    };
-  },
-
     // humans: (/humans/.exec(window.location.href)),
   Settings = {
     mode: 'normal',
@@ -686,8 +674,16 @@ Sudokill = (function() {
       "player1":"#FFDD44",
       "player2":"#00FF66"
     },
-    host: (new Location()).hostname(),
     port: '48080'
+  },
+
+  Location = function() {
+    this.hostname = function() {
+      return window.location.hostname;
+    };
+    this.host = function() {
+      return window.location.host;
+    };
   },
 
   userAgentName = function() {

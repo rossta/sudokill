@@ -9,9 +9,7 @@ This is an implementation of the game devised by Dennis Shasha for his Heuristic
 
 ## Try it out ##
 
-[Sudokill](http://rosskaff.github.com/sudokill)
-
-You can play game in browsers enabled with Websockets or Flash. Go to the sudokill site and enter your name to connect. Since all games are open to the public, you'll be able to see other players connected as well. 
+You can play the game in browsers enabled with Websockets or Flash. Visit [Sudokill](http://rosskaff.github.com/sudokill) and enter your name to connect. Since all games are open to the public, you'll be able to see other players connected as well. 
 
 About the controls: "Switch game" will take you to another game room. Press "Join game" to get in line to play the game. You can select a computer player to play against using the "Choose opponent" menu. Press "Play" to start a game when two players are in the "Now playing" list. You can alter how many numbers fill the board at the start with the density controls.
 

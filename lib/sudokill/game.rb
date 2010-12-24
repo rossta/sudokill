@@ -1,9 +1,10 @@
 module Sudokill
   class Game
+    PERCENT_FILL = 0.33
     include Sudokill::StateMachine
     has_states :waiting, :ready, :in_progress, :over
 
-    attr_accessor :board, :moves, :size, :file
+    attr_accessor :board, :moves, :size, :file, :preview
     attr_reader :players
 
     def initialize(opts = {})
@@ -15,11 +16,16 @@ module Sudokill
     def reset
       waiting!
       @players = []
-      @board = Board.from_file(@file, 0.33)
+      @board = Board.from_file(@file, PERCENT_FILL)
       @moves = []
     end
 
-    def rebuild(percent_fill = 0.33)
+    def rebuild(percent_fill = PERCENT_FILL, force_preview = false)
+      if force_preview
+        @preview = percent_fill
+      else
+        return if percent_fill == @preview
+      end
       @board = Board.from_file(sudoku_file, percent_fill)
     end
 

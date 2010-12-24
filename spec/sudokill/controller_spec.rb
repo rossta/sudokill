@@ -28,7 +28,7 @@ describe Sudokill::Controller do
       Sudokill::Controller.controllers.first.should == controller
     end
   end
-  
+
   describe "self.next_controller" do
     it "return next controller in list" do
       Sudokill::Controller.controllers = [:controller_1, :controller_2]
@@ -40,7 +40,7 @@ describe Sudokill::Controller do
     it "return choose controller in list expecting given name if possible" do
       controller_1 = Sudokill::Controller.new
       controller_2 = Sudokill::Controller.new
-      
+
       controller_2.expecting_players << "Fooby"
       Sudokill::Controller.controllers = [controller_1, controller_2]
 
@@ -48,7 +48,7 @@ describe Sudokill::Controller do
       Sudokill::Controller.select_controller("Nooby").should == controller_1
     end
   end
-  
+
   describe "subscribe" do
     it "should subscribe visitor to channel and assign subscriber id" do
       player = mock_player
@@ -320,11 +320,23 @@ describe Sudokill::Controller do
       describe "play_game" do
         before(:each) do
           Sudokill::Controller::RequestNextPlayerMoveCommand.stub!(:new).and_return(mock(Sudokill::Controller::Command, :call => nil))
-          @game.stub!(:ready? => true, :status => nil, :board => mock(Sudokill::Board),
+          @game.stub!(:ready? => true, :status => nil, :board => mock(Sudokill::Board), :rebuild => true,
             :play! => true, :next_player_request => nil, :current_player => nil, :players => [mock_player])
         end
         it "should build game board with given density" do
-          @game.should_receive(:rebuild).with(0.50)
+          @game.should_receive(:rebuild).with(0.50).once.ordered
+          @game.should_receive(:play!).once.ordered
+          @controller.call :play_game, :density => 0.50
+        end
+        it "should broadcast board and game status json" do
+          Sudokill::BoardJSON.should_receive(:to_json).with(@game.board).and_return("board_json")
+          Sudokill::StatusJSON.should_receive(:to_json).with(:in_progress, /New game/).and_return("status_json")
+          @channel.should_receive(:push).with("board_json")
+          @channel.should_receive(:push).with("status_json")
+          @controller.call :play_game, :density => 0.50
+        end
+        it "should request the next player move" do
+          Sudokill::Controller::RequestNextPlayerMoveCommand.should_receive(:new)
           @controller.call :play_game, :density => 0.50
         end
       end
@@ -368,6 +380,30 @@ describe Sudokill::Controller do
           next_controller.should_receive(:call).with(:new_visitor, :visitor => player)
           player.should_receive(:app=).with(next_controller)
           @controller.call :switch_controller, :visitor => player
+        end
+      end
+
+      describe "preview_board" do
+        before(:each) do
+          @game.stub!(:sudokill_state => :waiting, :in_progress? => false, :status => nil, :board => mock(Sudokill::Board), :rebuild => true)
+        end
+        it "should preview game with given density when not in progress" do
+          force_preview = true
+          @game.should_receive(:in_progress?).and_return(false)
+          @game.should_receive(:rebuild).with(0.45, force_preview)
+          Sudokill::BoardJSON.should_receive(:to_json).with(@game.board).and_return("board_json")
+          Sudokill::StatusJSON.should_receive(:to_json).with(:waiting, /Board density update/).and_return("status_json")
+          @channel.should_receive(:push).with("board_json")
+          @channel.should_receive(:push).with("status_json")
+          @controller.call :preview_board, :density => 0.45
+        end
+        it "should not rebuild game if in progress" do
+          @game.should_receive(:in_progress?).and_return(true)
+          @game.stub!(:sudokill_state).and_return(:in_progress)
+          @game.should_not_receive(:rebuild)
+          Sudokill::StatusJSON.should_receive(:to_json).with(:in_progress, /Cannot update the board density/).and_return("status_json")
+          @channel.should_receive(:push).with("status_json")
+          @controller.call :preview_board, :density => 0.45
         end
       end
 

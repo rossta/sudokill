@@ -308,6 +308,24 @@ module Sudokill
       end
     end
 
+    class PreviewBoardCommand < Command
+      def board_density
+        @density || 0.33
+      end
+
+      def call
+        defer do
+          if game.in_progress?
+            broadcast StatusJSON.to_json(game.sudokill_state, "Cannot update the board density while game is in progress")
+          else
+            game.rebuild(board_density, true)
+            broadcast BoardJSON.to_json(game.board)
+            broadcast StatusJSON.to_json(game.sudokill_state, "Board density update! #{board_density}% of the numbers are filled in")
+          end
+        end
+      end
+    end
+
     class ConnectOpponentCommand < Command
       def call
         defer do

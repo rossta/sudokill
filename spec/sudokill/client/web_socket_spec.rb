@@ -37,7 +37,7 @@ describe Sudokill::Client::WebSocket do
     end
     describe "PLAY" do
       it "should trigger play game callback" do
-        @app.should_receive(:call).with(:play_game, { :density => 0.33 })
+        @app.should_receive(:call).with(:play_game, :density => 0.33 )
         @player.receive_data("PLAY|33\r\n")
       end
     end
@@ -64,6 +64,12 @@ describe Sudokill::Client::WebSocket do
       it "should request new app" do
         @app.should_receive(:call).with(:switch_controller, :visitor => @player)
         @player.receive_data("SWITCH\r\n")
+      end
+    end
+    describe "PREVIEW" do
+      it "should request a preview of the current board game" do
+        @app.should_receive(:call).with(:preview_board, :density => 0.45)
+        @player.receive_data("PREVIEW|45\r\n")
       end
     end
   end

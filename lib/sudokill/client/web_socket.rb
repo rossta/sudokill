@@ -24,8 +24,7 @@ module Sudokill
             @name = given_name
             @app.call :new_visitor, :visitor => self
           when /PLAY/
-            cmd, density = line.split(PIPE)
-            @app.call :play_game, :density => (density.to_f/100)
+            @app.call :play_game, :density => convert_line_to_density(line)
           when /STOP/
             @app.call :stop_game
           when /SWITCH/
@@ -35,6 +34,8 @@ module Sudokill
             @app.call :announce_player, :player => self
           when /LEAVE/
             @app.call :remove_player, :player => self
+          when /PREVIEW/
+            @app.call :preview_board, :density => convert_line_to_density(line)
           when /OPPONENT\|/
             cmd, given_name = line.split(PIPE)
             @app.call :connect_opponent, :name => given_name, :visitor => self
@@ -79,9 +80,14 @@ module Sudokill
         super
         send("Press 'Join game' to re-enter a game")
       end
-
+      
       protected
-
+      
+      def convert_line_to_density(line)
+        cmd, density = line.split(PIPE)
+        (density.to_f/100)
+      end
+      
       def ensure_app
         raise "Instance of Sudokill::Server not defined" unless @app
       end

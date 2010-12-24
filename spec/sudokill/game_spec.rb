@@ -3,14 +3,14 @@ require 'spec_helper'
 describe Sudokill::Game do
   before(:each) do
     Sudokill::Board.stub!(:from_file)
+    @board = mock(Sudokill::Board)
     @game = Sudokill::Game.new
   end
   describe "initialize" do
     it "should build a board" do
-      board = mock(Sudokill::Board)
-      Sudokill::Board.should_receive(:from_file).and_return(board)
+      Sudokill::Board.should_receive(:from_file).and_return(@board)
       game = Sudokill::Game.new
-      game.board.should == board
+      game.board.should == @board
     end
     it "should pick a .sud file from the data directory" do
       filenames = Dir.glob('data/*.sud')
@@ -21,10 +21,40 @@ describe Sudokill::Game do
   describe "reset" do
     it "should rebuild board" do
       game = Sudokill::Game.new
-      board = mock(Sudokill::Board)
-      Sudokill::Board.should_receive(:from_file).and_return(board)
+      Sudokill::Board.should_receive(:from_file).and_return(@board)
       game.reset
-      game.board.should == board
+      game.board.should == @board
+    end
+  end
+
+  describe "rebuild" do
+    before(:each) do
+      Sudokill::Board.stub!(:from_file).and_return(@board)
+    end
+    it "should rebuild board from file" do
+      Sudokill::Board.should_receive(:from_file).and_return(@board)
+      @game.rebuild
+      @game.board.should == @board
+    end
+    it "should not set preview if not forced" do
+      @game.rebuild
+      @game.preview.should be_nil
+    end
+    it "should not rebuild if preview matches percent fill" do
+      @game.preview = 0.56
+      Sudokill::Board.should_not_receive(:from_file)
+      @game.rebuild(0.56)
+    end
+    it "should rebuild if preview doesn't match percent fill" do
+      @game.preview = 0.56
+      Sudokill::Board.should_receive(:from_file)
+      @game.rebuild(0.57)
+    end
+    describe "force_preview" do
+      it "should set previewed to given percent fill with force preview" do
+        @game.rebuild(0.56, true)
+        @game.preview.should == 0.56
+      end
     end
   end
 

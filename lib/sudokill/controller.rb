@@ -288,7 +288,7 @@ module Sudokill
 
     class PlayGameCommand < Command
       def board_density
-        @density || 0.33
+        @density || Game::PERCENT_FILL
       end
 
       def call
@@ -310,7 +310,7 @@ module Sudokill
 
     class PreviewBoardCommand < Command
       def board_density
-        @density || 0.33
+        @density || Game::PERCENT_FILL
       end
 
       def call
@@ -320,7 +320,7 @@ module Sudokill
           else
             game.rebuild(board_density, true)
             broadcast BoardJSON.to_json(game.board)
-            broadcast StatusJSON.to_json(game.sudokill_state, "Board density update! #{board_density}% of the numbers are filled in")
+            broadcast StatusJSON.to_json(game.sudokill_state, "Density update! The board is #{(board_density * 100).to_i}% full")
           end
         end
       end

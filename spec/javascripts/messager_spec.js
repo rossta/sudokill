@@ -129,6 +129,14 @@ describe("Sudokill.Messager", function() {
       });
     });
 
+    describe("preview", function() {
+      it("should send PREVIEW message when preview button clicked", function() {
+        $("input[name=density]").val(25);
+        $("input.preview").click();
+        expect(sendMessage).toHaveBeenCalledWith("PREVIEW|25");
+      });
+    });
+
     describe("join_game", function() {
       it("should send JOIN message when join button clicked", function() {
         var $button = $("input.join");

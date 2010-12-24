@@ -392,7 +392,7 @@ describe Sudokill::Controller do
           @game.should_receive(:in_progress?).and_return(false)
           @game.should_receive(:rebuild).with(0.45, force_preview)
           Sudokill::BoardJSON.should_receive(:to_json).with(@game.board).and_return("board_json")
-          Sudokill::StatusJSON.should_receive(:to_json).with(:waiting, /Board density update/).and_return("status_json")
+          Sudokill::StatusJSON.should_receive(:to_json).with(:waiting, /Density update!/).and_return("status_json")
           @channel.should_receive(:push).with("board_json")
           @channel.should_receive(:push).with("status_json")
           @controller.call :preview_board, :density => 0.45

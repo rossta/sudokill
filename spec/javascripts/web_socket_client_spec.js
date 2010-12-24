@@ -58,10 +58,17 @@ describe("WebSocketClient", function() {
       expect($form).toHaveSelector('label.port');
     });
     it('should initialize host value to hostname', function() {
-      var client = new Sudokill.WebSocketClient(game), websocket;
+      var client = new Sudokill.WebSocketClient(game);
       var hostname = new Sudokill.Location().hostname();
       var $host = $('input[name=host]');
       expect($host.val()).toEqual(hostname);
+    });
+    it('should initialize port value to port settings', function() {
+      var port = Sudokill.Settings.port;
+      var client = new Sudokill.WebSocketClient(game);
+      var $port = $('input[name=port]');
+      expect(port).toEqual('48080');
+      expect($port.val()).toEqual(port);
     });
   });
 

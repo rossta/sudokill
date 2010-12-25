@@ -223,7 +223,7 @@ describe Sudokill::Server do
   describe "periodic timer" do
     it "should end game if time is up for player while game in progress" do
       EM.run {
-        server = Sudokill::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789, :max_time => 120)
+        server = Sudokill::Server.new(:host => '0.0.0.0', :port => 12345, :ws_port => 56789)
         server.start
         controller = server.controller
 

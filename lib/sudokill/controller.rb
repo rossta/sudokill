@@ -24,14 +24,13 @@ module Sudokill
       @@controllers.detect { |app| app.expecting_players.include?(name) } || @@controllers.first
     end
 
-    attr_accessor :game, :queue, :max_time, :channel, :host, :port, :expecting_players
+    attr_accessor :game, :queue, :channel, :host, :port, :expecting_players
     def initialize(opts = {})
       @host   = opts[:host]
       @port   = opts[:port]
       @file   = opts[:file]
       @size   = opts[:size]
       @queue  = []
-      @max_time = (opts[:max_time]).to_i if opts[:max_time]
       @expecting_players = []
       initialize_game
     end
@@ -59,10 +58,6 @@ module Sudokill
       players.each { |player| player.send_command(msg) }
     end
 
-    def time_left?(player = game.current_player)
-      player.time_left?(max_time)
-    end
-
     def call(command, args = {})
       command_class = self.class.const_get "#{command.to_s.split("_").map(&:capitalize).join}Command"
       command_class.call(self, args)
@@ -71,10 +66,10 @@ module Sudokill
     def time_check
       # TODO test
       if game.in_progress?
-        if !time_left?
+        if !game.current_player.time_left?
           call :end_game, :msg => game.times_up_violation(game.current_player)
         end
-        broadcast(PlayerJSON.to_json(players, max_time)) if players.any?
+        broadcast(PlayerJSON.to_json(players, 120)) if players.any?
       end
     end
 
@@ -118,7 +113,7 @@ module Sudokill
           SRC
         end
       end
-      delegate_to_controller :game, :broadcast, :queue, :players, :max_time,
+      delegate_to_controller :game, :broadcast, :queue, :players,
         :send_players, :host, :port, :call, :channel, :expecting_players
 
       def defer(&block)
@@ -151,7 +146,7 @@ module Sudokill
       def call
         visitor.send StatusJSON.to_json(game.sudokill_state, "Welcome to Sudokill, #{visitor.name}")
         visitor.send BoardJSON.to_json(game.board)
-        visitor.send PlayerJSON.to_json(players, max_time)
+        visitor.send PlayerJSON.to_json(players, 120)
         visitor.send QueueJSON.to_json(queue)
         msg = "#{visitor.name} just joined the game room"
         broadcast msg, SUDOKILL
@@ -193,7 +188,7 @@ module Sudokill
         elsif queue.delete(player)
           broadcast("#{player.name} left the On Deck circle", SUDOKILL)
         end
-        broadcast PlayerJSON.to_json(players, max_time)
+        broadcast PlayerJSON.to_json(players, 120)
         broadcast QueueJSON.to_json(queue)
       end
     end
@@ -205,7 +200,7 @@ module Sudokill
         elsif queue.include? player
           broadcast("#{player.name} is now waiting On Deck", SUDOKILL)
         end
-        broadcast PlayerJSON.to_json(players, max_time)
+        broadcast PlayerJSON.to_json(players, 120)
         broadcast QueueJSON.to_json(queue)
       end
     end

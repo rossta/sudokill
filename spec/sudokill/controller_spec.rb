@@ -93,23 +93,6 @@ describe Sudokill::Controller do
     end
   end
 
-  describe "time_left?" do
-    it "should return false if player time left false" do
-      player = mock_player(:time_left? => false)
-      @controller.time_left?(player).should be_false
-    end
-
-    it "should return true if player time left true" do
-      player = mock_player(:time_left? => true)
-      @controller.time_left?(player).should be_true
-    end
-
-    it "should return time left for current player if not given player" do
-      @game.stub!(:current_player => mock_player(:time_left? => false))
-      @controller.time_left?.should be_false
-    end
-  end
-
   describe "commands" do
 
     describe "join_queue" do

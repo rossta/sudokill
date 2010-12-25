@@ -10,6 +10,7 @@ module Sudokill
         waiting!
         @dispatch     = Dispatch.new
         @app          = opts[:app]
+        @max_time     = opts[:max_time]
         @data = ''
       end
 
@@ -62,10 +63,6 @@ module Sudokill
 
       def logger_name
         "SK[#{name}]"
-      end
-
-      def time_left?(max_time = nil)
-        max_time.nil? || current_time <= max_time
       end
 
       protected

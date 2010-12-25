@@ -8,7 +8,7 @@ module Sudokill
 
   module Timer
 
-    attr_accessor :start_time, :stop_time, :last_lap, :total_time
+    attr_accessor :start_time, :stop_time, :last_lap, :total_time, :max_time
     def total_time
       @total_time ||= 0
     end
@@ -40,8 +40,8 @@ module Sudokill
       @total_time = 0
     end
 
-    def time_left?(max = nil)
-      true # default
+    def time_left?
+      @max_time.nil? || current_time <= @max_time
     end
 
   end

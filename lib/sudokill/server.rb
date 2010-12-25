@@ -3,13 +3,13 @@ module Sudokill
   SUDOKILL = 'Sudokill'
 
   class Server
-
+    
     def self.start(opts = {})
       new(opts).start
     end
 
     attr_accessor :controller
-    attr_reader :env, :host, :port, :ws_host, :ws_port, :http_port
+    attr_reader :env, :host, :port, :ws_host, :ws_port, :http_port, :max_time_socket, :max_time_websocket
 
     def initialize(opts = {})
       @env        = (opts.delete(:env) || Sudokill.env).to_sym
@@ -18,6 +18,10 @@ module Sudokill
       @ws_host    = (opts.delete(:ws_host) || '0.0.0.0').to_s
       @ws_port    = (opts.delete(:ws_port) || 8080).to_i
       @http_port  = (opts.delete(:http_port) || 4567).to_i
+
+      @max_time_socket    = (opts.delete(:max_time_socket) || 120).to_i
+      @max_time_websocket = (opts.delete(:max_time_websocket) || 600).to_i
+
       @opts       = opts
 
       instances = (@opts[:instances] || 4).to_i
@@ -36,12 +40,13 @@ module Sudokill
           app.channel = EM::Channel.new
         end
 
-        EventMachine::start_server @host, @port, Client::Socket, :app => controller do |player|
+        EventMachine::start_server @host, @port, Client::Socket, 
+          :app => controller, :max_time => @max_time_socket do |player|
           player.send_command "WAIT" unless @env == :test
         end
 
-        EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, :app => controller,
-          :debug => @debug, :logging => true do |ws|
+        EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, 
+          :app => controller, :max_time => @max_time_websocket, :debug => @debug, :logging => true do |ws|
             ws.onopen {
               controller.subscribe(ws)
             }

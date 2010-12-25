@@ -9,6 +9,7 @@ module Sudokill
       def initialize(opts = {})
         super
         @app      = opts[:app]
+        @max_time = opts[:max_time]
         @data     = ''
       end
 

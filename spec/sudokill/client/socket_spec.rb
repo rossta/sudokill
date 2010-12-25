@@ -160,23 +160,24 @@ describe Sudokill::Client::Socket do
   
   describe "time_left?" do
     before(:each) do
-      @max_time = 120
+      @player.max_time = 120
     end
     it "should return true if player time is less than max time" do
       @player.total_time = 60
-      @player.time_left?(@max_time).should be_true
+      @player.time_left?.should be_true
     end
 
     it "should return true if player time is equal to max time" do
       @player.total_time = 120
-      @player.time_left?(@max_time).should be_true
+      @player.time_left?.should be_true
     end
 
     it "should return false if player time is more than max time" do
       @player.total_time = 121
-      @player.time_left?(@max_time).should be_false
+      @player.time_left?.should be_false
     end
     it "should return true if no max time" do
+      @player.max_time = nil
       @player.total_time = 121
       @player.time_left?.should be_true
     end

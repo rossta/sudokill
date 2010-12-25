@@ -1,3 +1,9 @@
 Enforce computer player 2 min time limit
 Enforce human player extended time limit
 Trigger game play after 2 min timeout
+End game if no valid moves left
+ - last move results in free spaces that would all result in losses
+ - last move fills board (in case of complete solution)
+Don't allow starting config where it's not possible to misplay
+
+Private game room

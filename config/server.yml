@@ -6,6 +6,9 @@ production:
     http: 45678
     socket: 44444
   host: 0.0.0.0
+  max_time: 
+    websocket: 600
+    socket: 120
 development: 
   instances: 2
   port: 
@@ -13,3 +16,6 @@ development:
     http: 4567
     socket: 4444
   host: 0.0.0.0
+  max_time: 
+    websocket: 600
+    socket: 120

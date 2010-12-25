@@ -23,23 +23,6 @@ module Sudokill
     @@env
   end
 
-  def self.run!(script, env, opts = {})
-    require 'yaml'
-    config = YAML.load_file('config/server.yml')[env.to_s]
-    command = []
-    command << ["LOG=1"] if opts[:background]
-    command << ["WEB=1"] if opts[:web]
-    command << ["script/#{script.to_s}"]
-    command << config['host']
-    command << config['port']['socket'] unless opts[:web] == :only
-    command << config['port']['websocket']
-    command << config['port']['http'] if opts[:web]
-    command << env.to_s
-    command << config['instances']
-    command << '&' if opts[:background]
-    system command.join(" ")
-  end
-
   def self.run(opts = {})
     require 'yaml'
     config = YAML.load_file('config/server.yml')[opts[:env].to_s]

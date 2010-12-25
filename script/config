@@ -10,6 +10,10 @@ config = {
       "socket" => 4444,
       "websocket" => 8080,
       "http" => 4567
+    },
+    "max_time" => {
+      "socket" => 120,
+      "websocket" => 600
     }
   },
   "production" => {
@@ -19,6 +23,10 @@ config = {
       "socket" => 44444,
       "websocket" => 48080,
       "http" => 45678
+    },
+    "max_time" => {
+      "socket" => 120,
+      "websocket" => 600
     }
   }
 }

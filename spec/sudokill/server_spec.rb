@@ -14,6 +14,9 @@ describe Sudokill::Server do
       server.ws_host.should == '0.0.0.0'
       server.ws_port.should == 8080
       server.http_port.should == 4567
+
+      server.max_time_websocket.should == 600
+      server.max_time_socket.should == 120
     end
     
     it "should accept options" do
@@ -23,7 +26,9 @@ describe Sudokill::Server do
         :port => 454545,
         :ws_host => '127.0.0.1',
         :ws_port => 48080,
-        :http_port => 45678
+        :http_port => 45678,
+        :max_time_websocket => 500,
+        :max_time_socket => 100
       })
       server.env.should == :development
       server.host.should == 'localhost'
@@ -31,6 +36,9 @@ describe Sudokill::Server do
       server.ws_host.should == '127.0.0.1'
       server.ws_port.should == 48080
       server.http_port.should == 45678
+
+      server.max_time_websocket.should == 500
+      server.max_time_socket.should == 100
     end
   end
   

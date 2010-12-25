@@ -69,7 +69,7 @@ module Sudokill
         if !game.current_player.time_left?
           call :end_game, :msg => game.times_up_violation(game.current_player)
         end
-        broadcast(PlayerJSON.to_json(players, 120)) if players.any?
+        broadcast(PlayerJSON.to_json(players)) if players.any?
       end
     end
 
@@ -146,7 +146,7 @@ module Sudokill
       def call
         visitor.send StatusJSON.to_json(game.sudokill_state, "Welcome to Sudokill, #{visitor.name}")
         visitor.send BoardJSON.to_json(game.board)
-        visitor.send PlayerJSON.to_json(players, 120)
+        visitor.send PlayerJSON.to_json(players)
         visitor.send QueueJSON.to_json(queue)
         msg = "#{visitor.name} just joined the game room"
         broadcast msg, SUDOKILL
@@ -188,7 +188,7 @@ module Sudokill
         elsif queue.delete(player)
           broadcast("#{player.name} left the On Deck circle", SUDOKILL)
         end
-        broadcast PlayerJSON.to_json(players, 120)
+        broadcast PlayerJSON.to_json(players)
         broadcast QueueJSON.to_json(queue)
       end
     end
@@ -200,7 +200,7 @@ module Sudokill
         elsif queue.include? player
           broadcast("#{player.name} is now waiting On Deck", SUDOKILL)
         end
-        broadcast PlayerJSON.to_json(players, 120)
+        broadcast PlayerJSON.to_json(players)
         broadcast QueueJSON.to_json(queue)
       end
     end

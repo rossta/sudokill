@@ -66,7 +66,6 @@ module Sudokill
   class PlayerJSON < MessageJSON
     def initialize(players, max_time = nil)
       @players = players
-      @max_time = max_time
     end
     def action
       "SCORE"
@@ -74,7 +73,6 @@ module Sudokill
     def json_args
       {}.tap do |args|
         args[:players] = "[#{@players.map(&:to_json).join(",")}]"
-        args[:max_time] = @max_time unless @max_time.nil?
       end
     end
   end

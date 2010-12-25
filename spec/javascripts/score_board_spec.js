@@ -69,14 +69,12 @@ describe("Sudokill.ScoreBoard", function() {
       expect($score.find(".player")).toHaveLength(2);
 
       expect($player1.find(".name").text()).toEqual("Player 1");
-      expect($player1.find(".current_time").text()).toEqual("Time: 14");
-      expect($player1.find(".max_time").text()).toEqual("120");
+      expect($player1.find(".time"  ).text()).toEqual("Time: " + (120 - 14));
       expect($player1.find(".moves").text()).toEqual("Moves: 3");
       expect($player1.hasClass("has_turn")).toBeFalsy();
       
       expect($player2.find(".name").text()).toEqual("Player 2");
-      expect($player2.find(".current_time").text()).toEqual("Time: 8");
-      expect($player2.find(".max_time").text()).toEqual("120");
+      expect($player2.find(".time").text()).toEqual("Time: " + (120 - 8));
       expect($player2.hasClass("has_turn")).toBeTruthy();
     });
 
@@ -100,8 +98,7 @@ describe("Sudokill.ScoreBoard", function() {
       expect($score.find(".player")).toHaveLength(1);
 
       expect($player1.find(".name").text()).toEqual("Player 1");
-      expect($player1.find(".current_time").text()).toEqual("Time: 14");
-      expect($player1.find(".max_time").text()).toEqual("120");
+      expect($player1.find(".time").text()).toEqual("Time: " + (120 - 14));
       expect($player1.find(".moves").text()).toEqual("Moves: 3");
       expect($player1.hasClass("has_turn")).toBeTruthy();
       
@@ -130,14 +127,12 @@ describe("Sudokill.ScoreBoard", function() {
       expect($score.find(".player")).toHaveLength(2);
 
       expect($player1.find(".name").text()).toEqual("Player 1");
-      expect($player1.find(".current_time").text()).toEqual("Time: 16");
-      expect($player1.find(".max_time").text()).toEqual("120");
+      expect($player1.find(".time").text()).toEqual("Time: " + (120 - 16));
       expect($player1.find(".moves").text()).toEqual("Moves: 3");
       expect($player1.hasClass("has_turn")).toBeFalsy();
       
       expect($player2.find(".name").text()).toEqual("Player 2");
-      expect($player2.find(".current_time").text()).toEqual("Time: 8");
-      expect($player2.find(".max_time").text()).toEqual("120");
+      expect($player2.find(".time").text()).toEqual("Time: " + (120 - 8));
       expect($player2.hasClass("has_turn")).toBeTruthy();
     });
   });

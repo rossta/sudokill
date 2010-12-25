@@ -390,9 +390,11 @@ Sudokill = (function() {
         }
 
         $("<div />").appendTo($player).addClass("name").text(player["name"]);
-        $("<div />").appendTo($player).addClass("current_time").text("Time: " + player["current_time"]);
+        $("<div />").appendTo($player).addClass("time")
         if (player["max_time"]) {
-          $("<div />").appendTo($player).addClass("max_time").addClass("hidden").text(player["max_time"]);
+          $player.find(".time").text("Time: " + (player["max_time"] - player["current_time"]));
+        } else {
+          $player.find(".time").text("Time: " + player["current_time"]);
         }
         $("<div />").appendTo($player).addClass("moves").text("Moves: " + player["moves"]);
         if (player["has_turn"]) {

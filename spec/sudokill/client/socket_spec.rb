@@ -102,6 +102,7 @@ describe Sudokill::Client::Socket do
     before(:each) do
       @player.number = 1
       @player.total_time = 14
+      @player.max_time = 120
       @player.name = "Rossta"
       @player.has_turn!
     end
@@ -119,6 +120,7 @@ describe Sudokill::Client::Socket do
       json['name'].should == 'Rossta'
       json['moves'].should == 0
       json['current_time'].should == 14
+      json['max_time'].should == 120
       json['has_turn'].should be_true
     end
     it "should not include values that are not defined" do
@@ -129,6 +131,7 @@ describe Sudokill::Client::Socket do
 #     }
       @player.number = nil
       @player.total_time = nil
+      @player.max_time = nil
       @player.waiting!
 
       json_s = @player.to_json
@@ -138,6 +141,7 @@ describe Sudokill::Client::Socket do
       json['name'].should == 'Rossta'
       json['moves'].should == 0
       json['current_time'].should == 0
+      json['max_time'].should be_nil
       json['has_turn'].should be_false
     end
   end

@@ -1,5 +1,4 @@
-Enforce computer player 2 min time limit
-Enforce human player extended time limit
+Display time remaining for human/computer players
 Trigger game play after 2 min timeout
 End game if no valid moves left
  - last move results in free spaces that would all result in losses

@@ -34,7 +34,9 @@ module Sudokill
       :ws_port => config['port']['websocket'],
       :http_port => config['port']['http'],
       :size => 2,
-      :instances => config['instances']
+      :instances => config['instances'],
+      :max_time_socket => config['max_time']['socket'],
+      :max_time_websocket => config['max_time']['websocket']
     )
   end
 end

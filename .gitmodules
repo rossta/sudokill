@@ -1,6 +1,0 @@
-[submodule "vendor/addressable"]
-	path = vendor/addressable
-	url = git://github.com/sporkmonger/addressable.git
-[submodule "vendor/em-websocket"]
-	path = vendor/em-websocket
-	url = http://github.com/igrigorik/em-websocket.git

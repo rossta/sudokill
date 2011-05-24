@@ -9,6 +9,6 @@ gem "em-websocket", '0.2.0'
 
 group :test do
   gem "ruby-debug"
-  gem "jasmine", "~> 1.0.1"
+  gem "jasmine"
   gem "em-http-request"
 end

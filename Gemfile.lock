@@ -58,7 +58,7 @@ DEPENDENCIES
   em-http-request
   em-websocket (= 0.2.0)
   eventmachine (= 0.12.10)
-  jasmine (~> 1.0.1)
+  jasmine
   ruby-debug
   sinatra
   thin

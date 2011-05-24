@@ -1,6 +1,6 @@
 --- 
 production: 
-  instances: 4
+  instances: 2
   port: 
     websocket: 48080
     http: 45678

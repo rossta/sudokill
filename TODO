@@ -1,4 +1,3 @@
-Display time remaining for human/computer players
 Trigger game play after 2 min timeout
 End game if no valid moves left
  - last move results in free spaces that would all result in losses
@@ -6,3 +5,5 @@ End game if no valid moves left
 Don't allow starting config where it's not possible to misplay
 
 Private game room
+
+Get config.ru to work like rake sudokill:production

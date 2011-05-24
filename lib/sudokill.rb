@@ -14,30 +14,27 @@ require "em-websocket"
 %w[ naive ].each { |file| require "sudokill/player/#{file}" }
 
 module Sudokill
-  @@env = :development
-  def self.env=(env)
-    @@env = env
-  end
+  
+  class << self
 
-  def self.env
-    @@env
-  end
+    attr_accessor :env
 
-  def self.run(opts = {})
-    require 'yaml'
-    config = YAML.load_file('config/server.yml')[opts[:env].to_s]
+    def run(opts = {})
+      require 'yaml'
+      config = YAML.load_file('config/server.yml')[opts[:env].to_s]
     
-    Sudokill::Server.start(
-      :env  => opts[:env],
-      :host => config['host'],
-      :port => config['port']['socket'],
-      :ws_port => config['port']['websocket'],
-      :http_port => config['port']['http'],
-      :size => 2,
-      :instances => config['instances'],
-      :max_time_socket => config['max_time']['socket'],
-      :max_time_websocket => config['max_time']['websocket']
-    )
+      Server.start(
+        :env  => opts[:env],
+        :host => config['host'],
+        :port => config['port']['socket'],
+        :ws_port => config['port']['websocket'],
+        :http_port => config['port']['http'],
+        :size => 2,
+        :instances => config['instances'],
+        :max_time_socket => config['max_time']['socket'],
+        :max_time_websocket => config['max_time']['websocket']
+      )
+    end
   end
 end
 

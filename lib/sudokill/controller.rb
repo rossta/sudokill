@@ -129,7 +129,7 @@ module Sudokill
         if joined
           player.reset
           player.send_command "READY"
-          broadcast("Ready to begin", SUDOKILL) if game.ready?
+          call_command :ready_game
         end
         joined
       end
@@ -139,6 +139,14 @@ module Sudokill
       def call
         queue << player
         player.send_command "WAIT"
+      end
+    end
+
+    class ReadyGameCommand < Command
+      def call
+        defer do
+          broadcast("Ready to begin. Please press play", SUDOKILL) if game.ready?
+        end
       end
     end
 

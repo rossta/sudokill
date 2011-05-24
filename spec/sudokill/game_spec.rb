@@ -176,6 +176,9 @@ describe Sudokill::Game do
     end
   end
   describe "join_game" do
+    before(:each) do
+      Sudokill::Clock.stub!(:time)
+    end
     describe "game size is 2" do
       it "should return true if successful, false if not" do
         @game.join_game(:player_1).should be_true
@@ -205,6 +208,9 @@ describe Sudokill::Game do
         @game.join_game(:player_2)
         @game.waiting?.should be_false
         @game.ready?.should be_true
+      end
+      it "should set joined_at" do
+        Sudokill::Clock.should_receive(:time).and_return(1291259945)
       end
     end
     describe "game size is 3" do

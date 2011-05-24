@@ -15,6 +15,7 @@ describe Sudokill::Server do
         controller = server.controller
 
         socket = EM.connect('0.0.0.0', 12345, FakeSocketClient)
+
         socket.onopen = lambda {
           controller.players.size.should == 1
           socket.data.last.chomp.should == "READY"

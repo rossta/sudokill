@@ -106,13 +106,38 @@ describe Sudokill::Controller do
     end
 
     describe "join_game" do
-      it "should ready player for game" do
+      before(:each) do
         @player_1 = mock_player
+        Sudokill::Controller::ReadyGameCommand.stub!(:new).and_return(mock(Sudokill::Controller::Command, :call => nil))
+      end
+      it "should ready player for game" do
         @game.stub!(:join_game => true, :ready? => false, :players => [@player_1])
 
         @player_1.should_receive(:reset)
         @player_1.should_receive(:send_command).with("READY")
         @controller.call :join_game, :player => @player_1
+      end
+
+      it "should trigger ready game command" do
+        @game.stub!(:join_game => true, :ready? => false, :players => [@player_1])
+        Sudokill::Controller::ReadyGameCommand.should_receive(:new)
+        @controller.call :join_game, :player => @player_1
+      end
+    end
+
+    describe "ready_game" do
+      before(:each) do
+        @game.stub!(:join_game => true, :ready? => false, :players => [@player_1])
+      end
+      it "should broadcast ready-to-begin message if game ready" do
+        @game.should_receive(:ready?).and_return(true)
+        @channel.should_receive(:push).with(/Ready to begin. Please press play/)
+        @controller.call :ready_game
+      end
+      it "should not broadcast ready-to-begin if game not ready" do
+        @game.should_receive(:ready?).and_return(false)
+        @channel.should_not_receive(:push).with(/Ready/)
+        @controller.call :ready_game
       end
     end
 
@@ -390,6 +415,11 @@ describe Sudokill::Controller do
         end
       end
 
+      describe "game_ready" do
+        before(:each) do
+          @game.stub!(:sudokill_state => :ready, :ready? => true)
+        end
+      end
     end
   end
 end

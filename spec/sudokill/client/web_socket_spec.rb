@@ -84,9 +84,9 @@ describe Sudokill::Client::WebSocket do
 
   describe "send_command" do
     it "should wrap command in command json message" do
-      @conn.should_receive(:send_data).with(/\"action\":\"COMMAND\"/)
+      @player.should_receive(:send).with(/\"action\":\"COMMAND\"/)
       @player.send_command("ADD")
-      @conn.should_receive(:send_data).with(/\"command\":\"ADD\"/)
+      @player.should_receive(:send).with(/\"command\":\"ADD\"/)
       @player.send_command("ADD")
     end
   end

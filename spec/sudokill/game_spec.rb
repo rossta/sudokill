@@ -209,9 +209,6 @@ describe Sudokill::Game do
         @game.waiting?.should be_false
         @game.ready?.should be_true
       end
-      it "should set joined_at" do
-        Sudokill::Clock.should_receive(:time).and_return(1291259945)
-      end
     end
     describe "game size is 3" do
       before(:each) do

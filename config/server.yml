@@ -2,8 +2,8 @@
 production: 
   instances: 2
   port: 
-    websocket: 443
-    http: 80
+    websocket: 48080
+    http: 45678
     socket: 44444
   host: 0.0.0.0
   max_time: 

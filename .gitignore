@@ -1,4 +1,4 @@
 .rvmrc
 secret
 log/*.log
-tmp/*.pid
+tmp/

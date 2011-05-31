@@ -17,7 +17,7 @@ module Sudokill
       @port       = (opts.delete(:port) || 44444).to_i
       @ws_host    = (opts.delete(:ws_host) || '0.0.0.0').to_s
       @ws_port    = (opts.delete(:ws_port) || 8080).to_i
-      @http_port  = (opts.delete(:http_port) || 4567).to_i
+      @http_port  = (opts.delete(:http_port)).to_i
 
       @max_time_socket    = (opts.delete(:max_time_socket) || 120).to_i
       @max_time_websocket = (opts.delete(:max_time_websocket) || 600).to_i

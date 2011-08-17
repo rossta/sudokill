@@ -8,7 +8,8 @@ gem "addressable", '2.2.2'
 gem "em-websocket", '0.2.0'
 
 group :test do
-  gem "ruby-debug"
+  gem 'ruby-debug', :platforms => :ruby_18
+  gem 'ruby-debug19', :require => 'ruby-debug', :platforms => :ruby_19
   gem "jasmine"
   gem "em-http-request"
 end

@@ -1,12 +1,12 @@
-load 'deploy' if respond_to?(:namespace)
+load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 
 set :application, "sudokill"
 set :user,        "ross"
 
 set :scm,         :git
 set :repository,  "git@github.com:rossta/sudokill.git"
-set :deploy_via, :remote_cache
-# set :deploy_to, "/home/#{user}/www/#{application}"
+set :deploy_via,  :remote_cache
+set :deploy_to,   "/var/www/apps/#{application}"
 
 role :app, "173.45.242.10:5826"
 role :web, "173.45.242.10:5826"
@@ -14,6 +14,9 @@ role :db,  "173.45.242.10:5826", :primary => true
 
 set :runner, user
 set :admin_runner, user
+
+# Bundler
+require 'bundler/capistrano'
 
 namespace :deploy do
   task :start, :roles => [:web, :app] do

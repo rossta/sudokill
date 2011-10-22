@@ -15,6 +15,11 @@ role :db,  "173.45.242.10:5826", :primary => true
 set :runner, user
 set :admin_runner, user
 
+$:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the load path.
+require "rvm/capistrano"                  # Load RVM's capistrano plugin.
+set :rvm_ruby_string, '1.9.2-p180'        # Or whatever env you want it to run in.
+set :rvm_type, :user
+
 # Bundler
 require 'bundler/capistrano'
 

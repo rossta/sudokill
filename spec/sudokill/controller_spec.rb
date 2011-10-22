@@ -229,8 +229,8 @@ describe Sudokill::Controller do
         end
         it "should broadcast player 3 in game" do
           @channel.should_receive(:push).once.with(/Player 3 is now in the game/).ordered
-          @channel.should_receive(:push).once.with(/SCORE/).ordered
-          @channel.should_receive(:push).once.with(/QUEUE/).ordered
+          @channel.should_receive(:push).with(/SCORE/).ordered
+          @channel.should_receive(:push).with(/QUEUE/).ordered
           @controller.call :remove_player, :player => @player_1
         end
         it "should not end game and set it to waiting" do

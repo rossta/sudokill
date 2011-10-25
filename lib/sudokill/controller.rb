@@ -80,9 +80,9 @@ module Sudokill
     protected
 
     def defer(&block)
-      deferable = EM::DefaultDeferrable.new
-      deferable.callback &block
-      deferable.succeed
+      deferrable = EM::DefaultDeferrable.new
+      deferrable.callback &block
+      deferrable.succeed
     end
 
     class Command

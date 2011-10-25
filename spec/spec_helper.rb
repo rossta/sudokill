@@ -10,6 +10,7 @@ class FakeDeferrable
   def callback(&block)
     @block = block
   end
+
   def succeed
     @block.call
   end

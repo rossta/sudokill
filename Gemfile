@@ -12,6 +12,7 @@ gem "em-websocket", '0.2.0'
 gem "capistrano"
 
 group :test do
+  gem "thor"
   gem "rack-test", "~> 0.6.1"
   gem "rspec", "~> 2.6.0"
   gem 'ruby-debug', :platforms => :ruby_18

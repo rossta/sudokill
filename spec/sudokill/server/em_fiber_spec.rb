@@ -2,6 +2,33 @@ require 'spec_helper'
 require 'json'
 require 'fiber'
 
+
+module EMSpec
+  def em_spec(&block)
+    EM.run {
+      puts Fiber.new {
+        @current_fiber = Fiber.current
+         block.call(@current_fiber)
+         Fiber.yield("Fiber #1")
+         EventMachine.stop
+         "Fiber #2"
+       }.resume
+    }
+  end
+
+  def on_finish(fiber = @current_fiber, &block)
+    lambda {
+      block.call
+      fiber.resume
+    }
+  end
+
+end
+
+RSpec.configure do |c|
+  c.include EMSpec
+end
+
 describe Sudokill::Server do
   before(:each) do
     Sudokill::WebServer.stub!(:run!)
@@ -9,42 +36,24 @@ describe Sudokill::Server do
     @pipe = "|"
   end
 
-  module EMSpec
-    def em_spec(&block)
-      EM.run {
-        Fiber.new {
-           puts "Starting test"
-           block.call(Fiber.current)
-           Fiber.yield
-           puts "Finishing test"
-
-           EventMachine.stop
-         }.resume
-      }
-    end
-
-  end
-  include EMSpec
-
   describe "connection on open join game" do
     it "should add players to game if available and respond READY" do
-      em_spec do |f|
+      em_spec do
         server = Sudokill::Server.new(:host => '0.0.0.0', :port => 12345)
         server.start
         controller  = server.controller
         socket      = EM.connect('0.0.0.0', 12345, FakeSocketClient)
 
-        socket.onopen = lambda {
-          puts "socket opened"
+        socket.onopen = on_finish do
+          puts 'on open'
           controller.players.size.should == 1
           socket.data.last.chomp.should == "READY"
-          f.resume
-        }
+        end
       end
     end
 
     it "should add players to queue if game full and respond WAIT" do
-      EM.run {
+      em_spec do |f|
         server = Sudokill::Server.new(:host => '0.0.0.0', :port => 12345)
         server.start
         controller = server.controller
@@ -52,13 +61,15 @@ describe Sudokill::Server do
         socket_1 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_2 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
         socket_3 = EM.connect('0.0.0.0', 12345, FakeSocketClient)
-        socket_3.onopen = lambda {
+
+        socket_3.onopen = em_assert(f) do
+          puts "socket opened"
           controller.players.size.should == 2
           controller.queue.size.should == 1
           socket_3.data.last.chomp.should == "WAIT"
-          EM.stop
-        }
-      }
+          # f.resume
+        end
+      end
     end
   end
   describe "play_game" do

@@ -9,7 +9,7 @@ This is an implementation of the game devised by Dennis Shasha for his Heuristic
 
 ## Try it out ##
 
-You can play the game in browsers enabled with Websockets or Flash. Visit [Sudokill](http://rosskaff.github.com/sudokill) and enter your name to connect. Since all games are open to the public, you'll be able to see other players connected as well.
+You can play the game in browsers enabled with Websockets or Flash. Visit [Sudokill](http://rossta.github.com/sudokill) and enter your name to connect. Since all games are open to the public, you'll be able to see other players connected as well.
 
 About the controls: "Switch game" will take you to another game room. Press "Join game" to get in line to play the game. You can select a computer player to play against using the "Choose opponent" menu. Press "Play" to start a game when two players are in the "Now playing" list. You can alter how many numbers fill the board at the start with the density controls.
 
@@ -23,28 +23,19 @@ The game server is backed by EventMachine. Sinatra serves up the HTML, CSS and J
 
 ### Running the game locally ###
 
-Start the game server
+Clone the repo
 
-	$ ruby script/server
+  $ git clone git://github.com/rossta/sudokill.git
 
-Start the web server.
+Install dependencies via bundler. [Ruby newbies should check out the wiki]([[Setup-for-Ruby-Newbies]]) for more details
 
-	$ ruby script/web
+  $ bundle
 
-Start two player client scripts.
+Start the server
 
-	$ PLAYER=naive ruby script/play NAME
-	// automated naive player, bash
-
-	$ setenv PLAYER naive; ruby script/play NAME
-	// automated naive player, tcsh
-
-	$ ruby script/play NAME
-	// manual player: send messages to game server via STDIN
+	$ ./script/server
 
 Visit http://localhost:45678, enter a visitor name, and "Connect".
-
-Press "Play" when two player clients (from previous step) are connected to the game server.
 
 For best performance, use a browser that supports HTML5 websockets
 
@@ -53,9 +44,13 @@ For best performance, use a browser that supports HTML5 websockets
 	* Firefox 4 beta
 	* Opera 10.70
 
+Choose a player bot to compete with or open a second page to the same url to play against yourself.
+
+Press "Play" when two players are connected to get a game going.
+
 Optional command line parameters
 
-	$ ruby script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT]
+	$ ./script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT]
 	// default host: localhost
 	// default socket port: 4444
 	// default websocket port: 8080

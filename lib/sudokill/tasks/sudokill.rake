@@ -1,3 +1,7 @@
+task :environment do
+  require 'sudokill'
+end
+
 namespace :sudokill do
   namespace :production do
     task :start do
@@ -26,11 +30,12 @@ namespace :sudokill do
     end
   end
 
-  task :production do
+  desc "start sudokill with production environment"
+  task :production => :environment do
     Rake::Task["sudokill:production:start"].execute
   end
 
-  task :start do
+  task :start => :environment do
     Sudokill.run(:env => :development)
   end
 

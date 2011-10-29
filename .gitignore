@@ -2,3 +2,5 @@
 secret
 log/*.log
 tmp/
+.bundle/*
+vendor/*

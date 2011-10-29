@@ -9,7 +9,7 @@ This is an implementation of the game devised by Dennis Shasha for his Heuristic
 
 ## Try it out ##
 
-You can play the game in browsers enabled with Websockets or Flash. Visit [Sudokill](http://rosskaff.github.com/sudokill) and enter your name to connect. Since all games are open to the public, you'll be able to see other players connected as well. 
+You can play the game in browsers enabled with Websockets or Flash. Visit [Sudokill](http://rossta.github.com/sudokill) and enter your name to connect. Since all games are open to the public, you'll be able to see other players connected as well.
 
 About the controls: "Switch game" will take you to another game room. Press "Join game" to get in line to play the game. You can select a computer player to play against using the "Choose opponent" menu. Press "Play" to start a game when two players are in the "Now playing" list. You can alter how many numbers fill the board at the start with the density controls.
 
@@ -20,78 +20,22 @@ Instructions for connecting your own computer client to play the game through a 
 
 The game server is backed by EventMachine. Sinatra serves up the HTML, CSS and Javascript assets for rendering the view in browser. Pressing connect
 
-### Install ###
 
-To run the game server locally, download or clone:
+### Running the game locally ###
 
-	$ git clone git://github.com/rosskaff/sudokill.git
+Clone the repo
 
-### Dependencies ###
+  $ git clone git://github.com/rossta/sudokill.git
 
-**Mac**
+Install dependencies via bundler. [Ruby newbies should check out the wiki]([[Setup-for-Ruby-Newbies]]) for more details
 
-I recommend using Ruby version 1.8.7 or above. If you need to upgrade your rubies, use [RVM](http://rvm.beginrescueend.com/).
+  $ bundle
 
-	$ ruby -v
+Start the server
 
-Make sure you have rubygems installed. If you need rubygems, download from [rubygems.org](http://rubygems.org/pages/download).
-
-	$ gem -v
-
-Add the project gems:
-
-	$ gem install eventmachine
-	$ gem install em-websocket
-	$ gem install sinatra
-	$ gem install thin // optional: alternative web server to WEBrick
-
-**Linux**
-
-Get Ruby and ruby gems (Thanks to Max and Simon):
-
-	$ apt-get install ruby
-	$ apt-get install rubygems1.8
-	$ apt-get install ruby1.8-dev
-
-Then install the project gems as above described for Mac users.
-
-If using "sudo apt-get", you may need to chown the gems dir to get the gems command to work.
-
-	$ sudo chown -R <user>:<user> /var/lib/gems
-
-**Windows**
-
-Install Ruby 1.8.7 from [RubyInstaller](http://rubyinstaller.org): useful [installation info](http://ruby.about.com/od/beginningruby/ss/Installing-A-Ruby-Development-Environment-On-Windows.htm)
-
-	$ gem install eventmachine --platform=mswin32
-	$ gem install em-websocket
-	$ gem install sinatra
-	$ gem install thin --platform=mswin32 // optional: alternative web server to WEBrick
-
-### Run ###
-
-Start the game server
-
-	$ ruby script/server
-
-Start the web server.
-
-	$ ruby script/web
-
-Start two player client scripts.
-
-	$ PLAYER=naive ruby script/play NAME
-	// automated naive player, bash
-
-	$ setenv PLAYER naive; ruby script/play NAME
-	// automated naive player, tcsh
-
-	$ ruby script/play NAME
-	// manual player: send messages to game server via STDIN
+	$ ./script/server
 
 Visit http://localhost:45678, enter a visitor name, and "Connect".
-
-Press "Play" when two player clients (from previous step) are connected to the game server.
 
 For best performance, use a browser that supports HTML5 websockets
 
@@ -100,9 +44,13 @@ For best performance, use a browser that supports HTML5 websockets
 	* Firefox 4 beta
 	* Opera 10.70
 
+Choose a player bot to compete with or open a second page to the same url to play against yourself.
+
+Press "Play" when two players are connected to get a game going.
+
 Optional command line parameters
 
-	$ ruby script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT]
+	$ ./script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT]
 	// default host: localhost
 	// default socket port: 4444
 	// default websocket port: 8080
@@ -121,18 +69,12 @@ Optional command line parameters
 
 	$ ruby script/play NAME [HOST] [SOCKET_PORT]
 
-### At NYU ###
+## Writing a Player Bot ##
 
-The game server is currently available on linserv1.cims.nyu.edu, socket port 44444
+Bot players can be written in any language that can communicate over TCP. Player bots should
+be able to connect to the Sudokill server (default port 4444 when run locally) and respond
+to messages according to the following server protocol.
 
-Try connecting a computer player:
-
-	$ ruby script/play NAME linserv1.cims.nyu.edu 44444
-
-To view, visit the [Sudokill game](http://linserv1.cims.nyu.edu:45678) and log in with the following options:
-
-	host: linserv1.cims.nyu.edu
-	websocket port: 48080
 
 ## Server Protocol ##
 

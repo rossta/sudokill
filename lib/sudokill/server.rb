@@ -42,7 +42,7 @@ module Sudokill
 
         EventMachine::start_server @host, @port, Client::Socket, 
           :app => controller, :max_time => @max_time_socket do |player|
-          player.send_command "WAIT" unless @env == :test
+            player.send_command "WAIT" unless @env == :test
         end
 
         EventMachine::start_server @ws_host, @ws_port, Client::WebSocket, 

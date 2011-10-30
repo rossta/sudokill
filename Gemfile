@@ -7,7 +7,7 @@ gem "sinatra"
 gem "thin"
 gem "eventmachine", '0.12.10'
 gem "addressable", '2.2.2'
-gem "em-websocket", '0.2.0'
+gem "em-websocket", '0.3.5'
 
 gem "capistrano"
 

@@ -1,7 +1,7 @@
-$LOAD_PATH << File.expand_path(File.dirname(__FILE__)) + "/../vendor/addressable/lib"
-$LOAD_PATH << File.expand_path(File.dirname(__FILE__)) + "/../vendor/em-websocket/lib"
-
-require "rubygems"
+# Encoding.default_internal = "UTF-8"
+# Encoding.default_external = "UTF-8"
+# 
+require "bundler/setup"
 require "socket"
 require "eventmachine"
 require "addressable/uri"
@@ -14,7 +14,7 @@ require "em-websocket"
 %w[ naive ].each { |file| require "sudokill/player/#{file}" }
 
 module Sudokill
-  
+
   class << self
 
     attr_accessor :env
@@ -22,7 +22,7 @@ module Sudokill
     def run(opts = {})
       require 'yaml'
       config = YAML.load_file('config/server.yml')[opts[:env].to_s]
-    
+
       Server.start(
         :env  => opts[:env],
         :host => config['host'],

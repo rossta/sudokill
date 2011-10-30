@@ -13,63 +13,63 @@ describe Sudokill::Client::WebSocket do
     end
   end
 
-  describe "receive_data" do
+  describe "message_received" do
     it "should strip html tags" do
       @app.should_receive(:broadcast).with("alert('foo')", "Rossta")
-      @player.receive_data("<script>alert('foo')</script>\r\n");
+      @player.message_received("<script>alert('foo')</script>\r\n");
     end
     describe "MOVE" do
       it "should request add move callback if playing" do
         @player.has_turn!
         @app.should_receive(:call).with(:request_add_move, :player => @player, :move => "1 2 3")
-        @player.receive_data("MOVE|1 2 3\r\n")
+        @player.message_received("MOVE|1 2 3\r\n")
       end
       it "should not request add move callback if not playing" do
         @app.should_not_receive(:call).with(:request_add_move)
-        @player.receive_data("MOVE|1 2 3\r\n")
+        @player.message_received("MOVE|1 2 3\r\n")
       end
     end
     describe "STOP" do
       it "should trigger stop game callback" do
         @app.should_receive(:call).with(:stop_game)
-        @player.receive_data("STOP\r\n")
+        @player.message_received("STOP\r\n")
       end
     end
     describe "PLAY" do
       it "should trigger play game callback" do
         @app.should_receive(:call).with(:play_game, :density => 0.33 )
-        @player.receive_data("PLAY|33\r\n")
+        @player.message_received("PLAY|33\r\n")
       end
     end
     describe "JOIN" do
       it "should trigger new player callback" do
         @app.should_receive(:call).with(:new_player, :player => @player).once.ordered
         @app.should_receive(:call).with(:announce_player, :player => @player).once.ordered
-        @player.receive_data("JOIN\r\n")
+        @player.message_received("JOIN\r\n")
       end
     end
     describe "LEAVE" do
       it "should trigger new player callback" do
         @app.should_receive(:call).with(:remove_player, :player => @player)
-        @player.receive_data("LEAVE\r\n")
+        @player.message_received("LEAVE\r\n")
       end
     end
     describe "NEW CONNECTION" do
       it "should send app board json" do
         @app.should_receive(:call).with(:new_visitor, :visitor => @player)
-        @player.receive_data("NEW CONNECTION|Rossta\r\n")
+        @player.message_received("NEW CONNECTION|Rossta\r\n")
       end
     end
     describe "SWITCH" do
       it "should request new app" do
         @app.should_receive(:call).with(:switch_controller, :visitor => @player)
-        @player.receive_data("SWITCH\r\n")
+        @player.message_received("SWITCH\r\n")
       end
     end
     describe "PREVIEW" do
       it "should request a preview of the current board game" do
         @app.should_receive(:call).with(:preview_board, :density => 0.45)
-        @player.receive_data("PREVIEW|45\r\n")
+        @player.message_received("PREVIEW|45\r\n")
       end
     end
   end

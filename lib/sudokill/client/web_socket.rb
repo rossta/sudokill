@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Sudokill
 
   module Client
@@ -11,16 +13,18 @@ module Sudokill
         @app      = opts[:app]
         @max_time = opts[:max_time]
         @data     = ''
+
+        @onmessage = method(:message_received).to_proc
       end
 
-      def receive_data(data)
-        super(data)
+      def message_received(data)
         if line = data.slice!(/(.+)\r?\n/)
           line = line.chomp
           case line
           when /GET.*HTTP/
             log "New player connecting...", SUDOKILL
           when /NEW CONNECTION/
+            log "New Connection...", SUDOKILL
             cmd, given_name = line.split(PIPE)
             @name = given_name
             @app.call :new_visitor, :visitor => self
@@ -76,19 +80,19 @@ module Sudokill
         super
         @app.call :remove_visitor, :visitor => self
       end
-      
+
       def game_over!
         super
         send("Press 'Join game' to re-enter a game")
       end
-      
+
       protected
-      
+
       def convert_line_to_density(line)
         cmd, density = line.split(PIPE)
         (density.to_f/100)
       end
-      
+
       def ensure_app
         raise "Instance of Sudokill::Server not defined" unless @app
       end

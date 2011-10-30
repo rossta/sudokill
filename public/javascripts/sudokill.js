@@ -656,6 +656,7 @@ Sudokill = (function() {
       self.ws.close();
     },
     send: function(msg) {
+      this.game.log("sending:", msg);
       this.ws.send(msg + EOL);
     },
     status: function(msg) {

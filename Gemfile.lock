@@ -18,7 +18,7 @@ GEM
       addressable (>= 2.0.0)
       escape_utils
       eventmachine (>= 0.12.9)
-    em-websocket (0.2.0)
+    em-websocket (0.3.5)
       addressable (>= 2.1.1)
       eventmachine (>= 0.12.9)
     escape_utils (0.2.3)
@@ -95,7 +95,7 @@ DEPENDENCIES
   addressable (= 2.2.2)
   capistrano
   em-http-request
-  em-websocket (= 0.2.0)
+  em-websocket (= 0.3.5)
   eventmachine (= 0.12.10)
   jasmine (~> 1.0.2)
   rack-test (~> 0.6.1)

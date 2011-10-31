@@ -17,7 +17,7 @@ set :admin_runner, user
 
 $:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the load path.
 require "rvm/capistrano"                  # Load RVM's capistrano plugin.
-set :rvm_ruby_string, '1.9.2-p180'        # Or whatever env you want it to run in.
+set :rvm_ruby_string, '1.9.2-p290'        # Or whatever env you want it to run in.
 set :rvm_type, :user
 
 # Bundler
@@ -25,11 +25,13 @@ require 'bundler/capistrano'
 
 namespace :deploy do
   task :start, :roles => [:web, :app] do
-    run "cd #{deploy_to}/current && nohup thin -C config/thin/production.yml -R config.ru start"
+    # run "cd #{deploy_to}/current && nohup thin -C config/thin/production.yml -R config.ru start"
+    run "cd #{deploy_to}/current && bundle exec rake sudokill:production"
   end
  
   task :stop, :roles => [:web, :app] do
-    run "cd #{deploy_to}/current && nohup thin -C config/thin/production.yml -R config.ru stop"
+    # run "cd #{deploy_to}/current && nohup thin -C config/thin/production.yml -R config.ru stop"
+    run "cd #{deploy_to}/current && bundle exec rake sudokill:production:stop"
   end
  
   task :restart, :roles => [:web, :app] do
@@ -46,6 +48,6 @@ end
 
 namespace :sudokill do
   task :log do
-    run "cat #{deploy_to}/current/log/thin.log"
+    run "cat #{deploy_to}/current/log/sudokill.log"
   end
 end

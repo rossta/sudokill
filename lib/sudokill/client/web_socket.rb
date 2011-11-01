@@ -78,7 +78,7 @@ module Sudokill
 
       def unbind
         super
-        @app.call :remove_visitor, :visitor => self
+        @app.call :remove_visitor, :visitor => self unless error?
       end
 
       def game_over!

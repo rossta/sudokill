@@ -1,21 +1,21 @@
---- 
-production: 
+---
+production:
   instances: 2
-  port: 
-    websocket: 48080
+  port:
+    websocket: 8080
     http: 45678
     socket: 44444
   host: 0.0.0.0
-  max_time: 
+  max_time:
     websocket: 600
     socket: 120
-development: 
+development:
   instances: 2
-  port: 
+  port:
     websocket: 8080
     http: 4567
     socket: 4444
   host: 0.0.0.0
-  max_time: 
+  max_time:
     websocket: 600
     socket: 120

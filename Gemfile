@@ -11,6 +11,7 @@ gem "em-websocket", '0.3.5'
 
 gem "capistrano"
 
+
 group :test do
   gem "rack-test", "~> 0.6.1"
   gem "rspec", "~> 2.6.0"
@@ -19,4 +20,5 @@ group :test do
   gem "jasmine", "~> 1.0.2"
   gem "static_fm"
   gem "em-http-request"
+  gem "spatula"
 end

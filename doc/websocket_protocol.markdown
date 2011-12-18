@@ -1,4 +1,4 @@
-Sudokill Websocket JSON Protocol
+## Sudokill Websocket JSON Protocol ##
 
 Accepts commands in JSON format
 

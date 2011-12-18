@@ -1,7 +1,6 @@
 rvm:
   - 1.9.2
-  - ree
-  - 1.8.7
 
-before_script:
-  - sh -e /etc/init.d/xvfb start
+before_script: "sh -e /etc/init.d/xvfb start"
+
+script: "bundle exec rake travis"

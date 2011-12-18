@@ -25,17 +25,17 @@ The game server is backed by EventMachine. Sinatra serves up the HTML, CSS and J
 
 Clone the repo
 
-  $ git clone git://github.com/rossta/sudokill.git
+	$ git clone git://github.com/rossta/sudokill.git
 
 Install dependencies via bundler. [Ruby newbies should check out the wiki]([[Setup-for-Ruby-Newbies]]) for more details
 
-  $ bundle
+	$ bundle
 
 Start the server
 
-	$ ./script/server
+	$ ./bin/sudokill
 
-Visit http://localhost:45678, enter a visitor name, and "Connect".
+Visit http://localhost:4567, enter a visitor name, and "Connect".
 
 For best performance, use a browser that supports HTML5 websockets
 
@@ -48,28 +48,13 @@ Choose a player bot to compete with or open a second page to the same url to pla
 
 Press "Play" when two players are connected to get a game going.
 
-Optional command line parameters
+You can also play against a friend (or yourself in two browser windows) at [http://www.sudokill.com](http://rossta.github.com/sudokill)
 
-	$ ./script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT]
-	// default host: localhost
-	// default socket port: 4444
-	// default websocket port: 8080
+To learn the TCP protocol or for an extra challenge, play at sudokill.com via command line:
 
-	$ ruby script/web [HOST] [WEBSOCKET_PORT] [HTTP_PORT]
-	// default host: localhost
-	// default websocket port: 8080
-	// default http port: 4567
+	$ ./bin/sudokill play NAME
 
-	//or run both web and game server together with thin and enable WEB env:
-	$ WEB=1 ruby script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT] [HTTP_PORT]
-	//bash
-
-	$ setenv WEB 1; ruby script/server [HOST] [SOCKET_PORT] [WEBSOCKET_PORT] [HTTP_PORT]
-	//tcsh
-
-	$ ruby script/play NAME [HOST] [SOCKET_PORT]
-
-## Writing a Player Bot ##
+## Writing a TCP Player ##
 
 Bot players can be written in any language that can communicate over TCP. Player bots should
 be able to connect to the Sudokill server (default port 4444 when run locally) and respond

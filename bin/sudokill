@@ -1,0 +1,73 @@
+#! /usr/bin/env ruby
+
+lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
+$LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
+
+require 'sudokill'
+require 'optparse'
+
+config = {
+  :host      => '0.0.0.0',
+  :port      => 4444,
+  :ws_port   => 8080,
+  :http_port => 4567,
+  :env       => "development",
+  :instances => 2
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: sudokill [options]"
+
+  opts.separator ""
+  opts.separator "Options:"
+
+  opts.on("-n", "--host [HOST]", "host name, default #{config[:host]}") do |host|
+    config[:host] = host
+  end
+
+  opts.on("-p", "--http [HTTP_PORT]", "web server port, default #{config[:http_port]}") do |http_port|
+    config[:http_port] = http_port
+  end
+
+  opts.on("-t", "--tcp [TCP_PORT]", "tcp server port, default #{config[:port]}") do |tcp_port|
+    config[:port] = tcp_port
+  end
+
+  opts.on("-w", "--ws [WEBSOCKET_PORT]", "websocket server port, default #{config[:ws_port]}") do |ws_port|
+    config[:ws_port] = ws_port
+  end
+
+  opts.on("-e", "--enviroment [ENVIRONMENT]", "environment name, default #{config[:env]}") do |environment|
+    config[:env] = environment
+  end
+
+  opts.on("-i", "--instances [COUNT]", "number of game instances, default #{config[:instances]}") do |count|
+    config[:instances] = count
+  end
+
+  opts.on("-l", "--log [LOGFILE]", "log output to file") do |logfile|
+    logfile ||= "log/sudokill.log"
+    file = File.open(logfile, "a")
+    Sudokill::Logger.logger = Logger.new(logfile)
+  end
+
+  opts.on("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+  opts.separator ""
+  opts.separator "Commands:"
+  opts.separator "                  Run sudokill server"
+  opts.separator "  play NAME       Play sudokill on http://rossta.github.com/sudokill via commandline"
+end
+
+parser.parse!
+
+case ARGV[0]
+when 'play'
+  require "sudokill/player/echo"
+  Sudokill::Player::Echo.play!(ARGV[1], 'turfcasts.com', 44444)
+else
+  Sudokill::Server.start(config)
+end

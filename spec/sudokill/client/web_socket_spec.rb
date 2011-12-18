@@ -76,6 +76,7 @@ describe Sudokill::Client::WebSocket do
 
   describe "unbind" do
     it "should remove player from app" do
+      @player.stub!(:error? => false)
       @app.should_receive(:call).with(:remove_player, :player => @player).once.ordered
       @app.should_receive(:call).with(:remove_visitor, :visitor => @player).once.ordered
       @player.unbind

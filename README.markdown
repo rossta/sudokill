@@ -48,9 +48,7 @@ Choose a player bot to compete with or open a second page to the same url to pla
 
 Press "Play" when two players are connected to get a game going.
 
-You can also play against a friend (or yourself in two browser windows) at [http://www.sudokill.com](http://rossta.github.com/sudokill)
-
-To learn the TCP protocol or for an extra challenge, play at sudokill.com via command line:
+To learn the TCP protocol or for an extra challenge, play against others at sudokill.com via command line:
 
 	$ ./bin/sudokill play NAME
 

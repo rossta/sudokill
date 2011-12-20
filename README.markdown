@@ -39,16 +39,14 @@ Start the server. Visit http://localhost:4567, enter a visitor name, and "Connec
 	$ ./bin/sudokill
 	$ open http://localhost:4567 
 
+Choose a player bot to compete with or open a second page to the same url to play against yourself. Press "Play" when two players are connected to get a game going.
+
 For best performance, use a browser that supports HTML5 websockets
 
 * Chrome 5+
 * Safari 5+
 * Firefox 4 beta
 * Opera 10.70
-
-Choose a player bot to compete with or open a second page to the same url to play against yourself.
-
-Press "Play" when two players are connected to get a game going.
 
 To learn the TCP protocol (or for an extra challenge), you can enter the game on sudokill.com via command line:
 

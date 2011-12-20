@@ -27,8 +27,11 @@ Clone the repo
 
 	$ git clone git://github.com/rossta/sudokill.git
 
-Install dependencies via bundler. Sudokill will run on Ruby versions 1.8.7 and 1.9.x. [Ruby newbies should check out the wiki]([[Setup-for-Ruby-Newbies]]) for more details.
+Sudokill will run on Ruby versions 1.8.7 and 1.9.x. [Ruby newbies should check out the wiki]([[Setup-for-Ruby-Newbies]]) for more details. 
 
+Install dependencies via bundler. 
+	
+	$ gem install bundler
 	$ bundle
 
 Start the server

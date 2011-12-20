@@ -34,11 +34,10 @@ Install dependencies via bundler.
 	$ gem install bundler
 	$ bundle
 
-Start the server
+Start the server. Visit http://localhost:4567, enter a visitor name, and "Connect".
 
 	$ ./bin/sudokill
-
-Visit http://localhost:4567, enter a visitor name, and "Connect".
+	$ open http://localhost:4567 
 
 For best performance, use a browser that supports HTML5 websockets
 
@@ -51,6 +50,6 @@ Choose a player bot to compete with or open a second page to the same url to pla
 
 Press "Play" when two players are connected to get a game going.
 
-To learn the TCP protocol or for an extra challenge, play against others at sudokill.com via command line:
+To learn the TCP protocol (or for an extra challenge), you can enter the game on sudokill.com via command line:
 
 	$ ./bin/sudokill play NAME

@@ -41,10 +41,10 @@ Start the server. Visit http://localhost:4567, enter a visitor name, and "Connec
 
 For best performance, use a browser that supports HTML5 websockets
 
-	* Chrome 5+
-	* Safari 5+
-	* Firefox 4 beta
-	* Opera 10.70
+* Chrome 5+
+* Safari 5+
+* Firefox 4 beta
+* Opera 10.70
 
 Choose a player bot to compete with or open a second page to the same url to play against yourself.
 

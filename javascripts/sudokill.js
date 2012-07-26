@@ -463,10 +463,10 @@ Sudokill = (function() {
       $gameOptions.addClass("game_options");
       self.$form.append($gameOptions);
 
-      $gameOptions.append("<input type='button' name='switch' value='Switch game' class='switch' />");
-      $gameOptions.append(self.$select);
       if (Settings.humans) $gameOptions.append("<input type='button' name='join' value='Join game' class='join' />");
+      $gameOptions.append(self.$select);
       $gameOptions.append("<input type='button' name='play' value='Play' class='play' />");
+      $gameOptions.append("<input type='button' name='switch' value='Switch game' class='switch' />");
 
       var $slider = $("<div />");
       $slider.addClass("slider");
@@ -700,7 +700,7 @@ Sudokill = (function() {
     $connectForm.append("<div class='required'></div>");
     var $name = $connectForm.find("div.required");
         $name.append("<input id='s_name' type='text' name='name' class='name' placeholder='Your name please' autofocus='true' />");
-        $name.append("<label for='s_name' class='name'>Your name please</label>");
+        // $name.append("<label for='s_name' class='name'>Your name please</label>");
 
     var $toggle = $("<a></a>").attr("href", "#").text("Options").addClass("toggle");
         $name.append($toggle);

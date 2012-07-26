@@ -1,12 +1,22 @@
-body { background: black; color: white; font-family: Georgia, Times, serif;}
-input {font-family: Georgia, Times, serif;}
+body { background: black; color: white; font-family: Helvetica, Arial, sans-serif;}
+input {font-family: Helvetica, Arial, sans-serif;}
 .title  {
-  background: transparent url(../images/title_sudokill.png) no-repeat center;
-  text-indent:-4000em; height:200px; width:612px; margin:2em auto 1em;
+  background: transparent url(../images/title_sudokill.png) no-repeat top center;
+  text-indent:-4000em; height:135px; width:612px; margin:2em auto 1em;
 }
 .logo   {
   background: transparent url(../images/logo_sudokill.png) no-repeat center;
   height:67px; width:231px; display:none;
+}
+.container {
+  margin: 10px auto;
+  clear: both;
+  width: 650px;
+  line-height: 1.5em;
+  color:#ccc;
+}
+.container a {
+  color: #F98D2D;
 }
 .border { border: 1px solid #666; }
 .table { display:table; }
@@ -15,6 +25,7 @@ input {font-family: Georgia, Times, serif;}
 .cell_top { display:table-cell; vertical-align:top;}
 .optional { display:none; margin: 0.5em 0;}
 .hidden { display:none;}
+#sudokill { margin-bottom: 100px;}
 #game_board {
   float:left;
   margin:0 10px 10px;
@@ -121,3 +132,10 @@ div.slider label {
   text-align:center;
 }
 #game_status .msg { display:table-cell;}
+
+footer { 
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+  text-align:right;
+  padding:10px;
+}

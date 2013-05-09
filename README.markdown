@@ -18,7 +18,7 @@ Instructions for connecting your own computer client to play the game through a 
 
 ### Implementation ###
 
-The game server is backed by EventMachine. Sinatra serves up the HTML, CSS and Javascript assets for rendering the view in browser. Pressing connect
+The game server is backed by EventMachine. Sinatra serves up the HTML, CSS and Javascript assets for rendering the view in browser.
 
 
 ### Running the game locally ###

@@ -4,3 +4,4 @@ log/*.log
 tmp/
 .bundle/*
 vendor/*
+.env

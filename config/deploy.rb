@@ -60,6 +60,8 @@ namespace :sudokill do
   end
 
   task :symlink do
+    run "ln -nfs #{shared_path}/log #{release_path}/log"
+    run "ln -nfs #{shared_path}/pids #{release_path}/pids"
     run "ln -nfs #{shared_path}/.env #{release_path}/.env"
   end
 end

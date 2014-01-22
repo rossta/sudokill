@@ -7,7 +7,7 @@ gem "sinatra"
 gem "thin"
 gem "addressable"
 gem "em-websocket"
-
+gem "dotenv"
 gem "capistrano", "~> 2"
 gem "rvm-capistrano"
 

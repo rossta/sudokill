@@ -5,6 +5,7 @@ set :scm,         :git
 set :repository,  "git@github.com:rossta/sudokill.git"
 set :deploy_via,  :remote_cache
 set :deploy_to,   "/var/www/apps/#{application}"
+set :branch, "master"
 
 role :app, "107.170.9.121"
 role :web, "107.170.9.121"
@@ -12,6 +13,9 @@ role :db,  "107.170.9.121", :primary => true
 
 set :runner, user
 set :admin_runner, user
+
+default_run_options[:pty] = true
+set :ssh_options, { :forward_agent => true }
 
 $:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the load path.
 require "rvm/capistrano"                  # Load RVM's capistrano plugin.
@@ -21,6 +25,8 @@ set :rvm_autolibs_flag, "read-only"       # more info: rvm help autolibs
 
 before 'deploy:setup', 'rvm:install_rvm'  # install/update RVM
 before 'deploy:setup', 'rvm:install_ruby' # install Ruby and create gemset, OR:
+
+after "deploy:update_code", "sudokill:symlink"
 
 # Bundler
 require 'bundler/capistrano'
@@ -51,5 +57,9 @@ end
 namespace :sudokill do
   task :log do
     run "cat #{deploy_to}/current/log/sudokill.log"
+  end
+
+  task :symlink do
+    run "ln -nfs #{shared_path}/.env #{release_path}/.env"
   end
 end

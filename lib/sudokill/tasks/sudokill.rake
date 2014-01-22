@@ -1,4 +1,6 @@
-task :environment do
+require 'dotenv/tasks'
+
+task :environment => :dotenv do
   require 'sudokill'
 end
 

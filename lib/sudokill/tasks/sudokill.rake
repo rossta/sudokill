@@ -18,12 +18,12 @@ namespace :sudokill do
 
         Sudokill.run(:env => :production)
       end
-      File.open(File.join(app_root, 'tmp', 'production.pid'), 'w') {|f| f.write pid }
+      File.open(File.join(app_root, 'pids', 'production.pid'), 'w') {|f| f.write pid }
       Process.detach(pid)
     end
     task :stop do
       app_root = File.expand_path('../../../../', __FILE__)
-      pidfile = File.join(app_root, 'tmp', 'production.pid')
+      pidfile = File.join(app_root, 'pids', 'production.pid')
       pid     = File.read(pidfile) if File.exist?(pidfile)
       if pid.nil?
         puts "No pid found in #{pidfile}. Was the server running?"

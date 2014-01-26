@@ -32,25 +32,14 @@ after "deploy:update_code", "sudokill:symlink"
 require 'bundler/capistrano'
 
 namespace :deploy do
-  task :start, :roles => [:web, :app] do
-    # run "cd #{deploy_to}/current && nohup thin -C config/thin/production.yml -R config.ru start"
-    run "cd #{deploy_to}/current && bundle exec rake sudokill:production"
-  end
-
-  task :stop, :roles => [:web, :app] do
-    # run "cd #{deploy_to}/current && nohup thin -C config/thin/production.yml -R config.ru stop"
-    run "cd #{deploy_to}/current && bundle exec rake sudokill:production:stop"
-  end
-
   task :restart, :roles => [:web, :app] do
-    deploy.stop
-    deploy.start
+    # run "god restart sudokill"
   end
 
   # This will make sure that Capistrano doesn't try to run rake:migrate (this is not a Rails project!)
   task :cold do
     deploy.update
-    deploy.start
+    deploy.restart
   end
 end
 

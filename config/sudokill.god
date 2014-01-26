@@ -1,3 +1,4 @@
+# $ god -c /var/www/apps/sudokill/current/config/sudokill.god -D
 God.watch do |w|
   w.name = 'sudokill'
   w.start = "/var/www/apps/sudokill/current/bin/sudokill -p 45678 -t 44444 -w 8080 -e production -i 3"

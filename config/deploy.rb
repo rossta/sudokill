@@ -32,8 +32,12 @@ after "deploy:update_code", "sudokill:symlink"
 require 'bundler/capistrano'
 
 namespace :deploy do
+  task :reload, :roles => [:web, :app] do
+    run "god load #{deploy_to}/current/config/sudokill.god"
+  end
+
   task :restart, :roles => [:web, :app] do
-    # run "god restart sudokill"
+    run "god restart sudokill"
   end
 
   # This will make sure that Capistrano doesn't try to run rake:migrate (this is not a Rails project!)

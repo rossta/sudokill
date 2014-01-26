@@ -3,11 +3,6 @@
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../lib/"
 $LOAD_PATH << lib_path unless $LOAD_PATH.include? lib_path
 
-require 'bundler'
-Bundler.require
-Dotenv.load
-
-require 'sudokill'
 require 'optparse'
 
 config = {
@@ -41,7 +36,7 @@ parser = OptionParser.new do |opts|
     config[:ws_port] = ws_port
   end
 
-  opts.on("-e", "--enviroment [ENVIRONMENT]", "environment name, default #{config[:env]}") do |environment|
+  opts.on("-e", "--environment [ENVIRONMENT]", "environment name, default #{config[:env]}") do |environment|
     config[:env] = environment
   end
 
@@ -61,12 +56,15 @@ parser = OptionParser.new do |opts|
   end
 
   opts.separator ""
-  opts.separator "Commands:"
-  opts.separator "                  Run sudokill server"
-  opts.separator "  play NAME       Play sudokill on http://rossta.github.com/sudokill via commandline"
 end
 
 parser.parse!
+
+require 'bundler'
+Bundler.require
+Dotenv.load
+
+require 'sudokill'
 
 case ARGV[0]
 when 'play'
